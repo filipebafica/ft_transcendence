@@ -1,0 +1,49 @@
+version: '3.3'
+
+networks:
+  transcendence_network:
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: always
+    depends_on:
+      - nextjs
+    build: 
+      context: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - transcendence_network
+    ports:
+      - 80:80
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    volumes:
+      - ./postgres/entrypoint:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE}
+      TZ: ${DB_TIMEZONE}
+    networks:
+      - transcendence_network
+
+  nextjs:
+    container_name: nextjs
+    image: nextjs
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    build: 
+      context: nextjs
+    volumes:
+     - ./nextjs/pong:/usr/src/app
+    networks:
+      - transcendence_network
