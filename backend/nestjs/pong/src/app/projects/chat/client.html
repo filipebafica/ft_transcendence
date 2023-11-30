@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client</title>
+</head>
+<body>
+
+  <div>
+    <label for="from">From:</label>
+    <input type="text" id="from">
+    <button onclick="saveUser()">Save User</button>
+  </div>
+
+  <label for="to">To:</label>
+  <input type="text" id="to">
+
+  <label for="message">Message:</label>
+  <input type="text" id="message">
+
+  <button onclick="sendChatMessage()">Send Chat Message</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    const socket = io('http://localhost:8080');
+
+    function saveUser() {
+        const from = document.getElementById('from').value
+        socket.on(from, (data) => {
+        console.log('message:', data);
+      });
+    }
+
+    function sendChatMessage() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const message = document.getElementById('message').value;
+
+      socket.emit('messageRouter', JSON.stringify({ from, to, message }));
+    }
+
+  </script>
+</body>
+</html>

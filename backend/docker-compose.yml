@@ -9,7 +9,7 @@ services:
     image: nginx
     restart: always
     depends_on:
-      - nextjs
+      - nestjs
     build: 
       context: nginx
     volumes:
@@ -17,7 +17,7 @@ services:
     networks:
       - transcendence_network
     ports:
-      - 80:80
+      - 8080:80
 
   postgres:
     container_name: postgres
@@ -33,17 +33,17 @@ services:
     networks:
       - transcendence_network
 
-  nextjs:
-    container_name: nextjs
-    image: nextjs
+  nestjs:
+    container_name: nestjs
+    image: nestjs
     restart: always
     depends_on:
       - postgres
     env_file:
       - .env
     build: 
-      context: nextjs
+      context: nestjs
     volumes:
-     - ./nextjs/pong:/usr/src/app
+     - ./nestjs/pong:/usr/src/app
     networks:
       - transcendence_network
