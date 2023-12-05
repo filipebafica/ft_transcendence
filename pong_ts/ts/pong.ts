@@ -1,20 +1,19 @@
 // board
-let board;
-let boardWidth = 800;
-let boardHeight = 600;
-let context;
+const boardWidth = 800;
+const boardHeight = 600;
+let context: CanvasRenderingContext2D | null;
 
 // paddles
-let playerWidth = 10;
-let playerHeight = 90;
-let playerSpeed = 0;
+const playerWidth = 10;
+const playerHeight = 90;
 
+// players
 let player1 = {
 	x: 10,
 	y: (boardHeight - playerHeight) / 2,
 	width: playerWidth,
 	height: playerHeight,
-	speed: playerSpeed,
+	speed: 0,
 	numTouches: 0,
 };
 
@@ -23,13 +22,13 @@ let player2 = {
 	y: (boardHeight - playerHeight) / 2,
 	width: playerWidth,
 	height: playerHeight,
-	speed: playerSpeed,
+	speed: 0,
 	numTouches: 0,
 };
 
 // ball
-let ballWidth = 10;
-let ballHeight = 10;
+const ballWidth = 10;
+const ballHeight = 10;
 
 let ball = {
 	x: (boardWidth - ballWidth) / 2,
@@ -40,23 +39,27 @@ let ball = {
 	vY: 2,
 };
 
-const maxScore = 5;
+const maxPoints = 5;
 let player1Score = 0;
 let player2Score = 0;
 
-window.onload = function () {
-	board = document.getElementById("board");
+window.onload = () => {
+	const board: HTMLCanvasElement = document.getElementById(
+		"board"
+	) as HTMLCanvasElement;
 	const button = document.querySelector("button");
 	context = board.getContext("2d");
+
+	if (!board || !button || !context) return;
 
 	board.width = boardWidth;
 	board.height = boardHeight;
 
 	context.fillStyle = "white";
-	// draw initial player1
+	// * draw initial player1
 	context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
-	// draw initial player2
+	// * draw initial player2
 	context.fillRect(player2.x, player2.y, player2.width, player2.height);
 
 	button.addEventListener("click", recreateGame);
@@ -67,11 +70,13 @@ window.onload = function () {
 };
 
 function update() {
-	// end game
-	if (player1Score === maxScore) {
+	if (!context) return;
+
+	// * end game
+	if (player1Score === maxPoints) {
 		context.fillText("Player 1 wins!", (boardWidth - 300) / 2, 100);
 		return;
-	} else if (player2Score === maxScore) {
+	} else if (player2Score === maxPoints) {
 		context.fillText("Player 2 wins!", (boardWidth - 300) / 2, 100);
 		return;
 	}
@@ -80,39 +85,39 @@ function update() {
 	context.clearRect(0, 0, boardWidth, boardHeight);
 
 	context.fillStyle = "white";
-	// player1
-	let newPlayer1Y = player1.y + player1.speed;
-	// do not allow player1 to exit canvas
+	// * player1
+	const newPlayer1Y = player1.y + player1.speed;
+	// * do not allow player 1 to exit canvas
 	if (!outOfBounds(newPlayer1Y, playerHeight)) {
 		player1.y = newPlayer1Y;
 	}
 	context.fillRect(player1.x, player1.y, player1.width, player1.height);
 
-	// player2
-	let newPlayer2Y = player2.y + player2.speed;
-	// do not allow player2 to exit canvas
+	// * player2
+	const newPlayer2Y = player2.y + player2.speed;
+	// * do not allow player 2 to exit canvas
 	if (!outOfBounds(newPlayer2Y, playerHeight)) {
 		player2.y = newPlayer2Y;
 	}
 	context.fillRect(player2.x, player2.y, player2.width, player2.height);
 
-	// move ball
+	// * move ball
 	ball.x += ball.vX;
 	ball.y += ball.vY;
 	context.fillRect(ball.x, ball.y, ball.width, ball.height);
 
-	// ball touches top or bottom of canvas
+	// * ball touches top or bottom of canvas
 	if (outOfBounds(ball.y, ballHeight)) {
 		ball.vY *= -1;
 	}
 
-	// ball touches paddles
-	// find distances where ball is inside paddle
-	// when distance is minimum, that is where collision happened
-	// ball is dislocated to position when touching paddle
-	// if collision is at the top or bottom:
-	//  - if paddle is not moving, ball speed on y is inverted
-	//  - else, ball speed is added to player speed
+	// * ball touches paddles
+	// * find distances where ball is inside paddle
+	// * when distance is minimum, that is where collision happened
+	// * ball is dislocated to position when touching paddle
+	// * if collision is at the top or bottom:
+	// * - if paddle is not moving, ball speed on y is inverted
+	// * - else, ball speed is added to player speed
 	let dTop, dHor, dBot;
 	if (detectCollision(ball, player1)) {
 		player1.numTouches++;
@@ -178,7 +183,7 @@ function update() {
 		}
 	}
 
-	// speed up the game after even number of touches
+	// * speed up the game after even number of touches
 	if (
 		player1.numTouches != 0 &&
 		!(player1.numTouches % 2) &&
@@ -191,7 +196,7 @@ function update() {
 		player2.numTouches = 0;
 	}
 
-	// add score and reset
+	// * add score and reset
 	if (ball.x < 0) {
 		player2Score++;
 		resetGameState(2);
@@ -202,8 +207,8 @@ function update() {
 
 	// score
 	context.font = "45px sans-serif";
-	context.fillText(player1Score, boardWidth / 5, 45);
-	context.fillText(player2Score, (boardWidth * 4) / 5 - 45, 45);
+	context.fillText(String(player1Score), boardWidth / 5, 45);
+	context.fillText(String(player2Score), (boardWidth * 4) / 5 - 45, 45);
 
 	// midfield
 	for (let i = 10; i < boardHeight; i += 25) {
@@ -211,7 +216,7 @@ function update() {
 	}
 }
 
-function movePlayer(event) {
+function movePlayer(event: KeyboardEvent) {
 	if (event.code == "KeyW") {
 		player1.speed = -3;
 	} else if (event.code == "KeyS") {
@@ -225,7 +230,7 @@ function movePlayer(event) {
 	}
 }
 
-function stopMovement(event) {
+function stopMovement(event: KeyboardEvent) {
 	if (event.code == "KeyW") {
 		player1.speed = 0;
 	} else if (event.code == "KeyS") {
@@ -239,11 +244,14 @@ function stopMovement(event) {
 	}
 }
 
-function outOfBounds(yPosition, height) {
+function outOfBounds(yPosition: number, height: number) {
 	return yPosition < 0 || yPosition + height > boardHeight;
 }
 
-function detectCollision(ball, player) {
+function detectCollision(
+	ball: { x: number; y: number },
+	player: { x: number; y: number }
+) {
 	return (
 		ball.x <= player.x + playerWidth &&
 		ball.x + ballWidth >= player.x &&
@@ -252,7 +260,7 @@ function detectCollision(ball, player) {
 	);
 }
 
-function resetGameState(direction) {
+function resetGameState(direction: number) {
 	ball = {
 		x: (boardWidth - ballWidth) / 2,
 		y: (boardHeight - ballHeight) / 2,
@@ -271,7 +279,7 @@ function recreateGame() {
 		y: (boardHeight - playerHeight) / 2,
 		width: playerWidth,
 		height: playerHeight,
-		speed: playerSpeed,
+		speed: 0,
 		numTouches: 0,
 	};
 
@@ -280,7 +288,7 @@ function recreateGame() {
 		y: (boardHeight - playerHeight) / 2,
 		width: playerWidth,
 		height: playerHeight,
-		speed: playerSpeed,
+		speed: 0,
 		numTouches: 0,
 	};
 

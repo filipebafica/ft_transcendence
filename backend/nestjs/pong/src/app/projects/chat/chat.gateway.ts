@@ -3,13 +3,10 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    OnGatewayConnection,
-    ConnectedSocket
   } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { MessageDTO } from './message.dto';
-import { Logger } from '@nestjs/common';
-   
+
 @WebSocketGateway({cors: {
     origin: '*',
 }})

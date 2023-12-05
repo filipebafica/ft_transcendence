@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ChatRoom from '../ChatRoom'; // Import the ChatRoom component
 
 const ChatConfig = () => {
   const [userFrom, setUserFrom] = useState({ name: '', id: '' });
@@ -13,10 +12,6 @@ const ChatConfig = () => {
       alert('Please enter both user names');
     }
   };
-
-  if (isConfigComplete) {
-    return <ChatRoom userFrom={userFrom} userTo={userTo} />;
-  }
 
   return (
     <div>

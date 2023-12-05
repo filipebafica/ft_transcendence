@@ -41,8 +41,9 @@ services:
       - postgres
     env_file:
       - .env
-    build: 
+    build:
       context: nestjs
+      dockerfile: ${DEV_BUILD}
     volumes:
      - ./nestjs/pong:/usr/src/app
     networks:
