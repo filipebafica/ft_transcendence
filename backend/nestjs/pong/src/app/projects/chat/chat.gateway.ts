@@ -8,6 +8,7 @@ import {
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageDTO } from './message.dto';
+import { Logger } from '@nestjs/common';
    
 @WebSocketGateway({cors: {
     origin: '*',
@@ -22,7 +23,6 @@ export class ChatGateway {
         ): void {
 
             const messageDTO: MessageDTO = JSON.parse(message);
-
             this.server.emit(messageDTO.to, {
                 from: messageDTO.from,
                 to: messageDTO.to,
