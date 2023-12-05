@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./style.module.css";
+import Score from "./Score";
+// import Board from "./Board";
 
 function newGameState(gameState: GameState) {
 	const outOfBounds = (yPosition: number, height: number): boolean => {
@@ -110,7 +112,7 @@ interface Ball {
 	vY: number;
 }
 
-interface Board {
+interface Canvas {
 	width: number;
 	height: number;
 }
@@ -121,7 +123,7 @@ interface GameState {
 	ball: Ball;
 	player1Score: number;
 	player2Score: number;
-	board: Board;
+	board: Canvas;
 }
 
 function PongGame() {
@@ -240,11 +242,8 @@ function PongGame() {
 				gameState.ball.width,
 				gameState.ball.height
 			);
-			// score
-			context.font = "45px sans-serif";
-			context.fillText(String(player1Score), boardWidth / 5, 45);
-			context.fillText(String(player2Score), (boardWidth * 4) / 5 - 45, 45);
 			// midfield
+			context.fillStyle = "black";
 			for (let i = 10; i < boardHeight; i += 25) {
 				context.fillRect((boardWidth - 2) / 2, i, 4, 4);
 			}
@@ -264,7 +263,6 @@ function PongGame() {
 			setBall(() => updatedGameState.ball);
 			setPlayer1Score(() => updatedGameState.player1Score);
 			setPlayer2Score(() => updatedGameState.player2Score);
-			// console.log(updatedGameState.ball);
 			renderGameState(updatedGameState);
 
 			animationFrameId = requestAnimationFrame(gameLoop);
@@ -287,16 +285,21 @@ function PongGame() {
 	]);
 
 	return (
-		// <Score player=1 />
-		// <Score player=2 />
-		// <Board />
-		<div>
+		<div className={styles.screen}>
+			<Score player={1} score={player1Score} />
+			{/* <Board
+				player1Score={player1Score}
+				updatePlayer1Score={setPlayer1Score}
+				player2Score={player2Score}
+				updatePlayer2Score={setPlayer2Score}
+			/> */}
 			<canvas
 				ref={canvasRef}
 				width={boardWidth}
 				height={boardHeight}
 				className={styles.canvasGame}
 			/>
+			<Score player={2} score={player2Score} />
 			{/* <button onClick={() => {}}>Start Game</button> */}
 		</div>
 	);
