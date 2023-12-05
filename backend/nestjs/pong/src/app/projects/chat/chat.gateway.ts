@@ -20,7 +20,6 @@ export class ChatGateway {
         ): void {
 
             const messageDTO: MessageDTO = JSON.parse(message);
-
             this.server.emit(messageDTO.to, {
                 from: messageDTO.from,
                 to: messageDTO.to,
