@@ -10,6 +10,7 @@ import { MessageDTO } from './message.dto';
 @WebSocketGateway({cors: {
     origin: '*',
 }})
+
 export class ChatGateway {
     @WebSocketServer()
     server: Server;
@@ -18,9 +19,15 @@ export class ChatGateway {
     handleEvent(
         @MessageBody() message: string,
         ): void {
-
             const messageDTO: MessageDTO = JSON.parse(message);
-            this.server.emit(messageDTO.to, {
+
+            this.server.emit(messageDTO.from + messageDTO.to, {
+                from: messageDTO.from,
+                to: messageDTO.to,
+                message: messageDTO.message
+            })
+
+            this.server.emit(messageDTO.to + messageDTO.from, {
                 from: messageDTO.from,
                 to: messageDTO.to,
                 message: messageDTO.message

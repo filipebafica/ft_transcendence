@@ -43,7 +43,9 @@ const MessageBox = (props: MessageBoxProps) => {
   }
 
   useEffect(() => {
-    socket.on(userFrom.name, (msgResponse: any) => {
+    console.log(userFrom.name + userTo.name)
+    socket.on(userFrom.name + userTo.name, (msgResponse: any) => {
+      console.log(msgResponse)
       const { from, to, message } = msgResponse
       const msg = { from, to, message, timestamp: Date.now() }
 
