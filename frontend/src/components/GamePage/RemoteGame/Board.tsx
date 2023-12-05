@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-// import styles from "./style.module.css";
+import styles from "./style.module.css";
 
 function newGameState(gameState: GameState) {
 	const outOfBounds = (yPosition: number, height: number): boolean => {
@@ -11,6 +11,15 @@ function newGameState(gameState: GameState) {
 			player.y += player.speed;
 		}
 		return player;
+	};
+
+	const detectCollision = (ball: Ball, player: Player): boolean => {
+		return (
+			ball.x <= player.x + player.width &&
+			ball.x + ball.width >= player.x &&
+			ball.y + ball.height >= player.y &&
+			ball.y <= player.y + player.height
+		);
 	};
 
 	const handleCollision = (ball: Ball, player: Player) => {
@@ -68,15 +77,6 @@ function newGameState(gameState: GameState) {
 		};
 	};
 
-	const detectCollision = (ball: Ball, player: Player): boolean => {
-		return (
-			ball.x <= player.x + player.width &&
-			ball.x + ball.width >= player.x &&
-			ball.y + ball.height >= player.y &&
-			ball.y <= player.y + player.height
-		);
-	};
-
 	// Update score
 	if (gameState.ball.x < 0) {
 		gameState.player2Score += 1;
@@ -124,15 +124,14 @@ interface GameState {
 	board: Canvas;
 }
 
-// interface ScoreProps {
-// 	player1Score: number;
-// 	setPlayer1Score: (score: number) => any;
-// 	player2Score: number;
-// 	setPlayer2Score: (score: number) => any;
-// }
+interface ScoreProps {
+	player1Score: number;
+	setPlayer1Score: (score: number) => any;
+	player2Score: number;
+	setPlayer2Score: (score: number) => any;
+}
 
-// function Board() {
-function Board(player1Score: number, player2Score: number) {
+function Board(props: ScoreProps) {
 	const boardWidth = 800;
 	const boardHeight = 600;
 	const playerWidth = 10;
@@ -166,8 +165,11 @@ function Board(player1Score: number, player2Score: number) {
 		vY: 2,
 	});
 
-	// !const [player1Score, setPlayer1Score] = useState<number>(0);
-	// !const [player2Score, setPlayer2Score] = useState<number>(0);
+	let player1Score = props.player1Score;
+	const setPlayer1Score = props.setPlayer1Score;
+	let player2Score = props.player2Score;
+	const setPlayer2Score = props.setPlayer2Score;
+
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -267,9 +269,8 @@ function Board(player1Score: number, player2Score: number) {
 			};
 			const updatedGameState = newGameState(gameState); // simulacao do servidor
 			setBall(() => updatedGameState.ball);
-			// !setPlayer1Score(() => updatedGameState.player1Score);
-			// !setPlayer2Score(() => updatedGameState.player2Score);
-			// console.log(updatedGameState.ball);
+			setPlayer1Score(updatedGameState.player1Score);
+			setPlayer2Score(updatedGameState.player2Score);
 			renderGameState(updatedGameState);
 
 			animationFrameId = requestAnimationFrame(gameLoop);
@@ -287,9 +288,18 @@ function Board(player1Score: number, player2Score: number) {
 		ball,
 		player1Score,
 		player2Score,
-		boardWidth,
-		boardHeight,
+		setPlayer1Score,
+		setPlayer2Score,
 	]);
+
+	return (
+		<canvas
+			ref={canvasRef}
+			width={boardWidth}
+			height={boardHeight}
+			className={styles.canvasGame}
+		/>
+	);
 }
 
 export default Board;
