@@ -1,8 +1,8 @@
-import RoomGateway from "../gateways/room.gateway";
+import CreateGateway from "../gateways/room.gateway";
 
-export default class CreateRoomRule {
+export default class CreateRule {
     constructor(
-        private readonly roomGateway: RoomGateway
+        private readonly createGateway: CreateGateway
     ) {
     }
 
@@ -11,7 +11,7 @@ export default class CreateRoomRule {
         roomName: string,
         type: string
     ): void {
-        this.roomGateway.create(
+        this.createGateway.create(
             userId,
             roomName,
             type

@@ -1,4 +1,4 @@
-export default interface RoomGateway {
+export default interface CreateGateway {
     create(
         userId: number,
         roomName: string,

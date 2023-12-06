@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
 import UserChatGateway from './gateways/user.chat.gateway';
 import GetUserChatRule from './rules/get.user.chat.rule';
-import Request from './dtos/request.dto';
-import Response from './dtos/response.dto';
+import RequestDTO from './dtos/request.dto';
 import IsAuthorizedRule from './rules/is.authorized.rule';
+import ResponseDTO from './dtos/response.dto';
 
 export class SendMessageAuthorizationService {
     private getUserChatRule: GetUserChatRule;
@@ -17,16 +17,16 @@ export class SendMessageAuthorizationService {
         this.isAuthorizedRule = new IsAuthorizedRule();
     }
 
-    execute(request: Request): Response {
+    execute(request: RequestDTO): ResponseDTO {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": request}}));
 
             const userChat = this.getUserChatRule.apply(request.senderId);
             const isAuthorized = this.isAuthorizedRule.apply(request.receiverId, userChat.blockedUsers);
-            const response = new Response(isAuthorized);
+            const responseDTO = new ResponseDTO(isAuthorized);
 
-            this.logger.log(JSON.stringify({"Service has finished": {"response": response}}));
-            return response;
+            this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));
+            return responseDTO;
         } catch (error) {
             this.logger.error(JSON.stringify({"Service has faield": error.message}));
             throw error;
