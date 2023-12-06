@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import { MessageDTO } from './message.dto';
 
 @WebSocketGateway({
-    path: '/chat',
+    path: '/websocket/chat',
     cors: {
         origin: '*',
     }

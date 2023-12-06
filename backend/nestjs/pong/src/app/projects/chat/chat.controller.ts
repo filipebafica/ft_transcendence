@@ -10,25 +10,25 @@ export class ChatController {
     private sendMessageAuthorizationService: SendMessageAuthorizationService;
     
     constructor(
-        ) {
-            this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
-                new Logger(SendMessageAuthorizationService.name),
-                new UserChatAdapter()
-            )
-        }
+    ) {
+        this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
+            new Logger(SendMessageAuthorizationService.name),
+            new UserChatAdapter()
+        );
+    }
 
     @Get('/authorization')
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Successful response',
         schema: {
-            type: "object",
+            type: 'object',
             properties: {
                 status: {type: 'string'},
                 message: {type: 'boolean'}
             },
             example: {
-                status: "success",
+                status: 'success',
                 message: true
             }
         },
@@ -44,7 +44,7 @@ export class ChatController {
             },
             example: {
                 status: 500,
-                message: "Internal Server Error"
+                message: 'Internal Server Error'
             }
         },
     })

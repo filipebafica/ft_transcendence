@@ -12,7 +12,7 @@ export class SendMessageAuthorizationService {
     constructor(
         private readonly logger: Logger,
         userChatGatway: UserChatGateway
-        ) {
+    ) {
         this.getUserChatRule = new GetUserChatRule(userChatGatway);
         this.isAuthorizedRule = new IsAuthorizedRule();
     }

@@ -23,7 +23,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
-    const socket = io('http://localhost:8080', { path: '/chat' });
+    const socket = io('http://localhost:8080', { path: '/websocket/chat' });
 
     function saveUser() {
         const from = document.getElementById('from').value
