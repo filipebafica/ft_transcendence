@@ -8,13 +8,13 @@
 <body>
 
   <div>
-    <label for="from">From:</label>
-    <input type="text" id="from">
-    <button onclick="saveUser()">Save User</button>
+    <label for="room">Room:</label>
+    <input type="text" id="room">
+    <button onclick="saveRoom()">Save Room</button>
   </div>
 
-  <label for="to">To:</label>
-  <input type="text" id="to">
+  <label for="from">From:</label>
+  <input type="text" id="from">
 
   <label for="message">Message:</label>
   <input type="text" id="message">
@@ -23,21 +23,21 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
-    const socket = io('http://localhost:8080', { path: '/chat' });
+    const socket = io('http://localhost:8080', { path: '/room' });
 
-    function saveUser() {
-        const from = document.getElementById('from').value
-        socket.on(from, (data) => {
+    function saveRoom() {
+        const room = document.getElementById('room').value
+        socket.on(room, (data) => {
         console.log('message:', data);
       });
     }
 
     function sendChatMessage() {
+      const room = document.getElementById('room').value;
       const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
       const message = document.getElementById('message').value;
 
-      socket.emit('messageRouter', JSON.stringify({ from, to, message }));
+      socket.emit('messageRouter', JSON.stringify({ room, from, message, timeStamp:123 }));
     }
 
   </script>
