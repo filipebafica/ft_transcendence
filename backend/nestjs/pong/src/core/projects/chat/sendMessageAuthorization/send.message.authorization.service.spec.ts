@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SendMessageAuthorizationService } from './send.message.authorization.service';
 
-describe('UsecaseService', () => {
+describe('SendMessageAuthorizationService', () => {
   let service: SendMessageAuthorizationService;
 
   beforeEach(async () => {

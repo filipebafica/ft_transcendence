@@ -8,13 +8,13 @@ import { Server } from 'socket.io';
 import { MessageDTO } from './message.dto';
 
 @WebSocketGateway({
-    path: '/websocket/chat',
+    path:'/websocket/room',
     cors: {
         origin: '*',
     }
 })
 
-export class ChatGateway {
+export class RoomGateway {
     @WebSocketServer()
     server: Server;
 
@@ -23,19 +23,10 @@ export class ChatGateway {
         @MessageBody() message: string,
         ): void {
             const messageDTO: MessageDTO = JSON.parse(message);
-
-            this.server.emit(messageDTO.from + messageDTO.to, {
+            this.server.emit(messageDTO.room, {
                 from: messageDTO.from,
-                to: messageDTO.to,
                 message: messageDTO.message,
-                timeStamp: messageDTO.timeStamp,
-            })
-
-            this.server.emit(messageDTO.to + messageDTO.from, {
-                from: messageDTO.from,
-                to: messageDTO.to,
-                message: messageDTO.message,
-                timeStamp: messageDTO.timeStamp,
+                timeStamp: messageDTO.timeStamp
             })
     }
 }

@@ -1,5 +1,5 @@
 import { Controller, Get, HttpException, HttpStatus, Logger, Query } from '@nestjs/common';
-import Request from 'src/core/projects/chat/sendMessageAuthorization/dtos/request.dto';
+import RequestDTO from 'src/core/projects/chat/sendMessageAuthorization/dtos/request.dto';
 import { SendMessageAuthorizationService } from 'src/core/projects/chat/sendMessageAuthorization/send.message.authorization.service';
 import UserChatAdapter from './user.chat.adapter';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -10,25 +10,25 @@ export class ChatController {
     private sendMessageAuthorizationService: SendMessageAuthorizationService;
     
     constructor(
-        ) {
-            this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
-                new Logger(SendMessageAuthorizationService.name),
-                new UserChatAdapter()
-            )
-        }
+    ) {
+        this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
+            new Logger(SendMessageAuthorizationService.name),
+            new UserChatAdapter()
+        );
+    }
 
     @Get('/authorization')
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Successful response',
         schema: {
-            type: "object",
+            type: 'object',
             properties: {
                 status: {type: 'string'},
                 message: {type: 'boolean'}
             },
             example: {
-                status: "success",
+                status: 'success',
                 message: true
             }
         },
@@ -44,7 +44,7 @@ export class ChatController {
             },
             example: {
                 status: 500,
-                message: "Internal Server Error"
+                message: 'Internal Server Error'
             }
         },
     })
@@ -53,8 +53,8 @@ export class ChatController {
         @Query('receiverId') receiverId: string,
     ) {
         try {
-            const response = this.sendMessageAuthorizationService.execute(
-                new Request(
+            const responseDTO = this.sendMessageAuthorizationService.execute(
+                new RequestDTO(
                         parseInt(senderId),
                         parseInt(receiverId)
                     )
@@ -62,7 +62,7 @@ export class ChatController {
 
             return {
                 "status": "success",
-                "message": response.isAuthorized
+                "message": responseDTO.isAuthorized
             };
 
         } catch (error) {

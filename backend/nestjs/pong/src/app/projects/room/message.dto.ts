@@ -1,6 +1,6 @@
 export class MessageDTO {
+    room: string;
     from: string;
-    to: string;
     message: string;
     timeStamp: number;
 }
