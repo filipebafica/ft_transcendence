@@ -7,8 +7,8 @@ export default class GetRoomsRule {
     ) {
     }
 
-    apply(): RoomDTO[] {
-        return this.getRoomsGateway.get();
+    apply(userId: number): RoomDTO[] {
+        return this.getRoomsGateway.getByUserId(userId);
     }
 
 }

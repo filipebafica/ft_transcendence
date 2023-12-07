@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import CreateRule from './rules/create.room.rule';
 import CreateGateway from './gateways/room.gateway';
-import Request from './dtos/request.dto';
+import { RequestDTO } from './dtos/request.dto';
 
 export class CreateService {
     private createRule: CreateRule;
@@ -13,14 +13,14 @@ export class CreateService {
         this.createRule = new CreateRule(createGateway);
     }
 
-    execute(request: Request): void {
+    execute(requestDTO: RequestDTO): void {
         try {
-            this.logger.log(JSON.stringify({"Service has started": {"request": request}}));
+            this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
             this.createRule.apply(
-                request.userId,
-                request.roomName,
-                request.type
+                requestDTO.userId,
+                requestDTO.roomName,
+                requestDTO.type
             );
 
             this.logger.log(JSON.stringify({"Service has finished": "Room has been created"}));

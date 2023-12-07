@@ -4,6 +4,7 @@ export default class RoomDTO {
         public readonly name: string,
         public readonly ownerId: number,
         public readonly adminId: number,
+        public readonly type: string,
         public readonly participants: Array<number>
     ) {
     }

@@ -1,4 +1,4 @@
-export default class Request {
+export class RequestDTO {
     constructor(
         public readonly userId: number,
         public readonly roomName: string,
