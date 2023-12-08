@@ -1,17 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react'
 
-import { socket } from '../../../../socket'
-
 import styles from './style.module.css'
 
 interface UserMessage {
   name: string
   id: string
-}
-
-interface MessageBoxProps {
-  userFrom: UserMessage
-  userTo: UserMessage
 }
 
 interface Message {
@@ -21,8 +14,17 @@ interface Message {
   timestamp: number
 }
 
+interface MessageBoxProps {
+  userFrom: UserMessage
+  userTo: UserMessage
+  onSendMessage: (message: Message) => void;
+  onReceiveMessage: (message: Message) => void;
+  socket: any;
+  listenTo: string;
+}
+
 const MessageBox = (props: MessageBoxProps) => {
-  const { userFrom, userTo } = props
+  const { userFrom, userTo, onSendMessage, onReceiveMessage, socket, listenTo } = props
   const [messages, setMessages] = useState([] as Message[])
   const [newMessage, setNewMessage] = useState('')
 
@@ -30,10 +32,7 @@ const MessageBox = (props: MessageBoxProps) => {
 
   const sendMessage = () => {
     if (newMessage.trim() !== '') {
-      socket.emit(
-        'messageRouter',
-        JSON.stringify({ from: userFrom.name, to: userTo.name, message: newMessage }),
-      )
+      onSendMessage({ from: userFrom.name, to: userTo.name, message: newMessage, timestamp: Date.now() })
       setMessages((prevMessages) => [
         ...prevMessages,
         { from: userFrom.name, to: userTo.name, message: newMessage, timestamp: Date.now() },
@@ -43,18 +42,14 @@ const MessageBox = (props: MessageBoxProps) => {
   }
 
   useEffect(() => {
-    console.log(userFrom.name + userTo.name)
-    socket.on(userFrom.name + userTo.name, (msgResponse: any) => {
-      console.log(msgResponse)
+    console.log('Listening to:', listenTo)
+    socket.on(listenTo, (msgResponse: any) => {
       const { from, to, message } = msgResponse
       const msg = { from, to, message, timestamp: Date.now() }
 
-      if (from === userFrom.name && to === userTo.name) {
-        setMessages((prevMessages) => [...prevMessages, msg])
-      }
-      return setMessages((prevMessages) => [...prevMessages, msg])
+      onReceiveMessage(msg)
     })
-  }, [userFrom.name, userTo.name])
+  }, [userFrom.name, userTo.name, socket, listenTo, onReceiveMessage])
 
   useEffect(() => {
     if (messagesEndRef.current) {

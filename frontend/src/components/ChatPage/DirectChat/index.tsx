@@ -1,23 +1,41 @@
-import React, { useState } from 'react';
-import MessageBox from './MessageBox'; 
+import React, { useState } from 'react'
+import MessageBox from '../Shared/MessageBox'
 
-import styles from './style.module.css';
+import { chatSocket } from 'socket'
+
+import styles from './style.module.css'
 
 const DirectChat = () => {
-  const [userFrom, setUserFrom] = useState({ name: '', id: '' });
-  const [userTo, setUserTo] = useState({ name: '', id: '' });
-  const [isConfigComplete, setIsConfigComplete] = useState(false);
+  const [userFrom, setUserFrom] = useState({ name: '', id: '' })
+  const [userTo, setUserTo] = useState({ name: '', id: '' })
+  const [isConfigComplete, setIsConfigComplete] = useState(false)
 
   const handleStartChat = () => {
     if (userFrom.name && userTo.name) {
-      setIsConfigComplete(true);
+      setIsConfigComplete(true)
     } else {
-      alert('Please enter both user names');
+      alert('Please enter both user names')
     }
-  };
+  }
 
   if (isConfigComplete) {
-    return <MessageBox userFrom={userFrom} userTo={userTo} />;
+    return (
+      <MessageBox
+        userFrom={userFrom}
+        userTo={userTo}
+        socket={chatSocket}
+        listenTo={userFrom.name + userTo.name}
+        onSendMessage={(message) => {
+          chatSocket.emit(
+            'messageRouter',
+            JSON.stringify({ from: userFrom.name, to: userTo.name, message }),
+          )
+        }}
+        onReceiveMessage={(message) => {
+          console.log(message)
+        }}
+      />
+    )
   }
 
   return (
@@ -36,7 +54,7 @@ const DirectChat = () => {
       />
       <button onClick={handleStartChat}>Start Chat</button>
     </div>
-  );
-};
+  )
+}
 
-export default DirectChat;
+export default DirectChat
