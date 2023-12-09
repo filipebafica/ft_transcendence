@@ -28,7 +28,7 @@ const DirectChat = () => {
         onSendMessage={(message) => {
           chatSocket.emit(
             'messageRouter',
-            JSON.stringify({ from: userFrom.name, to: userTo.name, message }),
+            JSON.stringify({ from: userFrom.name, to: userTo.name, message: message.message }),
           )
         }}
         onReceiveMessage={(message) => {

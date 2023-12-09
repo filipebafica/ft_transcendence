@@ -33,10 +33,6 @@ const MessageBox = (props: MessageBoxProps) => {
   const sendMessage = () => {
     if (newMessage.trim() !== '') {
       onSendMessage({ from: userFrom.name, to: userTo.name, message: newMessage, timestamp: Date.now() })
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { from: userFrom.name, to: userTo.name, message: newMessage, timestamp: Date.now() },
-      ])
     }
     setNewMessage('')
   }
@@ -47,6 +43,7 @@ const MessageBox = (props: MessageBoxProps) => {
       const { from, to, message } = msgResponse
       const msg = { from, to, message, timestamp: Date.now() }
 
+      setMessages((prevMessages) => [...prevMessages, msg])
       onReceiveMessage(msg)
     })
   }, [userFrom.name, userTo.name, socket, listenTo, onReceiveMessage])
