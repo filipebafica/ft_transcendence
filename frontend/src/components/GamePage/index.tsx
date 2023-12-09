@@ -1,25 +1,38 @@
 import React, { useState } from "react";
 import styles from "./style.module.css";
 
-import LocalGame from "./LocalGame";
-import RemoteGame from "./RemoteGame";
+import LoadingPage from "./LoadingPage";
 
 interface GamePageProps {
 	// Define the props for the GamePage component here
 }
 
 function GamePage(props: GamePageProps) {
-	const [game, setGame] = useState<boolean>(true);
+	const [user, setUser] = useState({ name: "", id: "" });
+	const [isConfigComplete, setIsConfigComplete] = useState(false);
 
-	const handleSwitchGame = () => {
-		setGame(!game);
+	const handleMatching = () => {
+		if (user.name) {
+			setIsConfigComplete(true);
+		} else {
+			alert("Please enter your username");
+		}
 	};
+
+	if (isConfigComplete) {
+		return <LoadingPage userName={user.name} playerId={user.id} />;
+	}
 
 	return (
 		<div className={styles.container}>
-			{game ? <RemoteGame /> : <LocalGame />}
-			<button onClick={handleSwitchGame} className={styles.button}>
-				Switch Game
+			<input
+				type="text"
+				value={user.name}
+				onChange={(e) => setUser({ ...user, name: e.target.value })}
+				placeholder="Username"
+			/>
+			<button onClick={handleMatching} className={styles.button}>
+				Find Match
 			</button>
 		</div>
 	);

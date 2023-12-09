@@ -179,21 +179,25 @@ function Board(props: ScoreProps) {
 					...prevState,
 					speed: -2,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "s") {
 				setPlayer1((prevState) => ({
 					...prevState,
 					speed: 2,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "ArrowUp") {
 				setPlayer2((prevState) => ({
 					...prevState,
 					speed: -2,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "ArrowDown") {
 				setPlayer2((prevState) => ({
 					...prevState,
 					speed: 2,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			}
 		};
 
@@ -203,11 +207,13 @@ function Board(props: ScoreProps) {
 					...prevState,
 					speed: initialPlayerSpeed,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
 				setPlayer2((prevState) => ({
 					...prevState,
 					speed: initialPlayerSpeed,
 				}));
+				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			}
 		};
 
@@ -267,6 +273,7 @@ function Board(props: ScoreProps) {
 				player2Score,
 				board: { width: boardWidth, height: boardHeight },
 			};
+			// const updatedGameState = newGameState(gameState + gameId); // simulacao do servidor
 			const updatedGameState = newGameState(gameState); // simulacao do servidor
 			setBall(() => updatedGameState.ball);
 			setPlayer1Score(updatedGameState.player1Score);

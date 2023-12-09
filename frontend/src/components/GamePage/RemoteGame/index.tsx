@@ -17,7 +17,6 @@ function PongGame() {
 				setPlayer2Score={setPlayer2Score}
 			/>
 			<Score player={2} score={player2Score} />
-			{/* <button onClick={() => {}}>Start Game</button> */}
 		</div>
 	);
 }
