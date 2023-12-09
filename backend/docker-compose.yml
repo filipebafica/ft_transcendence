@@ -43,7 +43,7 @@ services:
       - .env
     build:
       context: nestjs
-      dockerfile: ${DEV_BUILD}
+      dockerfile: ${BUILD_ENVIROMENT}
     volumes:
      - ./nestjs/pong:/usr/src/app
     networks:
