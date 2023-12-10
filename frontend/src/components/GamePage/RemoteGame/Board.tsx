@@ -44,6 +44,7 @@ function newGameState(gameState: GameState) {
 			ball.y += (min_dist.value * ball.vY) / ball.vX;
 			ball.vX *= -1.1;
 			ball.vY *= 1.1;
+			// ball.vY = ball.vY * 1.1 + player.speed / 2;
 		}
 
 		return ball;
@@ -177,25 +178,25 @@ function Board(props: ScoreProps) {
 			if (event.key === "w") {
 				setPlayer1((prevState) => ({
 					...prevState,
-					speed: -2,
+					speed: -3,
 				}));
 				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "s") {
 				setPlayer1((prevState) => ({
 					...prevState,
-					speed: 2,
+					speed: 3,
 				}));
 				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "ArrowUp") {
 				setPlayer2((prevState) => ({
 					...prevState,
-					speed: -2,
+					speed: -3,
 				}));
 				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			} else if (event.key === "ArrowDown") {
 				setPlayer2((prevState) => ({
 					...prevState,
-					speed: 2,
+					speed: 3,
 				}));
 				// socket.emit('playerAction', {gameId: gameId, playerId: playerId, action: event.key})
 			}

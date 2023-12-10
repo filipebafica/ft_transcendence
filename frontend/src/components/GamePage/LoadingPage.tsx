@@ -17,7 +17,7 @@ function LoadingPage(props: PlayerProps) {
 	const userName = props.userName;
 	const playerId = props.playerId;
 
-	console.log("UserName: ", userName, "\nPlayerID: ", playerId);
+	// console.log("UserName: ", userName, "\nPlayerID: ", playerId);
 
 	// gameSocket.on("connect", () => {
 	// 	document.getElementById("gameStatus").innerText = "Connected to Game";
@@ -29,10 +29,17 @@ function LoadingPage(props: PlayerProps) {
 		gameSocket.on(gameID, () => {
 			setLoadingDone(true);
 		});
+
+		// document.addEventListener("keydown", function (event) {
+		// 	gameSocket.emit("playerAction", {
+		// 		gameID: gameID,
+		// 		action: event.key,
+		// 	});
+		// });
 	});
 
 	if (loadingDone) {
-		return <RemoteGame />;
+		return <RemoteGame player1UserName={userName} player2UserName="someone" />;
 	}
 
 	// https://loading.io/
