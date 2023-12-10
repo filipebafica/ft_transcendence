@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Socket.io Game</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+
+<body>
+	<h1>Socket.io Game Example</h1>
+	<div id="gameStatus"></div>
+	<!-- Input for player ID -->
+	<label for="playerIDInput">Player ID:</label>
+	<input type="text" id="playerIDInput" placeholder="Enter Player ID">
+
+	<!-- Button for joining the game -->
+	<button id="joinGameButton">Join Game</button>
+	<div id="gameID"></div>
+
+	<script>
+		const gameSocket = io('/game');
+
+		gameSocket.on('connect', () => {
+			document.getElementById('gameStatus').innerText = 'Connected to Game';
+		});
+
+		const handleJoinGame = () => {
+			const playerIDInput = document.getElementById('playerIDInput');
+			playerID = playerIDInput.value.toString();
+
+			if (playerID) {
+				gameSocket.emit('joinGame', playerID);
+				gameSocket.on(playerID, (gameID) => {
+					document.getElementById('gameID').innerText = gameID;
+					gameSocket.on(gameID, (gameState) => {
+						console.log(gameState.player1.speed);
+					});
+
+					document.addEventListener('keydown', function(event) {
+						console.log(event.key);
+						gameSocket.emit('playerAction', { gameID: gameID, playerID: playerID, action: event.key });
+					})
+				})
+			}
+		}
+
+		// Attach the handleJoinGame function to the button click event
+		document.getElementById('joinGameButton').addEventListener('click', handleJoinGame);
+
+		gameSocket.on('disconnect', () => {
+			document.getElementById('gameStatus').innerText = 'Disconnected from Game';
+		});
+
+		// Close the connections when the page is closed or refreshed
+		window.addEventListener('beforeunload', () => {
+			gameSocket.close();
+		});
+	</script>
+</body>
+</html>
