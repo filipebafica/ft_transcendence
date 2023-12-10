@@ -7,7 +7,7 @@ import Player from "src/core/projects/game/shared/entities/player";
 import { GameStateInterface } from "src/core/projects/game/shared/interfaces/game.state.interface";
 
 export default class MemoryGameStateAdapter implements GameStateInterface {
-	public games: Map<string, GameState> = new Map<string, GameState>();
+	public games: Map<string | number, GameState> = new Map<string | number, GameState>();
 
 	private interval: number = 1000 / 40;
 	private step: number = 3;
@@ -19,8 +19,8 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 	private ballHeight: number = 10;
 	private initialPlayerSpeed: number = 0;
 
-	public 	createGame(playerID: string): GameState {
-		let player: Player = this.createPlayer(playerID);
+	public 	createGame(playerId: string | number): GameState {
+		let player: Player = this.createPlayer(playerId, 1);
 		let ball: Ball = this.createBall();
 		let board: Canvas = this.createBoard();
 		let gameState: GameState = {
@@ -37,19 +37,19 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		return gameState;
 	}
 
-	public removeGame(gameID: string): void {
+	public removeGame(gameId: string | number): void {
 	}
 
-	public createSecondPlayer(playerID: string, gameID: string): GameState {
-		let player: Player = this.createPlayer(playerID);
-		let gameState: GameState = this.games.get(gameID);
+	public createSecondPlayer(playerId: string | number, gameId: string | number): GameState {
+		let player: Player = this.createPlayer(playerId, 2);
+		let gameState: GameState = this.games.get(gameId);
 		gameState.player2 = player;
 		gameState.status = 1;
-		this.games.set(gameID, gameState);
+		this.games.set(gameId, gameState);
 		return gameState;
 	}
 
-	public async updateGame(gameID: string, currentGameState: GameState): Promise<void> {
+	public async updateGame(gameId: string | number, currentGameState: GameState): Promise<void> {
 		if (currentGameState.status != 1) {
 			return ;
 		}
@@ -144,15 +144,15 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		gameState.player2 = updatePlayer(gameState.player2);
 		gameState.ball = updateBall(gameState.ball);
 	
-		this.games.set(gameID, gameState);
+		this.games.set(gameId, gameState);
 		return ;
 	}
 
 	public collectUpdatePromises(): Promise<void>[] {
 		const updatePromises: Promise<void>[] = [];
 	
-		for (let [gameID, gameState] of this.games) {
-			updatePromises.push(this.updateGame(gameID, gameState));
+		for (let [gameId, gameState] of this.games) {
+			updatePromises.push(this.updateGame(gameId, gameState));
 		}
 	
 		return updatePromises;
@@ -166,10 +166,10 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		return new Promise(resolve => setTimeout(resolve, this.interval));
 	}
 
-	private createPlayer(id: string): Player {
+	private createPlayer(id: string | number, playerNumber: number): Player {
 		return {
 			id: id,
-			x: 10,
+			x: playerNumber == 1 ? 10 : this.boardWidth - this.playerWidth - 10,
 			y: (this.boardHeight - this.playerHeight) / 2,
 			width: this.playerWidth,
 			height: this.playerHeight,
@@ -195,32 +195,46 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		};
 	}
 
-	public getGames(): Map<string, GameState> {
+	public getGames(): Map<string | number, GameState> {
 		return this.games;
 	}
 
-	public updatePlayerSpeed(gameID: string, playerID: string, action: string): void {
-		const gameState = this.games.get(gameID);
+	public updatePlayerSpeed(gameId: string | number, playerId: string | number, action: string): void {
+		const gameState = this.games.get(gameId);
 		
+		console.log('BeforeupdatePlayerSpeed', gameState);
 		if (gameState.status != 1) {
 			return ;
 		}
 
-		if (gameState.player1.id == playerID) {
+		console.log('updatePlayerSpeed', playerId);
+		console.log('Playerid1', gameState.player1.id);
+		console.log('Playerid2', gameState.player2.id);
+
+		if (gameState.player1.id == playerId) {
+			console.log('player1Speed', this.calculateSpeed(action));
 			gameState.player1.speed = this.calculateSpeed(action);
-		} else if (gameState.player2.id == playerID) {
+		} else if (gameState.player2.id == playerId) {
+			console.log('player2Speed', this.calculateSpeed(action));
 			gameState.player2.speed = this.calculateSpeed(action);
 		}
 
-		this.games.set(gameID, gameState);
+		this.games.set(gameId, gameState);
+
+		console.log('player1Speed', this.games.get(gameId).player1.speed);
+		console.log('player2Speed', this.games.get(gameId).player2.speed);
 	}
 
 	private calculateSpeed(action: string): number {
 		switch(action) {
-			case "ArrowUp":
+			case "KeyDownArrowUp":
 				return -this.step;
-			case "ArrowDown":
+			case "KeyDownArrowDown":
 				return this.step;
+			case "KeyUpArrowUp":
+				return 0;
+			case "KeyUpArrowDown":
+				return 0;
 		}
 	}
 }

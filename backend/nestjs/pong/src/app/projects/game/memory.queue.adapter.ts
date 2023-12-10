@@ -4,18 +4,18 @@ import { QueueInterface } from "src/core/projects/game/shared/interfaces/queue.i
 
 @Injectable()
 export default class MemoryQueueAdapter implements QueueInterface {
-	private queue: Map<string, string> = new Map<string, string>();
+	private queue: Map<string | number, string | number> = new Map<string | number, string | number>();
 
-	public isOnQueue(playerID: string): boolean {
-		return this.queue.has(playerID);
+	public isOnQueue(playerId: string | number): boolean {
+		return this.queue.has(playerId);
 	}
 
-	public add(playerID: string, gameID: string): void {
-		this.queue.set(playerID, gameID);
+	public add(playerId: string | number, gameId: string | number): void {
+		this.queue.set(playerId, gameId);
 	}
 
-	public remove(playerID: string): void {
-		this.queue.delete(playerID);
+	public remove(playerId: string | number): void {
+		this.queue.delete(playerId);
 	}
 
 	public isEmpty(): boolean {
@@ -25,7 +25,7 @@ export default class MemoryQueueAdapter implements QueueInterface {
 		return false;
 	}
 
-	public first(): [string, string] | undefined {
+	public first(): [string | number, string | number] | undefined {
 		const entriesArray = [...this.queue.entries()];
 
 		if (entriesArray.length === 0) {

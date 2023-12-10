@@ -15,20 +15,20 @@ function GamePage(props: GamePageProps) {
 	const [gameId, setGameId] = useState("");
 
 	const handleMatching = () => {
-		if (user.name) {
+		if (user.id) {
 			console.log('Joining game');
-			gameSocket.emit("joinGame", user.name);
+			gameSocket.emit("joinGame", user.id);
 		} else {
 			alert("Please enter your username");
 		}
 	};
 
 	useEffect(() => {
-		gameSocket.on(user.name, (newGameId) => {
+		gameSocket.on(user.id, (newGameId) => {
 			setGameId(newGameId);
 			setIsConfigComplete(true);	
 		});
-	}, [user.name]);
+	}, [user.id]);
 
 	if (isConfigComplete) {
 		return <LoadingPage userName={user.name} playerId={user.id} gameId={gameId} />;

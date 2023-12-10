@@ -1,7 +1,7 @@
 export class Request {
 	constructor(
-		public playerID: string,
-		public gameID: string,
+		public playerId: string | number,
+		public gameId: string | number,
 		public action: string,
 	) {
 	}
