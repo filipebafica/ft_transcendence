@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./style.module.css";
+
+import { gameSocket } from "../../socket/index";
 
 import LoadingPage from "./LoadingPage";
 
@@ -10,17 +12,26 @@ interface GamePageProps {
 function GamePage(props: GamePageProps) {
 	const [user, setUser] = useState({ name: "", id: "" });
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
+	const [gameId, setGameId] = useState("");
 
 	const handleMatching = () => {
 		if (user.name) {
-			setIsConfigComplete(true);
+			console.log('Joining game');
+			gameSocket.emit("joinGame", user.name);
 		} else {
 			alert("Please enter your username");
 		}
 	};
 
+	useEffect(() => {
+		gameSocket.on(user.name, (newGameId) => {
+			setGameId(newGameId);
+			setIsConfigComplete(true);	
+		});
+	}, [user.name]);
+
 	if (isConfigComplete) {
-		return <LoadingPage userName={user.name} playerId={user.id} />;
+		return <LoadingPage userName={user.name} playerId={user.id} gameId={gameId} />;
 	}
 
 	return (
@@ -30,6 +41,12 @@ function GamePage(props: GamePageProps) {
 				value={user.name}
 				onChange={(e) => setUser({ ...user, name: e.target.value })}
 				placeholder="Username"
+			/>
+			<input
+				type="id"
+				value={user.id}
+				onChange={(e) => setUser({ ...user, id: e.target.value })}
+				placeholder="User ID"
 			/>
 			<button onClick={handleMatching} className={styles.button}>
 				Find Match
