@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client</title>
+</head>
+<body>
+
+  <div>
+    <label for="room">Room:</label>
+    <input type="text" id="room">
+    <button onclick="saveRoom()">Save Room</button>
+  </div>
+
+  <label for="from">From:</label>
+  <input type="text" id="from">
+
+  <label for="message">Message:</label>
+  <input type="text" id="message">
+
+  <button onclick="sendChatMessage()">Send Chat Message</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    const socket = io('http://localhost:8080', { path: '/websocket/room' });
+
+    function saveRoom() {
+        const room = document.getElementById('room').value
+        socket.on(room, (data) => {
+        console.log('message:', data);
+      });
+    }
+
+    function sendChatMessage() {
+      const room = document.getElementById('room').value;
+      const from = document.getElementById('from').value;
+      const message = document.getElementById('message').value;
+
+      socket.emit('messageRouter', JSON.stringify({ room, from, message, timeStamp:123 }));
+    }
+
+  </script>
+</body>
+</html>

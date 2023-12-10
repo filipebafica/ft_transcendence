@@ -1,0 +1,163 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Socket.io Game</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+	<style>
+		.rectangle {
+		width: 0px; /* Set the width of the rectangle */
+		height: 0px; /* Set the height of the rectangle */
+		background-color: #DBDBDB; /* Set the background color of the rectangle */
+		position: absolute; /* Set position to absolute */
+		top: 50%; /* Align the top edge at the vertical center */
+		left: 50%; /* Align the left edge at the horizontal center */
+		transform: translate(-50%, -50%); /* Move the rectangle back by 50% of its own width and height */
+		border: 5px solid #000000;
+		}
+
+		.ball {
+			width: 0px;
+			height: 0px;
+			background-color: #e74c3c;
+			border-radius: 50%;
+			position: absolute;
+			top: 50%; /* Align the top edge at the vertical center */
+			left: 50%; /* Align the left edge at the horizontal center */
+			transform: translate(-50%, -50%);
+		}
+
+		.player1 {
+			width: 0px;
+			height: 0px;
+			background-color: #6f3ce7;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+		}
+
+		.player2 {
+			width: 0px;
+			height: 0px;
+			background-color: #6f3ce7;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+		}
+	  </style>
+</head>
+
+<body>
+	<h1>Socket.io Game Example</h1>
+
+	<div class="rectangle" id="rectangle"></div>
+	<div class="ball" id="ball"></div>
+
+	<div class="player1" id="player1"></div>
+	<div class="player2" id="player2"></div>
+	<div id="gameStatus"></div>
+
+	<!-- Input for player ID -->
+	<label for="playerIdInput">Player ID:</label>
+	<input type="text" id="playerIdInput" placeholder="Enter Player ID">
+
+	<!-- Button for joining the game -->
+	<button id="joinGameButton">Join Game</button>
+
+	<div id="gameID">GameID:</div>
+	<div id="ballPosition"></div>
+	<div id="keypressed"></div>
+
+	<div id="h-board"></div>
+	<div id="w-board"></div>
+
+	<div id="p1pos"></div>
+	<div id="p2pos"></div>
+
+	<script>
+		const gameSocket = io('/game');
+
+		gameSocket.on('connect', () => {
+			document.getElementById('gameStatus').innerText = 'Connected to Game';
+		});
+
+		// Function to handle the button click event for joining the game
+		const handleJoinGame = () => {
+			const playerIdInput = document.getElementById('playerIdInput');
+			playerId = playerIdInput.value.toString();
+
+			if (playerId) {
+				// Emit the 'joinGame' event with the entered player ID
+				gameSocket.emit('joinGame', playerId);
+
+				console.log("PlayerID: " . playerID);
+
+				gameSocket.on(playerId, (gameID) => {
+					console.log("GameID: " . gameID);
+					gameSocket.on(gameID, (gameState) => {
+						// document.getElementById('gameID').innerText = gameState.id;
+
+						// Updates player 1
+						const player1 = document.getElementById('player1');
+						player1.style.left = gameState.player1.x + 'px';
+						player1.style.top = gameState.player1.y + 'px';
+						player1.style.width = gameState.player1.width + 'px';
+						player1.style.height = gameState.player1.height + 'px';
+						document.getElementById('p1pos').innerText = gameState.player1.y;
+
+
+						// Updates player 2
+						const player2 = document.getElementById('player2');
+						player2.style.left = gameState.player2.x + 'px';
+						player2.style.top = gameState.player2.y + 'px';
+						player2.style.width = gameState.player2.width + 'px';
+						player2.style.height = gameState.player2.height + 'px';
+						document.getElementById('p2pos').innerText = gameState.player2.y;
+
+						// Updates ball
+						const ball = document.getElementById('ball');
+						ball.style.left = gameState.ball.x + 'px';
+						ball.style.top = gameState.ball.y + 'px';
+						ball.style.width = gameState.ball.width + 'px';
+						ball.style.height = gameState.ball.height + 'px';
+						document.getElementById('ballPosition').innerText = ball.offsetLeft;
+
+						// Updates gameboard
+						const board = document.getElementById('rectangle');
+						board.style.width =  gameState.board.width + 'px';
+						board.style.height = gameState.board.height + 'px';
+
+					});
+
+					document.addEventListener('keydown', function(event) {
+							gameSocket.emit('playerAction', { gameID: gameID, playerID: playerId, action: event.key });
+						});
+				});
+			} else {
+				alert('Please enter a Player ID.');
+			}
+		};
+
+		// Attach the handleJoinGame function to the button click event
+		document.getElementById('joinGameButton').addEventListener('click', handleJoinGame);
+
+		gameSocket.on('disconnect', () => {
+			document.getElementById('gameStatus').innerText = 'Disconnected from Game';
+		});
+
+		// Close the connections when the page is closed or refreshed
+		window.addEventListener('beforeunload', () => {
+			gameSocket.close();
+		});
+	</script>
+
+	<script>
+        let ball = document.getElementById('ball');
+	</script>
+</body>
+
+</html>

@@ -3,6 +3,14 @@ version: '3.3'
 networks:
   transcendence_network:
 
+volumes:
+  shared-volumes-postgres:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${SHARED_VOLUME_DEVICE}
+
 services:
   nginx:
     container_name: nginx
@@ -24,6 +32,7 @@ services:
     image: postgres
     restart: always
     volumes:
+      - shared-volumes-postgres:/var/lib/postgresql/data
       - ./postgres/entrypoint:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -32,6 +41,8 @@ services:
       TZ: ${DB_TIMEZONE}
     networks:
       - transcendence_network
+    ports:
+      - 5432:5432
 
   nestjs:
     container_name: nestjs
@@ -43,7 +54,7 @@ services:
       - .env
     build:
       context: nestjs
-      dockerfile: ${DEV_BUILD}
+      dockerfile: ${BUILD_ENVIROMENT}
     volumes:
      - ./nestjs/pong:/usr/src/app
     networks:

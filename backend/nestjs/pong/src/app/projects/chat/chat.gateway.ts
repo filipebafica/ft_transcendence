@@ -7,9 +7,12 @@ import {
 import { Server } from 'socket.io';
 import { MessageDTO } from './message.dto';
 
-@WebSocketGateway({cors: {
-    origin: '*',
-}})
+@WebSocketGateway({
+    path: '/websocket/chat',
+    cors: {
+        origin: '*',
+    }
+})
 
 export class ChatGateway {
     @WebSocketServer()
@@ -24,13 +27,15 @@ export class ChatGateway {
             this.server.emit(messageDTO.from + messageDTO.to, {
                 from: messageDTO.from,
                 to: messageDTO.to,
-                message: messageDTO.message
+                message: messageDTO.message,
+                timeStamp: messageDTO.timeStamp,
             })
 
             this.server.emit(messageDTO.to + messageDTO.from, {
                 from: messageDTO.from,
                 to: messageDTO.to,
-                message: messageDTO.message
+                message: messageDTO.message,
+                timeStamp: messageDTO.timeStamp,
             })
     }
 }
