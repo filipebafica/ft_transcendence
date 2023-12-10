@@ -68,7 +68,7 @@
 	<!-- Button for joining the game -->
 	<button id="joinGameButton">Join Game</button>
 
-	<div id="gameID">GameID:</div>
+	<div id="gameId">GameID:</div>
 	<div id="ballPosition"></div>
 	<div id="keypressed"></div>
 
@@ -94,12 +94,12 @@
 				// Emit the 'joinGame' event with the entered player ID
 				gameSocket.emit('joinGame', playerId);
 
-				console.log("PlayerID: " . playerID);
+				console.log("PlayerID: " . playerId);
 
-				gameSocket.on(playerId, (gameID) => {
-					console.log("GameID: " . gameID);
-					gameSocket.on(gameID, (gameState) => {
-						// document.getElementById('gameID').innerText = gameState.id;
+				gameSocket.on(playerId, (gameId) => {
+					console.log("GameID: " . gameId);
+					gameSocket.on(gameId, (gameState) => {
+						// document.getElementById('gameId').innerText = gameState.id;
 
 						// Updates player 1
 						const player1 = document.getElementById('player1');
@@ -134,7 +134,7 @@
 					});
 
 					document.addEventListener('keydown', function(event) {
-							gameSocket.emit('playerAction', { gameID: gameID, playerID: playerId, action: event.key });
+							gameSocket.emit('playerAction', { gameId: gameId, playerId: playerId, action: event.key });
 						});
 				});
 			} else {

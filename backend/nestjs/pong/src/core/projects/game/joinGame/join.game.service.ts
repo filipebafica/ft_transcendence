@@ -42,10 +42,10 @@ export class JoinGameService {
 				this.playingQueue.add(request.playerConfig.uuid, gameState.id)
 				response = new Response(gameState);
 			} else {
-				const [playerID, gameID]: [string, string] = this.waitingQueue.first();
-				this.waitingQueue.remove(playerID);
-				const gameState: GameState = this.gameState.createSecondPlayer(request.playerConfig.uuid, gameID);
-				this.playingQueue.add(playerID, gameID);
+				const [playerId, gameId]: [string | number, string | number] = this.waitingQueue.first();
+				this.waitingQueue.remove(playerId);
+				const gameState: GameState = this.gameState.createSecondPlayer(request.playerConfig.uuid, gameId);
+				this.playingQueue.add(playerId, gameId);
 				response = new Response(gameState);
 			}
 

@@ -21,8 +21,8 @@ export class PlayerActionService {
 			));
 
 			this.gameState.updatePlayerSpeed(
-				request.gameID,
-				request.playerID,
+				request.gameId,
+				request.playerId,
 				request.action,
 			)
 

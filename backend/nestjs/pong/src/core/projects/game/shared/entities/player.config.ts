@@ -1,6 +1,6 @@
 export default class PlayerConfig {
 	constructor(
-		public uuid: string,
+		public uuid: string | number,
 		public clientid: string
 	) {
 	}

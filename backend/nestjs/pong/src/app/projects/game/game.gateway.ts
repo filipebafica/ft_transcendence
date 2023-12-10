@@ -35,7 +35,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	//Handles Join Game Socket
 	@SubscribeMessage('joinGame')
 	joinGame(
-		@MessageBody() uuid: string,
+		@MessageBody() uuid: string | number,
 		@ConnectedSocket() client: any,
 	): void {
 		try {
@@ -51,10 +51,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			);
 			const response: JoinGameResponse = joinGameService.execute(request);
 
-			this.server.emit(uuid, response.gameState.id);
+			this.server.emit(uuid.toString(), response.gameState.id);
 		}
 		catch (error) {
-			this.server.emit(uuid, JSON.stringify(
+			this.server.emit(uuid.toString(), JSON.stringify(
 				{
 					"COULDN'T JOIN THE GAME": [error.message],
 				}
@@ -74,8 +74,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				await handleGameService.gameLoop();
 				let games = this.gameStateManager.getGames();
 
-				for (const [gameID, gameState] of games) {
-					this.server.emit(gameID, gameState);
+				for (const [gameId, gameState] of games) {
+					this.server.emit(gameId.toString(), gameState);
 				}
 			}
 		} catch (error) {
@@ -84,7 +84,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('playerAction')
-	playerAction(@MessageBody() data: {gameID: string, playerID: string, action: string}) {
+	playerAction(@MessageBody() data: {gameId: string | number, playerId: string | number, action: string}) {
 		try {
 			console.log(data.action);
 			const playerActionService: PlayerActionService = new PlayerActionService(
@@ -93,8 +93,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			)
 
 			const request: PlayerActionRequest = new PlayerActionRequest(
-				data.playerID,
-				data.gameID,
+				data.playerId,
+				data.gameId,
 				data.action,
 			);
 

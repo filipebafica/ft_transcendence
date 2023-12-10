@@ -11,12 +11,12 @@
 	<h1>Socket.io Game Example</h1>
 	<div id="gameStatus"></div>
 	<!-- Input for player ID -->
-	<label for="playerIDInput">Player ID:</label>
-	<input type="text" id="playerIDInput" placeholder="Enter Player ID">
+	<label for="playerIdInput">Player ID:</label>
+	<input type="text" id="playerIdInput" placeholder="Enter Player ID">
 
 	<!-- Button for joining the game -->
 	<button id="joinGameButton">Join Game</button>
-	<div id="gameID"></div>
+	<div id="gameId"></div>
 
 	<script>
 		const gameSocket = io('/game');
@@ -26,20 +26,20 @@
 		});
 
 		const handleJoinGame = () => {
-			const playerIDInput = document.getElementById('playerIDInput');
-			playerID = playerIDInput.value.toString();
+			const playerIdInput = document.getElementById('playerIdInput');
+			playerId = playerIdInput.value.toString();
 
-			if (playerID) {
-				gameSocket.emit('joinGame', playerID);
-				gameSocket.on(playerID, (gameID) => {
-					document.getElementById('gameID').innerText = gameID;
-					gameSocket.on(gameID, (gameState) => {
+			if (playerId) {
+				gameSocket.emit('joinGame', playerId);
+				gameSocket.on(playerId, (gameId) => {
+					document.getElementById('gameId').innerText = gameId;
+					gameSocket.on(gameId, (gameState) => {
 						console.log(gameState.player1.speed);
 					});
 
 					document.addEventListener('keydown', function(event) {
 						console.log(event.key);
-						gameSocket.emit('playerAction', { gameID: gameID, playerID: playerID, action: event.key });
+						gameSocket.emit('playerAction', { gameId: gameId, playerId: playerId, action: event.key });
 					})
 				})
 			}

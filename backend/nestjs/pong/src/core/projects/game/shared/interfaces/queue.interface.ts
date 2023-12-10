@@ -1,7 +1,7 @@
 export interface QueueInterface {
-	isOnQueue(playerID: string): boolean;
-	add(playerID: string, gameID: string): void;
-	remove(playerID: string): void;
+	isOnQueue(playerId: string | number): boolean;
+	add(playerId: string | number, gameId: string | number): void;
+	remove(playerId: string | number): void;
 	isEmpty(): boolean;
-	first(): [string, string]
+	first(): [string | number, string | number]
 }
