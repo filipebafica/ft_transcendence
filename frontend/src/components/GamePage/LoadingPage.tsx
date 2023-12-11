@@ -4,6 +4,7 @@ import loading from "../../assets/loading.gif";
 
 import { gameSocket } from "../../socket/index";
 
+import WinnerPage from "./WinnerPage";
 import RemoteGame from "./RemoteGame";
 
 interface LoadingProps {
@@ -13,6 +14,7 @@ interface LoadingProps {
 }
 
 function LoadingPage(props: LoadingProps) {
+	const [finishedDone, setFinishedDone] = useState(false);
 	const [loadingDone, setLoadingDone] = useState(false);
 	const [gameState, setGameState] = useState({} as any);
 
@@ -21,12 +23,19 @@ function LoadingPage(props: LoadingProps) {
 
 	useEffect(() => {
 		gameSocket.on(gameId, (newGameState) => {
+			if (newGameState.status === 2) {
+				setFinishedDone(true);
+			}
 			if (newGameState.status === 1) {
 				setLoadingDone(true);
 				setGameState(newGameState);
 			}
 		});
 	}, [gameId]);
+
+	if (finishedDone) {
+		return <WinnerPage gameId={gameId} playerId={playerId} />;
+	}
 
 	if (loadingDone) {
 		return <RemoteGame gameState={gameState} playerId={playerId} />;
@@ -35,13 +44,6 @@ function LoadingPage(props: LoadingProps) {
 	// https://loading.io/
 	return (
 		<div className={styles.center}>
-			{/* <div className={styles.wave}></div>
-			<div className={styles.wave}></div>
-			<div className={styles.wave}></div>
-			<div className={styles.wave}></div>
-			<div className={styles.wave}></div>
-			<div className={styles.wave}></div>
-			<div className={styles.wave}></div> */}
 			<img src={loading} alt="loading..." />
 		</div>
 	);
