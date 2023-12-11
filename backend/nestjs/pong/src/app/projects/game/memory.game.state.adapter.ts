@@ -6,6 +6,12 @@ import GameState from "src/core/projects/game/shared/entities/game.state";
 import Player from "src/core/projects/game/shared/entities/player";
 import { GameStateInterface } from "src/core/projects/game/shared/interfaces/game.state.interface";
 
+enum Status {
+	Waiting,
+	Running,
+	Finished,
+}
+
 export default class MemoryGameStateAdapter implements GameStateInterface {
 	public games: Map<string | number, GameState> = new Map<string | number, GameState>();
 
@@ -19,8 +25,8 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 	private ballHeight: number = 10;
 	private initialPlayerSpeed: number = 0;
 
-	public 	createGame(playerId: string | number): GameState {
-		let player: Player = this.createPlayer(playerId, 1);
+	public 	createGame(playerId: string | number, playerName: string): GameState {
+		let player: Player = this.createPlayer(playerId, 1, playerName);
 		let ball: Ball = this.createBall();
 		let board: Canvas = this.createBoard();
 		let gameState: GameState = {
@@ -28,29 +34,38 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 			player1: player,
 			ball: ball,
 			player1Score: 0,
-			player2Score: 1,
+			player2Score: 0,
 			board: board,
-			status: 0,
+			status: Status.Waiting,
 		};
 
 		this.games.set(gameState.id, gameState);
 		return gameState;
 	}
 
-	public removeGame(gameId: string | number): void {
+	public closeGame(gameId: string): GameState | undefined {
+		let gameState: GameState = this.games.get(gameId);
+		if (gameState == undefined) {
+			//gameId doens't exist
+			return undefined;
+		}
+		this.games.delete(gameId);
+
+		gameState.status = Status.Finished;
+		return gameState;
 	}
 
-	public createSecondPlayer(playerId: string | number, gameId: string | number): GameState {
-		let player: Player = this.createPlayer(playerId, 2);
+	public createSecondPlayer(playerId: string | number, gameId: string | number, playerName: string): GameState {
+		let player: Player = this.createPlayer(playerId, 2, playerName);
 		let gameState: GameState = this.games.get(gameId);
 		gameState.player2 = player;
-		gameState.status = 1;
+		gameState.status = Status.Running;
 		this.games.set(gameId, gameState);
 		return gameState;
 	}
 
 	public async updateGame(gameId: string | number, currentGameState: GameState): Promise<void> {
-		if (currentGameState.status != 1) {
+		if (currentGameState.status != Status.Running) {
 			return ;
 		}
 
@@ -166,9 +181,10 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		return new Promise(resolve => setTimeout(resolve, this.interval));
 	}
 
-	private createPlayer(id: string | number, playerNumber: number): Player {
+	private createPlayer(id: string | number, playerNumber: number, playerName: string): Player {
 		return {
 			id: id,
+			name: playerName,
 			x: playerNumber == 1 ? 10 : this.boardWidth - this.playerWidth - 10,
 			y: (this.boardHeight - this.playerHeight) / 2,
 			width: this.playerWidth,
@@ -202,27 +218,17 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 	public updatePlayerSpeed(gameId: string | number, playerId: string | number, action: string): void {
 		const gameState = this.games.get(gameId);
 		
-		console.log('BeforeupdatePlayerSpeed', gameState);
-		if (gameState.status != 1) {
+		if (gameState.status != Status.Running) {
 			return ;
 		}
 
-		console.log('updatePlayerSpeed', playerId);
-		console.log('Playerid1', gameState.player1.id);
-		console.log('Playerid2', gameState.player2.id);
-
 		if (gameState.player1.id == playerId) {
-			console.log('player1Speed', this.calculateSpeed(action));
 			gameState.player1.speed = this.calculateSpeed(action);
 		} else if (gameState.player2.id == playerId) {
-			console.log('player2Speed', this.calculateSpeed(action));
 			gameState.player2.speed = this.calculateSpeed(action);
 		}
 
 		this.games.set(gameId, gameState);
-
-		console.log('player1Speed', this.games.get(gameId).player1.speed);
-		console.log('player2Speed', this.games.get(gameId).player2.speed);
 	}
 
 	private calculateSpeed(action: string): number {
@@ -236,5 +242,9 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 			case "KeyUpArrowDown":
 				return 0;
 		}
+	}
+
+	public getGame(gameId: string): GameState | undefined {
+		return this.games.get(gameId);
 	}
 }
