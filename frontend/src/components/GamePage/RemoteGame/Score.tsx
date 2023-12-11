@@ -1,7 +1,7 @@
 import styles from "./style.module.css";
 
 interface PlayerScore {
-	player: string;
+	player: number;
 	score: number;
 }
 
