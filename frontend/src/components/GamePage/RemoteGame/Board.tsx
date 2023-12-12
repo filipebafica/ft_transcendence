@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./style.module.css";
 
 import { gameSocket } from "../../../socket/index";
@@ -55,13 +55,21 @@ function Board(props: BoardProps) {
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-				gameSocket.emit('playerAction', { gameId: gameId, playerId: playerId, action: `KeyDown${event.key}` })
+				gameSocket.emit("playerAction", {
+					gameId: gameId,
+					playerId: playerId,
+					action: `KeyDown${event.key}`,
+				});
 			}
 		};
 
 		const handleKeyUp = (event: KeyboardEvent) => {
 			if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-				gameSocket.emit('playerAction', { gameId: gameId, playerId: playerId, action: `KeyUp${event.key}` })
+				gameSocket.emit("playerAction", {
+					gameId: gameId,
+					playerId: playerId,
+					action: `KeyUp${event.key}`,
+				});
 			}
 		};
 
@@ -72,7 +80,7 @@ function Board(props: BoardProps) {
 			document.removeEventListener("keydown", handleKeyDown);
 			document.removeEventListener("keyup", handleKeyUp);
 		};
-	}, []);
+	}, [gameId, playerId]);
 
 	// Game Render
 	useEffect(() => {

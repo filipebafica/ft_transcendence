@@ -1,4 +1,5 @@
 import styles from "./style.module.css";
+
 import GamePage from ".";
 
 interface WinnerProps {
