@@ -34,7 +34,7 @@
 				gameSocket.on(playerId, (gameId) => {
 					document.getElementById('gameId').innerText = gameId;
 					gameSocket.on(gameId, (gameState) => {
-						console.log(gameState.player1.speed);
+						console.log(gameState.status);
 					});
 
 					document.addEventListener('keydown', function(event) {

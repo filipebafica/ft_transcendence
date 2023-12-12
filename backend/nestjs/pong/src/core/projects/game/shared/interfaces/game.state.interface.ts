@@ -10,4 +10,6 @@ export interface GameStateInterface {
 	collectUpdatePromises(): Promise<void>[]
 	delay(): Promise<void>
 	updatePlayerSpeed(gameId: string | number, playerId: string | number, action: string): void
+	getFinishedGames(): GameState[]
+	deleteFinishedGame(gameState: GameState): void
 }

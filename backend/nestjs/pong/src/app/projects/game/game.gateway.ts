@@ -1,4 +1,4 @@
-import { Logger } from "@nestjs/common";
+import { ConsoleLogger, Logger } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "http";
 import { JoinGameService } from "src/core/projects/game/joinGame/join.game.service";
@@ -14,6 +14,9 @@ import { HandleDisconnectService } from "src/core/projects/game/handleDisconnect
 import { MemoryClientManagerAdapter } from "./memory.client.manager.adapter";
 import { Request as HandleDisconnectRequest} from "src/core/projects/game/handleDisconnect/dtos/request.dto";
 import { Response as HandleDisconnectResponse} from "src/core/projects/game/handleDisconnect/dtos/response.dto";
+import { HandleFinishedGameService } from "src/core/projects/game/handleFinishedGame/handle.finished.game.service";
+import { Response as HandleFinishedGameResponse} from "src/core/projects/game/handleFinishedGame/dtos/response.dto";
+import GameState from "src/core/projects/game/shared/entities/game.state";
 
 @WebSocketGateway({
 	namespace: '/game',
@@ -35,6 +38,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.clientManager = new MemoryClientManagerAdapter();
 
 		this.handleGame();
+		this.handleFinishedGame();
 	}
 
 	//Handles Join Game Socket
@@ -66,8 +70,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	public async handleGame() {
 		try {
 			const handleGameService: HandleGameService = new HandleGameService(
-				new Logger(),
-				this.playingQueue,
 				this.gameStateManager,
 			);
 			
@@ -81,6 +83,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 		} catch (error) {
 			//could see error messages here
+		}
+	}
+
+	public async handleFinishedGame() {
+		try {
+			const handleFinishedGameService: HandleFinishedGameService = new HandleFinishedGameService(
+				new Logger(),
+				this.gameStateManager,
+				this.clientManager,
+			);
+
+			while (true) {
+				const response: HandleFinishedGameResponse = await handleFinishedGameService.finishGameLoop();
+				if (response.gameStates.length) {
+					await Promise.all(
+						response.gameStates.map(async (gameState: GameState) => {
+						await this.server.emit(gameState.id, gameState);
+					}));
+				}
+				await new Promise(resolve => setTimeout(resolve, 300));
+			}
+
+		} catch (error) {
+			//could see messages here
 		}
 	}
 
