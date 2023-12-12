@@ -7,7 +7,7 @@ export default class GetUserChatRule {
     ) {
     }
 
-    apply(userId: number): UserChatDTO {
-        return this.userChatGateay.getUserChat(userId);
+    async apply(userId: number): Promise<Array<number>> {
+        return await this.userChatGateay.getUserChat(userId);
     }
 }

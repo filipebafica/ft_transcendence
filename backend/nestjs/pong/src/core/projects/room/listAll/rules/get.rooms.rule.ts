@@ -7,8 +7,7 @@ export default class GetRoomsRule {
     ) {
     }
 
-    apply(): RoomDTO[] {
+    apply(): Promise<RoomDTO[]> {
         return this.getRoomsGateway.get();
     }
-
 }

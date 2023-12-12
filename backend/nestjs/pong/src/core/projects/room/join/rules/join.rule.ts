@@ -1,12 +1,23 @@
-import JoinGateway from "../gateways/join.gateways";
+import RoomParticipantsGateway from "../../shared/gateways/join.gateways";
+import RoomPartitipantsDTO from "../dtos/room.participants.dto";
 
 export default class JoinRule {
     constructor(
-        private readonly joinGateway: JoinGateway
+        private readonly roomParticipantsGateway: RoomParticipantsGateway
     ) {
     }
 
-    apply(userId: number, roomId: number): void {
-        this.joinGateway.join(userId, roomId);
+    async apply(
+        userId: number,
+        roomId: number,
+        isOwner: boolean,
+        isAdamin: boolean
+    ): Promise<RoomPartitipantsDTO> {
+        return await this.roomParticipantsGateway.join(
+            userId,
+            roomId,
+            isOwner,
+            isAdamin
+        );
     }
 }

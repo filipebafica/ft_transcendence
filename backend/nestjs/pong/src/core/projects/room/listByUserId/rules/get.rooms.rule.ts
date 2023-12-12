@@ -7,7 +7,7 @@ export default class GetRoomsRule {
     ) {
     }
 
-    apply(userId: number): RoomDTO[] {
+    apply(userId: number): Promise<RoomDTO[]> {
         return this.getRoomsGateway.getByUserId(userId);
     }
 

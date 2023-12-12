@@ -3,6 +3,7 @@ import RequestDTO from 'src/core/projects/chat/sendMessageAuthorization/dtos/req
 import { SendMessageAuthorizationService } from 'src/core/projects/chat/sendMessageAuthorization/send.message.authorization.service';
 import UserChatAdapter from './user.chat.adapter';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { EntityManager } from 'typeorm';
 
 @Controller('/chat')
 @ApiTags('chat')
@@ -10,10 +11,11 @@ export class ChatController {
     private sendMessageAuthorizationService: SendMessageAuthorizationService;
     
     constructor(
+        private readonly entityManager: EntityManager
     ) {
         this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
             new Logger(SendMessageAuthorizationService.name),
-            new UserChatAdapter()
+            new UserChatAdapter(entityManager)
         );
     }
 
@@ -48,12 +50,12 @@ export class ChatController {
             }
         },
     })
-    isAuthorized(
+    async isAuthorized(
         @Query('senderId') senderId: string,
         @Query('receiverId') receiverId: string,
     ) {
         try {
-            const responseDTO = this.sendMessageAuthorizationService.execute(
+            const responseDTO = await this.sendMessageAuthorizationService.execute(
                 new RequestDTO(
                         parseInt(senderId),
                         parseInt(receiverId)
