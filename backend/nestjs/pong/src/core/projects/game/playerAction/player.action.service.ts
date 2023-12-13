@@ -34,7 +34,7 @@ export class PlayerActionService {
 				}
 			));
 		} catch (error) {
-
+			this.logger.error("An error occurred on player action service");
 		}
 	}
 }

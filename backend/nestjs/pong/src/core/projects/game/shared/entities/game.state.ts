@@ -4,7 +4,7 @@ import Player from "./player";
 
 export default class GameState {
 	constructor(
-		public id: string,
+		public id: number,
 		public status: number,
 		public ball: Ball,
 		public board: Canvas,

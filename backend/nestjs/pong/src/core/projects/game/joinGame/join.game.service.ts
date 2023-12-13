@@ -7,6 +7,7 @@ import GameState from "../shared/entities/game.state";
 import { GameStateInterface } from "../shared/interfaces/game.state.interface";
 import { QueueInterface } from "../shared/interfaces/queue.interface";
 import { ClientManagerInterface } from "../shared/interfaces/client.manager.interface";
+import { WaitingPlayerDTO } from "../shared/dtos/waiting.player.dto";
 
 export class JoinGameService {
 
@@ -18,7 +19,7 @@ export class JoinGameService {
 	) {
 	}
 
-	public execute(request: Request): Response {
+	public async execute(request: Request): Promise<Response> {
 		try {
 			this.logger.log(JSON.stringify(
 				{
@@ -28,33 +29,50 @@ export class JoinGameService {
 				}
 			));
 
-			if (this.clientManager.getClientGameMask(request.playerConfig.clientid) !== undefined) {
+			if (await this.clientManager.hasMask(request.playerConfig.clientId) == true) {
 				throw new AlreadyPlayingException({key: "uuid", value: request.playerConfig.uuid});
 			}
 
-			if (this.waitingQueue.isOnQueue(request.playerConfig.uuid)) {
+			if (await this.waitingQueue.isOnQueue(request.playerConfig.uuid) == true) {
 				throw new AlreadyWaitingException({key: "uuid", value: request.playerConfig.uuid});
 			}
 
 			let response: Response;
-			if (this.waitingQueue.isEmpty()) {
-				/**
-				 * @todo: criar adapter para buscar o nome do player a partir do ID
-				 */
+			// if (this.waitingQueue.isEmpty()) {
+			// 	/**
+			// 	 * @todo: criar adapter para buscar o nome do player a partir do ID
+			// 	 */
+			// 	const mockedPlayerName: string = "player1";
+			// 	const gameState: GameState = await this.gameState.createGame(request.playerConfig.uuid, mockedPlayerName);
+			// 	this.waitingQueue.add(request.playerConfig.uuid, gameState.id);
+			// 	await this.clientManager.addClientGameMask(request.playerConfig.clientId, request.playerConfig.uuid, gameState.id);
+			// 	response = new Response(gameState);
+			// } else {
+			// 	const [playerId, gameId]: [number, number] = this.waitingQueue.first();
+			// 	this.waitingQueue.remove(playerId);
+			// 	/**
+			// 	 * @todo: criar adapter para buscar o nome do player a partir do ID
+			// 	 */
+			// 	const mockedPlayerName: string = "player2";
+			// 	const gameState: GameState = this.gameState.createSecondPlayer(request.playerConfig.uuid, gameId, mockedPlayerName);
+			// 	await this.clientManager.addClientGameMask(request.playerConfig.clientId, request.playerConfig.uuid, gameState.id);
+			// 	response = new Response(gameState);
+			// }
+
+			const waitingPlayer: WaitingPlayerDTO | null = await this.waitingQueue.first();
+			if (waitingPlayer == null) {
 				const mockedPlayerName: string = "player1";
-				const gameState: GameState = this.gameState.createGame(request.playerConfig.uuid, mockedPlayerName);
-				this.waitingQueue.add(request.playerConfig.uuid, gameState.id);
-				this.clientManager.addClientGameMask(request.playerConfig.clientid, gameState.id);
+
+				const gameState: GameState = await this.gameState.createGame(request.playerConfig.uuid, mockedPlayerName);
+				await this.waitingQueue.add(request.playerConfig.uuid, gameState.id);
+				await this.clientManager.addClientGameMask(request.playerConfig.clientId, request.playerConfig.uuid, gameState.id);
 				response = new Response(gameState);
 			} else {
-				const [playerId, gameId]: [string | number, string | number] = this.waitingQueue.first();
-				this.waitingQueue.remove(playerId);
-				/**
-				 * @todo: criar adapter para buscar o nome do player a partir do ID
-				 */
 				const mockedPlayerName: string = "player2";
-				const gameState: GameState = this.gameState.createSecondPlayer(request.playerConfig.uuid, gameId, mockedPlayerName);
-				this.clientManager.addClientGameMask(request.playerConfig.clientid, gameState.id);
+
+				await this.waitingQueue.remove(waitingPlayer.playerId);
+				const gameState: GameState = await this.gameState.createSecondPlayer(request.playerConfig.uuid, waitingPlayer.gameId, mockedPlayerName);
+				await this.clientManager.addClientGameMask(request.playerConfig.clientId, request.playerConfig.uuid, gameState.id);
 				response = new Response(gameState);
 			}
 

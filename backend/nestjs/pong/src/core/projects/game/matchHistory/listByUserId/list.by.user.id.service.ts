@@ -1,0 +1,39 @@
+import { Logger } from "@nestjs/common";
+import { Request } from "./dtos/request.dto";
+import { Response } from "./dtos/response.dto";
+import { GameHistoryRepository } from "../../shared/interfaces/game.history.repository";
+
+export class ListByUserIdService {
+
+	constructor(
+		private readonly logger: Logger,
+		private gameHistoryRepository: GameHistoryRepository,
+	){}
+
+	public async execute(request: Request): Promise<Response> {
+		try {
+			this.logger.log(JSON.stringify(
+				{
+					"ListByUserIdService has started": {
+						"request": request,
+					}
+				}
+			));
+
+			const matchHistories = await this.gameHistoryRepository.listMatchesByUserId(request.userId, request.index);
+			const response: Response = new Response(matchHistories);
+
+			this.logger.log(JSON.stringify(
+				{
+					"ListByUserIdService has finished": {
+						"response": response,
+					}
+				}
+			));
+			return response;
+		} catch (error) {
+			this.logger.error("[SERVICE] An error occurred when listing game history by user id");
+			throw error;
+		}
+	}
+}
