@@ -11,6 +11,8 @@ function LoginPage() {
 		// TODO: Implement login logic here
 	};
 
+	const handleReturnHome = () => {};
+
 	if (redirectSignup) {
 		return <SignupPage />;
 	}
@@ -30,6 +32,9 @@ function LoginPage() {
 				<button type="submit">Login</button>
 				<button type="submit" onClick={() => setRedirectSignup(true)}>
 					Signup
+				</button>
+				<button onClick={handleReturnHome} className={styles.button}>
+					Home
 				</button>
 			</form>
 		</div>
