@@ -4,14 +4,20 @@ import { CreateService } from 'src/core/projects/room/create/create.room.service
 import RoomAdapter from './room.adapter';
 import { CreateDTO } from './create.dto';
 import { RequestDTO as CreateRequestDTO } from 'src/core/projects/room/create/dtos/request.dto';
+import { ResponseDTO as CreateResponseDTO} from 'src/core/projects/room/create/dtos/response.dto';
 import { ListAllService } from 'src/core/projects/room/listAll/list.all.service';
-import ResponseDTO from 'src/core/projects/room/listAll/dtos/response.dto';
+import { ResponseDTO as ListAllResponseDTO} from 'src/core/projects/room/listAll/dtos/response.dto';
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
 import { ListByUserIdService } from 'src/core/projects/room/listByUserId/list.by.user.id.service';
 import { RequestDTO as ListByUserIdRequestDTO } from 'src/core/projects/room/listByUserId/dtos/request.dto';
+import { ResponseDTO as ListByUserIdResponseDTO} from 'src/core/projects/room/listByUserId/dtos/response.dto';
 import { JoinService } from 'src/core/projects/room/join/join.service';
 import { JoinDTO } from './join.dto';
 import { RequestDTO as JoinRequestDTO } from 'src/core/projects/room/join/dtos/request.dto';
+import { ResponseDTO as JoinResponseDTO} from 'src/core/projects/room/join/dtos/response.dto';
+import { EntityManager } from 'typeorm';
+import RoomParticipantsAdapter from './room.participants.adapter';
+import RoomPartitipantsDTO from 'src/core/projects/room/join/dtos/room.participants.dto';
 
 
 @Controller('/room')
@@ -23,25 +29,26 @@ export class RoomController {
     private listByUserIdService: ListByUserIdService;
 
     constructor(
+        private readonly entityManager: EntityManager
     ) {
         this.createService = new CreateService(
             new Logger(CreateService.name),
-            new RoomAdapter()
+            new RoomAdapter(entityManager)
         );
 
         this.joinService = new JoinService(
             new Logger(CreateService.name),
-            new RoomAdapter()
+            new RoomParticipantsAdapter(entityManager)
         );
 
         this.listAllService = new ListAllService(
             new Logger(ListAllService.name),
-            new RoomAdapter()
+            new RoomAdapter(entityManager)
         );
 
         this.listByUserIdService = new ListByUserIdService(
             new Logger(ListAllService.name),
-            new RoomAdapter()
+            new RoomAdapter(entityManager)
         );
     }
 
@@ -53,12 +60,7 @@ export class RoomController {
             properties: {
                 userId: {type: 'number'},
                 roomName: {type: 'string'},
-                type: {type: 'string'}
-            },
-            example: {
-                userId: 123,
-                roomName: 'myRoom',
-                type: 'public',
+                isPublic: {type: 'boolean'}
             }
         },
         examples: {
@@ -66,7 +68,7 @@ export class RoomController {
                 value: {
                     userId: 123,
                     roomName: 'myRoom',
-                    type: 'public'
+                    isPublic: true
                 },
                 summary: 'Example of a valid request'
             }
@@ -79,11 +81,13 @@ export class RoomController {
             type: 'Object',
             properties: {
                 status: {type: 'string'},
-                message: {type: 'boolean'}
+                data: {type: 'Object'}
             },
             example: {
                 status: 'success',
-                message: 'created'
+                data: new CreateResponseDTO(
+                        new RoomDTO(1, 'room1')
+                )
             }
         }
     })
@@ -102,21 +106,21 @@ export class RoomController {
             }
         }
     })
-    create(
+    async create(
         @Body() createDTO: CreateDTO
     ) {
         try {
-            this.createService.execute(
+            const responseDTO = await this.createService.execute(
                 new CreateRequestDTO(
                     createDTO.userId,
                     createDTO.roomName,
-                    createDTO.type
+                    createDTO.isPublic
                 )
             );
 
             return {
                 "status": "success",
-                "message": "created"
+                "data": responseDTO.rooms
             };
 
         } catch (error) {
@@ -127,32 +131,32 @@ export class RoomController {
         }
     }
 
-    @Put('/join')
+    @Post('/join')
     @ApiBody({
         description: 'Data to join a room',
         schema: {
             type: 'Object',
             properties: {
                 userId: {type: 'number'},
-                roomId: {type: 'number'}
-            },
-            example: {
-                userId: 123,
-                roomId: 321
+                roomId: {type: 'number'},
+                isOwner: {type: 'boolean'},
+                isAdmin: {type: 'boolean'}
             }
         },
         examples: {
             example1: {
                 value: {
                     userId: 123,
-                    roomId: 321
+                    roomId: 321,
+                    isOwner: true,
+                    isAdmin: true
                 },
                 summary: 'Example of a valid request'
             }
         }
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: 'Successful response',
         schema: {
             type: 'Object',
@@ -181,14 +185,16 @@ export class RoomController {
             }
         }
     })
-    join(
+    async join(
         @Body() joinDTO: JoinDTO
     ) {
         try {
-            this.joinService.execute(
+            await this.joinService.execute(
                 new JoinRequestDTO(
                     joinDTO.userId,
-                    joinDTO.roomId
+                    joinDTO.roomId,
+                    joinDTO.isOwner,
+                    joinDTO.isAdmin
                 )
             );
 
@@ -217,10 +223,10 @@ export class RoomController {
             },
             example: {
                 status: 'success',
-                data: new ResponseDTO([
-                    new RoomDTO(1, 'room1', 1, 1, 'public', [1, 2, 3]),
-                    new RoomDTO(2, 'room2', 2, 2, 'public', [1, 2, 3]),
-                    new RoomDTO(3, 'room3', 3, 3, 'public', [1, 2, 3]),
+                data: new ListAllResponseDTO([
+                    new RoomDTO(1, 'room1', [1, 2, 3]),
+                    new RoomDTO(2, 'room2', [1, 2, 3]),
+                    new RoomDTO(3, 'room3', [1, 2, 3]),
                 ])
             }
         }
@@ -240,9 +246,9 @@ export class RoomController {
             }
         }
     })
-    list() {
+    async list() {
         try {
-            const responseDTO = this.listAllService.execute();
+            const responseDTO = await this.listAllService.execute();
 
             return {
                 "status": "success",
@@ -269,10 +275,10 @@ export class RoomController {
             },
             example: {
                 status: 'success',
-                data: new ResponseDTO([
-                        new RoomDTO(1, 'room1', 1, 1, 'private', [1, 2, 3]),
-                        new RoomDTO(2, 'room2', 2, 2, 'public', [1, 2, 3]),
-                        new RoomDTO(3, 'room3', 3, 3, 'public', [1, 2, 3]),
+                data: new ListByUserIdResponseDTO([
+                        new RoomDTO(1, 'room1', [1, 2, 3]),
+                        new RoomDTO(2, 'room2', [1, 2, 3]),
+                        new RoomDTO(3, 'room3', [1, 2, 3]),
                 ])
             }
         }
@@ -292,9 +298,9 @@ export class RoomController {
             }
         }
     })
-    listByUserId(@Param('userId') userId: string) {
+    async listByUserId(@Param('userId') userId: string) {
         try {
-            const responseDTO = this.listByUserIdService.execute(
+            const responseDTO = await this.listByUserIdService.execute(
                 new ListByUserIdRequestDTO(
                     parseInt(userId)
                 )

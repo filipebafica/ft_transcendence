@@ -17,12 +17,12 @@ export class SendMessageAuthorizationService {
         this.isAuthorizedRule = new IsAuthorizedRule();
     }
 
-    execute(request: RequestDTO): ResponseDTO {
+    async execute(request: RequestDTO): Promise<ResponseDTO> {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": request}}));
 
-            const userChat = this.getUserChatRule.apply(request.senderId);
-            const isAuthorized = this.isAuthorizedRule.apply(request.receiverId, userChat.blockedUsers);
+            const userChat = await this.getUserChatRule.apply(request.receiverId);
+            const isAuthorized = this.isAuthorizedRule.apply(request.senderId, userChat);
             const responseDTO = new ResponseDTO(isAuthorized);
 
             this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));

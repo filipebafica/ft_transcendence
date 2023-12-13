@@ -1,4 +1,5 @@
 import CreateGateway from "../gateways/create.gateway";
+import RoomDTO from "../../shared/dtos/room.dto";
 
 export default class CreateRule {
     constructor(
@@ -6,15 +7,13 @@ export default class CreateRule {
     ) {
     }
 
-    apply(
-        userId: number,
+    async apply(
         roomName: string,
-        type: string
-    ): void {
-        this.createGateway.create(
-            userId,
+        isPublic: boolean
+    ): Promise<RoomDTO> {
+        return await this.createGateway.create(
             roomName,
-            type
+            isPublic
         );
     }
 }

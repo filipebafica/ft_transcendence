@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import ResponseDTO from './dtos/response.dto';
+import { ResponseDTO } from './dtos/response.dto';
 import GetRoomsGateway from '../shared/gateways/get.rooms.gateway';
 import GetRoomsRule from './rules/get.rooms.rule';
 
@@ -13,12 +13,12 @@ export class ListAllService {
         this.getRoomsRule = new GetRoomsRule(getRoomsGateway);
     }
 
-    execute(): ResponseDTO
+    async execute(): Promise<ResponseDTO>
     {
         try {
             this.logger.log("{Service has started}");
 
-            const rooms = this.getRoomsRule.apply();
+            const rooms = await this.getRoomsRule.apply();
             const responseDTO = new ResponseDTO(rooms);
 
             this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));
