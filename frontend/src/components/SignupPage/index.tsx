@@ -8,8 +8,10 @@ function SignupPage() {
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		// TODO: Implement login logic here
+		// TODO: Implement signup logic here
 	};
+
+	const handleReturnHome = () => {};
 
 	if (redirectLogin) {
 		return <LoginPage />;
@@ -42,6 +44,9 @@ function SignupPage() {
 				<button type="submit">Signup</button>
 				<button type="submit" onClick={() => setRedirectLogin(true)}>
 					Login
+				</button>
+				<button onClick={handleReturnHome} className={styles.button}>
+					Home
 				</button>
 			</form>
 		</div>

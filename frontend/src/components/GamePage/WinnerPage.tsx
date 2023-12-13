@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import styles from "./style.module.css";
 
 import GamePage from ".";
@@ -8,29 +9,37 @@ interface WinnerProps {
 }
 
 function WinnerPage(props: WinnerProps) {
+	const [returnGamePage, setReturnGamePage] = useState(false);
+
 	const handleGamePage = () => {
-		return <GamePage />;
+		setReturnGamePage(true);
 	};
+
+	if (returnGamePage) {
+		return <GamePage />;
+	}
 
 	const gameId = props.gameId;
 	const playerId = props.playerId;
+	let result;
 
 	// TODO: get result from backend
 	let matchResult = 1;
 	// single page
 	if (matchResult === 0) {
-		console.log("Empate!");
+		result = "Empate!";
 	} else if (matchResult === 1) {
-		console.log("Jogador 1 venceu!");
+		result = "Jogador 1 venceu!";
 	} else {
-		console.log("Jogador 2 venceu!");
+		result = "Jogador 2 venceu!";
 	}
 
 	return (
 		<div className={styles.container}>
-			<span>
-				gameId: {gameId}; playerId: {playerId} - Fim de Jogo
-			</span>
+			<div>
+				gameId: {gameId}; playerId: {playerId}
+			</div>
+			<div>Result: {result}</div>
 			<button onClick={handleGamePage} className={styles.button}>
 				New Game
 			</button>
