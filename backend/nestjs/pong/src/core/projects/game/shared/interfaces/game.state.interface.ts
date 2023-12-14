@@ -1,13 +1,15 @@
 import GameState from "../entities/game.state";
-import PlayerConfig from "../entities/player.config";
 
 export interface GameStateInterface {
-	createGame(playerId: string | number): GameState
-	removeGame(gameId: string | number): void
+	getGame(gameId: string): GameState
+	createGame(playerId: string | number, playerName: string): GameState
+	closeGame(gameId: string): GameState | undefined
 	updateGame(gameId: string | number, newGameState: GameState): void
-	createSecondPlayer(playerId: string | number, gameId: string | number): GameState
+	createSecondPlayer(playerId: string | number, gameId: string | number, playerName: string): GameState
 	waitAllUpdatesToComplete(updatePromises: Promise<void>[]): Promise<void[]>
 	collectUpdatePromises(): Promise<void>[]
 	delay(): Promise<void>
 	updatePlayerSpeed(gameId: string | number, playerId: string | number, action: string): void
+	getFinishedGames(): GameState[]
+	deleteFinishedGame(gameState: GameState): void
 }
