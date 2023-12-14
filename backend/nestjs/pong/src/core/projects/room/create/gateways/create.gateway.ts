@@ -1,7 +1,8 @@
+import RoomDTO from "../../shared/dtos/room.dto";
+
 export default interface CreateGateway {
     create(
-        userId: number,
         roomName: string,
-        type: string
-    ): void;
+        isPublic: boolean
+    ): Promise<RoomDTO>;
 }
