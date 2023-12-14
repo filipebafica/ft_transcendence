@@ -3,21 +3,21 @@ import { Link } from 'react-router-dom'
 
 function App() {
   return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/game">Game</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/chat">Chat</Link>
-          </li>
-        </ul>
-      </nav>
-    </div>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/game">Game</Link>
+            </li>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/chat">Chat</Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
   )
 }
 

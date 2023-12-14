@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./style.module.css";
 import loading from "../../assets/loading.gif";
 
-import { gameSocket } from "../../socket/index";
+import { gameSocket } from "socket";
 
 import RemoteGame from "./RemoteGame";
 
