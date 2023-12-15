@@ -4,12 +4,11 @@ import GamePage from '../components/GamePage'
 import LoginPage from '../components/LoginPage'
 import ChatPage from '../components/ChatPage'
 import LandingPage from '../components/LandingPage'
-import App from '../App'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: App,
+    Component: LandingPage,
   },
   {
     path: '/login',

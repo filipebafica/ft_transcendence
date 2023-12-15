@@ -1,8 +1,8 @@
 import RoomDTO from "../../shared/dtos/room.dto";
 
-export  class ResponseDTO {
+export class ResponseDTO {
     constructor(
-        public readonly rooms: RoomDTO[]
+        public readonly rooms: RoomDTO
     ) {
     }
 }

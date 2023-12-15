@@ -1,49 +1,60 @@
-import React from 'react';
-import Header from './Header';
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import Button from '@mui/material/Button';
+import Header from './Header'
 
-import hero from "../../assets/hero_3.png";
+import { AuthContext } from '../../auth'
 
-import styles from './style.module.css';
+import Button from '@mui/material/Button'
 
-import { ThemeOptions, ThemeProvider, createTheme } from '@mui/material/styles';
+import hero from '../../assets/hero_3.png'
+import logo from '../../assets/logo.png'
 
-export const themeOptions: ThemeOptions = {
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#2e2c33',
-    },
-    secondary: {
-      main: '#5386ac',
-    },
-  },
-};
-
-const theme = createTheme(themeOptions);
+import styles from './style.module.css'
 
 const LandingPage = () => {
-    return (
-		// <ThemeProvider theme={theme}>
-        <div className={styles.landingPage}>
-            <Header />
-            <div className={styles.mainContent}>
-				<div className={styles.titleContent}>
-					<h1>Welcome to Pong!</h1>
-					<p>Play the classic Pong game online.</p>
-					<Button variant="contained">Play Now</Button>
-				</div>
-				<div className={styles.heroContent}>
-					<img src={hero} alt="game" />
-				</div>
-            </div>
-            <footer className={styles.footer}>
-                © {new Date().getFullYear()} 42 Transcendence, Inc. All rights reserved.
-            </footer>
-        </div>
-		// </ThemeProvider>
-    );
-};
+  const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
 
-export default LandingPage;
+  return (
+    <div className={styles.landingPage}>
+      <Header />
+      <div className={styles.mainContent}>
+        <div className={styles.titleContent}>
+          {!user &&
+            <>
+            <div className={styles.welcomeContainer}>
+              <h1>Welcome to </h1>
+              <img src={logo} alt={"logo"}/>
+            </div>
+            <p>Play the classic Pong game online.</p>
+            <p>Play with your friends or any other player.</p>
+
+            <p>Sign up now to play!</p>
+            </>
+          } 
+          {
+            user &&
+            <>
+              <div className={styles.welcomeContainer}>
+                <h1>Welcome back to </h1> 
+                <img src={logo} alt={"logo"}/>
+              </div>
+              <div >
+                <Button variant="contained" size="large" onClick={() => navigate('/game')}>Play Now!</Button>
+              </div>
+            </>
+          }
+        </div>
+        <div className={styles.heroContent}>
+          <img src={hero} alt="game" />
+        </div>
+      </div>
+      <footer className={styles.footer}>
+        © {new Date().getFullYear()} 42 Transcendence, Inc. All rights reserved.
+      </footer>
+    </div>
+  )
+}
+
+export default LandingPage

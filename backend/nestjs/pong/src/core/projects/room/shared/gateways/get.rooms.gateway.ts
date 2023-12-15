@@ -1,7 +1,7 @@
 import RoomDTO from "../dtos/room.dto";
 
 export default interface GetRoomsGateway {
-    get(): RoomDTO[];
+    get(): Promise<RoomDTO[]>;
 
-    getByUserId(userId: number): RoomDTO[];
+    getByUserId(userId: number): Promise<RoomDTO[]>;
 }

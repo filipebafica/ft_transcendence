@@ -16,22 +16,30 @@ function GamePage(props: GamePageProps) {
 
 	const handleMatching = () => {
 		if (user.id) {
-			console.log('Joining game');
+			console.log("Joining game");
 			gameSocket.emit("joinGame", user.id);
 		} else {
 			alert("Please enter your username");
 		}
 	};
 
+	const handleReturnHome = () => {};
+
 	useEffect(() => {
 		gameSocket.on(user.id, (newGameId) => {
 			setGameId(newGameId);
-			setIsConfigComplete(true);	
+			setIsConfigComplete(true);
 		});
 	}, [user.id]);
 
 	if (isConfigComplete) {
-		return <LoadingPage userName={user.name} playerId={user.id} gameId={gameId} />;
+		return (
+			<LoadingPage
+				userName={user.name}
+				playerId={user.id}
+				gameId={gameId}
+			/>
+		);
 	}
 
 	return (
@@ -50,6 +58,9 @@ function GamePage(props: GamePageProps) {
 			/>
 			<button onClick={handleMatching} className={styles.button}>
 				Find Match
+			</button>
+			<button onClick={handleReturnHome} className={styles.button}>
+				Home
 			</button>
 		</div>
 	);

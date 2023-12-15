@@ -4,6 +4,8 @@ import './index.css';
 
 import { RouterProvider } from "react-router-dom";
 
+import { AuthProvider } from './auth';
+
 import router from './routes/routes';
 
 import { ThemeOptions, ThemeProvider, createTheme } from '@mui/material/styles';
@@ -18,6 +20,12 @@ export const themeOptions: ThemeOptions = {
       main: '#5386ac',
     },
   },
+  typography: {
+    fontFamily: ['Fredoka'].join(','),
+    button: {
+      textTransform: 'none',
+    }
+  }
 };
 
 const theme = createTheme(themeOptions);
@@ -27,7 +35,9 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <ThemeProvider theme={theme}>
-    <RouterProvider router={router} />
-  </ThemeProvider>
+  <AuthProvider>
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </AuthProvider>
 );

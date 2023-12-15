@@ -24,10 +24,9 @@
 	padding: 3px;
 }
 
-.center {
-	height: 100vh;
+.divInput {
 	display: flex;
-	justify-content: center;
+	max-width: 300px;
 	align-items: center;
-	background: white;
+	justify-content: space-between;
 }

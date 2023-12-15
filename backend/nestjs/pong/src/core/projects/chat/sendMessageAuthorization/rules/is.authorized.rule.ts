@@ -1,6 +1,9 @@
-export default class IsAuthorizedRule {
-    apply(receiverId: number, blockedUsers: Array<number>): boolean {
+import UserChatDTO from "../dtos/user.chat.dto";
 
-        return !blockedUsers.includes(receiverId);
+export default class IsAuthorizedRule {
+    apply(senderId: number, receiverBlockedUsers: Array<number>): boolean {
+
+        console.log(receiverBlockedUsers);
+        return !receiverBlockedUsers.includes(senderId);
     }
 }
