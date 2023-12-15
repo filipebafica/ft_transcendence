@@ -5,26 +5,28 @@ import LoginPage from '../components/LoginPage'
 import ChatPage from '../components/ChatPage'
 import LandingPage from '../components/LandingPage'
 
+import LayoutWrapper from './layoutWrapper'
+
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: LandingPage,
+    Component: LayoutWrapper(LandingPage),
   },
   {
     path: '/login',
-    Component: LoginPage,
+    Component: LayoutWrapper(LoginPage, false),
   },
   {
     path: '/game',
-    Component: GamePage,
+    Component: LayoutWrapper(GamePage),
   },
   {
 	path: '/chat',
-	Component: ChatPage,
+	Component: LayoutWrapper(ChatPage),
   },
   {
     path: '/home',
-    Component: LandingPage,
+    Component: LayoutWrapper(LandingPage),
   }
 ])
 
