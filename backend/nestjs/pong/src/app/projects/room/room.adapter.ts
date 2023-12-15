@@ -25,7 +25,7 @@ export default class RoomAdapter implements CreateGateway, GetRoomsGateway {
         try {
             let entity = this.roomRepository.create({
                 name: roomName,
-                is_public: isPublic
+                isPublic: isPublic
             });
 
             entity = await this.roomRepository.save(entity);
