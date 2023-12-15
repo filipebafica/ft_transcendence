@@ -1,8 +1,6 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import Header from './Header'
-
 import { AuthContext } from '../../auth'
 
 import Button from '@mui/material/Button'
@@ -18,7 +16,6 @@ const LandingPage = () => {
 
   return (
     <div className={styles.landingPage}>
-      <Header />
       <div className={styles.mainContent}>
         <div className={styles.titleContent}>
           {!user &&
@@ -50,9 +47,6 @@ const LandingPage = () => {
           <img src={hero} alt="game" />
         </div>
       </div>
-      <footer className={styles.footer}>
-        © {new Date().getFullYear()} 42 Transcendence, Inc. All rights reserved.
-      </footer>
     </div>
   )
 }

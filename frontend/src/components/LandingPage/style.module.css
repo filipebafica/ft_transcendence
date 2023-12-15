@@ -1,13 +1,10 @@
 .landingPage {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
 }
 
 .mainContent {
     text-align: center;
-    padding: 50px;
-    background: #f0f0f0;
 	flex-direction: row;
 	display: flex;
 	height: calc(100vh - 13rem);
