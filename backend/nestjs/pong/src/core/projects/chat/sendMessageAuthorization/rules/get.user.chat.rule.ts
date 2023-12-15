@@ -1,5 +1,5 @@
 import UserChatDTO from "../dtos/user.chat.dto";
-import UserChatGateway from "../gateways/user.chat.gateway";
+import UserChatGateway from "../../shared/user.chat.gateway";
 
 export default class GetUserChatRule {
     constructor(
@@ -8,6 +8,6 @@ export default class GetUserChatRule {
     }
 
     async apply(userId: number): Promise<Array<number>> {
-        return await this.userChatGateay.getUserChat(userId);
+        return await this.userChatGateay.get(userId);
     }
 }

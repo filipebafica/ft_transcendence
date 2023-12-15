@@ -10,7 +10,7 @@ export class Room {
     name: string;
 
     @Column({ nullable: true })
-    is_public: boolean;
+    isPublic: boolean;
 
     @OneToMany(() => RoomParticipants, participants => participants.room)
     participants: RoomParticipants[];

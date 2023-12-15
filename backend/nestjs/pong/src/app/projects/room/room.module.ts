@@ -7,8 +7,7 @@ import { Room } from 'src/app/entities/room.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot(config),
-        TypeOrmModule.forFeature([Room])
+        TypeOrmModule.forRoot(config)
     ],
     controllers: [RoomController],
     providers: [RoomGateway]

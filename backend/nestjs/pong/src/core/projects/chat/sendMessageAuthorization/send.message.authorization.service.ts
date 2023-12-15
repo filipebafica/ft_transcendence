@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
-import UserChatGateway from './gateways/user.chat.gateway';
+import UserChatGateway from '../shared/user.chat.gateway';
 import GetUserChatRule from './rules/get.user.chat.rule';
-import RequestDTO from './dtos/request.dto';
+import { RequestDTO } from './dtos/request.dto';
 import IsAuthorizedRule from './rules/is.authorized.rule';
 import ResponseDTO from './dtos/response.dto';
 
@@ -17,12 +17,12 @@ export class SendMessageAuthorizationService {
         this.isAuthorizedRule = new IsAuthorizedRule();
     }
 
-    async execute(request: RequestDTO): Promise<ResponseDTO> {
+    async execute(requestDTO: RequestDTO): Promise<ResponseDTO> {
         try {
-            this.logger.log(JSON.stringify({"Service has started": {"request": request}}));
+            this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            const userChat = await this.getUserChatRule.apply(request.receiverId);
-            const isAuthorized = this.isAuthorizedRule.apply(request.senderId, userChat);
+            const userChat = await this.getUserChatRule.apply(requestDTO.receiverId);
+            const isAuthorized = this.isAuthorizedRule.apply(requestDTO.senderId, userChat);
             const responseDTO = new ResponseDTO(isAuthorized);
 
             this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));
