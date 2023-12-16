@@ -1,5 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react'
 
+// API
+import { addFriend, listFriends } from 'api/friend'
+
 // Style
 import styles from './style.module.css'
 
@@ -7,7 +10,7 @@ import styles from './style.module.css'
 import { AuthContext } from 'auth'
 
 // Constants
-import { testUsers } from 'constants/fake'
+// import { testUsers } from 'constants/fake'
 
 // Components
 import TextField from '@mui/material/TextField'
@@ -50,9 +53,15 @@ function FriendsList() {
   }
 
   useEffect(() => {
-    // TODO: Fetch friends list
-    console.log(userId)
-    setFriends(testUsers)
+    if (!userId) return
+
+    const fetchFriends = async () => {
+      const friends = await listFriends(userId)
+      console.log(friends)
+      setFriends(friends)
+    }
+
+    fetchFriends()
   }, [userId])
 
   return (
@@ -77,10 +86,10 @@ function FriendsList() {
                   anchorEl={anchorElUser}
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseFriendMenu}
-				  anchorOrigin={{
-					vertical: 'center',
-					horizontal: 'center',
-				  }}
+                  anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                  }}
                 >
                   <MenuItem key={'profile'} onClick={handleClickProfile}>
                     <Typography textAlign="center">{'Profile'}</Typography>

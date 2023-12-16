@@ -14,8 +14,12 @@ const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
 
+  // Todo
+  const [id, setId] = useState('1')
+
   const handleSignIn = () => {
-    const randomNumber = Math.floor(Math.random() * 10000) + 1
+    // const randomNumber = Math.floor(Math.random() * 10000) + 1
+    const randomNumber = id
     signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
   }
 
@@ -40,6 +44,7 @@ const Header = () => {
   const handleClickSignOut = () => {
     signOut()
     setAnchorElUser(null)
+    window.location.href = "/";
   }
 
   return (
@@ -95,6 +100,7 @@ const Header = () => {
       )}
       {!user && (
         <div className={styles.loggedOutNavigation}>
+          <input value={id} onChange={(e) => setId(e.target.value)} />
           <Button variant="outlined" onClick={() => handleSignIn()}>
             Log In
           </Button>

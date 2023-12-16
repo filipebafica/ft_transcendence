@@ -5,7 +5,7 @@ all: setup up
 setup:
 	sudo mkdir -p ${SHARED_VOLUME_DEVICE}
 	docker-compose build
-	# npm --prefix nestjs/pong
+	npm --prefix nestjs/pong install
 
 up:
 	docker-compose up -d
