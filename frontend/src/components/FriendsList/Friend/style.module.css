@@ -1,0 +1,18 @@
+
+.friendContainer {
+	display: flex;
+	align-items: center;
+	padding: 0.5rem 1rem;
+}
+
+.friendBadge {
+	margin-right: 1rem;
+}
+
+.online > span{
+	background-color: #17a817;
+}
+
+.offline > span{
+	background-color: #a81c17;
+}
