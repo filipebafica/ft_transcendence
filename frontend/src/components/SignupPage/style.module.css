@@ -35,18 +35,25 @@
 	display: flex;
 	align-items: center;
 	height: 100px;
-	gap: 40px;
+	gap: 80px;
+	padding-top: 20px;
 	padding-bottom: 80px;
 }
 
-.profile input {
-	width: 100px;
+.avatar {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.avatar input {
+	width: 200px;
 	height: 20px;
 }
 
-.profile button {
-	width: 60px;
-	height: 60px;
+.avatar button {
+	width: 180px;
+	height: 180px;
+	border: 0.2px solid black;
 }
 
 .twoFactor button {

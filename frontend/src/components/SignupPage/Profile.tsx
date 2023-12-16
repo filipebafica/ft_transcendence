@@ -4,32 +4,36 @@ import default_image from "../../assets/default_image.png";
 import styles from "./style.module.css";
 
 function Profile() {
-	const handleAvatarInput = () => {
+	const handleAvatarUpload = () => {
 		// TODO: upload avatar
+		console.log("Avatar Button");
 	};
 
 	const handleTwoFactor = () => {
 		// TODO: enable/disable two factor authentication
+		console.log("Two Factor Button");
 	};
 
 	return (
 		<div className={styles.container}>
 			<div className={styles.profile}>
 				<TextField label="displayName" variant="outlined" />
-				<input
-					accept="image/*"
-					id="contained-button-file"
-					multiple
-					type="file"
-				/>
-				<label htmlFor="contained-button-file">
-					<IconButton onClick={handleAvatarInput}>
-						<Avatar
-							src={default_image}
-							sx={{ width: 150, height: 150 }}
-						></Avatar>
-					</IconButton>
-				</label>
+				<div className={styles.avatar}>
+					<input
+						accept="image/*"
+						id="contained-button-file"
+						multiple
+						type="file"
+					/>
+					<label htmlFor="contained-button-file">
+						<IconButton onClick={handleAvatarUpload}>
+							<Avatar
+								src={default_image}
+								sx={{ width: 175, height: 175 }}
+							></Avatar>
+						</IconButton>
+					</label>
+				</div>
 			</div>
 			<div className={styles.twoFactor}>
 				<h3>Security</h3>
