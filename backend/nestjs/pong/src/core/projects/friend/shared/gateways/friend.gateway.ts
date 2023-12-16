@@ -5,7 +5,8 @@ export default interface FriendGateway {
 
     create(
         userId: number,
-        friedUserId: number,
+        friedUserId?: number,
+        friendNickName?: string,
     );
 
     delete(

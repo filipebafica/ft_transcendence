@@ -19,7 +19,8 @@ export class CreateService {
 
             await this.createRule.apply(
                 requestDTO.userId,
-                requestDTO.friendUserId
+                requestDTO.friendUserId,
+                requestDTO.friendNickName
             );
 
             this.logger.log(JSON.stringify({"Service has finished": "friendship has been created"}));

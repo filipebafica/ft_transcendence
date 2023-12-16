@@ -11,6 +11,7 @@ import { RequestDTO as ListByUserIdRequestDTO } from 'src/core/projects/friend/l
 import { ResponseDTO as ListByUserIdResponseDTO } from 'src/core/projects/friend/listByUserId/dtos/response.dto';
 import FriendDTO from 'src/core/projects/friend/listByUserId/dtos/friend.dto';
 import { DeleteDTO } from './delete.dto';
+import { RequestDTO as DeleteRequestDTO } from 'src/core/projects/friend/delete/dtos/request.dto';
 
 @Controller('/friend')
 @ApiTags('friend')
@@ -45,14 +46,17 @@ export class FriendController {
             type: 'Object',
             properties: {
                 userId: {type: 'number'},
-                friendUserId: {type: 'number'}
-            }
+                friendUserId: {type: 'number'},
+                friendNickName: {type: 'number'},
+            },
+            required: ['userId'],
         },
         examples: {
             example1: {
                 value: {
                     userId: 1,
-                    friendUserId: 2
+                    friendUserId: 2,
+                    friendNickName: 'nick.name',
                 },
                 summary: 'Example of a valid request'
             }
@@ -95,7 +99,8 @@ export class FriendController {
             await this.createService.execute(
                 new CreateRequestDTO(
                     createDTO.userId,
-                    createDTO.friendUserId
+                    createDTO.friendUserId,
+                    createDTO.friendNickName
                 )
             );
 
@@ -223,7 +228,7 @@ export class FriendController {
     ) {
         try {
             await this.deleteService.execute(
-                new CreateRequestDTO(
+                new DeleteRequestDTO(
                     deleteDTO.userId,
                     deleteDTO.friendUserId
                 )

@@ -8,11 +8,13 @@ export default class CreateRule {
 
     async apply(
         userId: number,
-        roomId: number,
+        friendUserId?: number,
+        friendNickName?: string
     ) {
         return await this.friendGateway.create(
             userId,
-            roomId
+            friendUserId,
+            friendNickName
         );
     }
 }
