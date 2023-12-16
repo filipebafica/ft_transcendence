@@ -9,14 +9,27 @@ import { AuthContext } from '../../../auth'
 
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
 
+// Socket
+
+import { friendsStatusSocket } from 'socket'
+
 const Header = () => {
   const { user, signIn, signOut } = useContext(AuthContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
 
+  // Todo
+  const [id, setId] = useState('1')
+
   const handleSignIn = () => {
-    const randomNumber = Math.floor(Math.random() * 10000) + 1
+    // const randomNumber = Math.floor(Math.random() * 10000) + 1
+    const randomNumber = id
     signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
+
+    friendsStatusSocket.emit('statusRouter', JSON.stringify({
+      userId: id,
+      status: 'online'
+    }))
   }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -40,6 +53,7 @@ const Header = () => {
   const handleClickSignOut = () => {
     signOut()
     setAnchorElUser(null)
+    window.location.href = "/";
   }
 
   return (
@@ -95,6 +109,7 @@ const Header = () => {
       )}
       {!user && (
         <div className={styles.loggedOutNavigation}>
+          <input value={id} onChange={(e) => setId(e.target.value)} />
           <Button variant="outlined" onClick={() => handleSignIn()}>
             Log In
           </Button>

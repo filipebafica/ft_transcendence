@@ -13,3 +13,5 @@ export const roomSocket = io(URL!, { path: '/websocket/room' })
 
 export const gameSocket = io('http://localhost:8080/game')
 
+export const friendsStatusSocket = io(URL!, { path: '/websocket/status' })
+

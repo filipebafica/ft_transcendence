@@ -4,7 +4,7 @@ import styles from './style.module.css'
 
 // Constants
 
-import { paddleColors, fieldColors } from './colors'
+import { paddleColors, fieldColors } from 'constants/colors'
 
 // Components
 import ColorPicker from './ColorPicker'
