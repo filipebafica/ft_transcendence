@@ -1,0 +1,33 @@
+.gameConfigContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+.field {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 400px;
+	height: 50px;
+	margin: 50px;
+}
+
+.field label {
+	flex-basis: 200px;
+	flex-shrink: 0; 
+}
+
+.colorPickerButton {
+	padding: 1px;
+	width: auto;
+	margin: 0px;
+}
+
+.joinGameButton {
+	margin: 20px;
+}
+

@@ -1,4 +1,11 @@
 .mainContent {
 	padding: 50px;
     background: #f0f0f0;
+	flex-grow: 1;
+}
+
+.mainContainer {
+	display: flex;
+  	flex-direction: column;
+	min-height: 100vh;
 }
