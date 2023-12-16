@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import RoomParticipantsGateway from "src/core/projects/room/shared/gateways/join.gateways";
+import RoomParticipantsGateway from "src/core/projects/room/shared/gateways/room.participants.gateways";
 import { EntityManager, Repository } from "typeorm";
 import { RoomParticipants } from "src/app/entities/room.participants.entity";
 import RoomPartitipantsDTO from "src/core/projects/room/join/dtos/room.participants.dto";

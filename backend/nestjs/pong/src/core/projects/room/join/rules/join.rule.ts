@@ -1,4 +1,4 @@
-import RoomParticipantsGateway from "../../shared/gateways/join.gateways";
+import RoomParticipantsGateway from "../../shared/gateways/room.participants.gateways";
 import RoomPartitipantsDTO from "../dtos/room.participants.dto";
 
 export default class JoinRule {
