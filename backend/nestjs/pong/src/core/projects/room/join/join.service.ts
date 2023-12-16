@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import JoinRule from './rules/join.rule';
-import RoomParticipantsGateway from '../shared/gateways/join.gateways';
+import RoomParticipantsGateway from '../shared/gateways/room.participants.gateways';
 import { RequestDTO } from './dtos/request.dto';
 import { ResponseDTO } from './dtos/response.dto';
 

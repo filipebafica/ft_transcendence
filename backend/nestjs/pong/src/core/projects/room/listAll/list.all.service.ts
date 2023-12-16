@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { ResponseDTO } from './dtos/response.dto';
-import GetRoomsGateway from '../shared/gateways/get.rooms.gateway';
+import RoomGateway from '../shared/gateways/room.gateway';
 import GetRoomsRule from './rules/get.rooms.rule';
 
 export class ListAllService {
@@ -8,9 +8,9 @@ export class ListAllService {
 
     constructor(
         private readonly logger: Logger,
-        getRoomsGateway: GetRoomsGateway
+        roomGateway: RoomGateway
     ) {
-        this.getRoomsRule = new GetRoomsRule(getRoomsGateway);
+        this.getRoomsRule = new GetRoomsRule(roomGateway);
     }
 
     async execute(): Promise<ResponseDTO>
