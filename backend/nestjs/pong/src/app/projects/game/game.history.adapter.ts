@@ -1,4 +1,3 @@
-import { error } from "console";
 import { GameHistory } from "src/app/entities/game.history.entity";
 import { GameHistoryDTO } from "src/core/projects/game/shared/dtos/game.history.dto";
 import { GameHistoryRepository as GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
@@ -35,7 +34,6 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		try {
 		  const recordsPerPage = 10;
 	  
-		  // Ensure index is at least 1
 		  const adjustedIndex = Math.max(index, 1);
 	  
 		  const startIndex = (adjustedIndex - 1) * recordsPerPage;
@@ -77,7 +75,6 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			});
 
 			entity = await this.gameHistoryRepository.save(entity);
-			console.log(`ENTITY ID: ${entity.id}`);
 			return entity.id;
 		} catch (error) {
 			console.log("[GameHistoryAdapter] ERROR WHEN TRYING TO CREATE GAME");
@@ -91,6 +88,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		player2Score: number,
 		status: number,
 		disconnectedId: number,
+		winnerId: number | null,
 	): Promise<number> {
 		try {
 			const gameHistory = await this.gameHistoryRepository.findOne({
@@ -107,6 +105,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			gameHistory.player_two_score = player2Score;
 			gameHistory.status = status;
 			gameHistory.disconnected_id = disconnectedId;
+			gameHistory.winner_id = winnerId;
 
 			const result = await this.gameHistoryRepository.save(gameHistory);
 
@@ -146,7 +145,8 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		gameId: number, 
 		player1Score: number, 
 		player2Score: number, 
-		status: number
+		status: number,
+		winnerId: number,
 	): Promise<number> {
 		try {
 			const gameHistory = await this.gameHistoryRepository.findOne({
@@ -162,6 +162,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			gameHistory.player_one_score = player1Score;
 			gameHistory.player_two_score = player2Score;
 			gameHistory.status = status;
+			gameHistory.winner_id = winnerId;
 
 			const result = await this.gameHistoryRepository.save(gameHistory);
 
@@ -182,6 +183,40 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  game.player_two_score,
 		  game.disconnected_id,
 		);
-	  }
+	}
 
+	public async removeUncompleteGameHistory(
+		gameId: number,
+	): Promise<void> {
+		try {
+			await this.gameHistoryRepository
+			.createQueryBuilder()
+			.delete()
+			.where("id = :gameId", { gameId })
+			.execute();
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async getWinnerByGameId(
+		gameId: number,
+	): Promise<number | null> {
+		try {
+			const result = await this.gameHistoryRepository
+			.findOne({
+				select: ["winner_id"],
+				where: { id: gameId, status: 2},
+			});
+
+			
+			if (result == undefined) {
+				return null;
+			}
+
+			return result.winner_id;
+		} catch (error) {
+			throw error;
+		}
+	}
 }

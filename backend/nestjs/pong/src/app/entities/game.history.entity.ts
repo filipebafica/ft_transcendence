@@ -23,6 +23,9 @@ export class GameHistory {
 	@Column({nullable: true})
 	disconnected_id: number | null;
 
+	@Column({nullable: true})
+	winner_id: number | null;
+
 	@CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	created_at: Date;
 

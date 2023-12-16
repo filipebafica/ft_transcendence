@@ -12,7 +12,7 @@ enum Status {
 }
 
 export default class GameStateAdapter implements GameStateInterface {
-	public runningGames: Map<number, GameState> = new Map<number, GameState>();
+	public openedGames: Map<number, GameState> = new Map<number, GameState>();
 	public finishedGames: GameState[] = [];
 
 	private interval: number = 1000 / 40;
@@ -52,26 +52,33 @@ export default class GameStateAdapter implements GameStateInterface {
 			status: Status.Waiting,
 		};
 
-		this.runningGames.set(gameState.id, gameState);
+		this.openedGames.set(gameState.id, gameState);
 		return gameState;
 	}
 
 	public async closeDisconnectedGame(gameId: number, disconnectedId: number): Promise<GameState | undefined> {
-		let gameState: GameState = this.runningGames.get(gameId);
+		let gameState: GameState = this.openedGames.get(gameId);
 		if (gameState == undefined) {
-			//gameId doens't exist
 			return undefined;
 		}
-		this.runningGames.delete(gameId);
+		this.openedGames.delete(gameId);
 
 		gameState.status = Status.Finished;
 
+		//there is only one player on the game and they've disconnected
+		if (gameState.player1 == null || gameState.player2 == null) {
+			await this.gameHistoryRepository.removeUncompleteGameHistory(gameState.id);
+			return gameState;
+		}
+
+		const winnerId: number = this.calculateWinner(gameState, disconnectedId);
 		await this.gameHistoryRepository.updateGameHistoryWithDisconnect(
 			gameState.id,
 			gameState.player1Score,
 			gameState.player2Score,
 			gameState.status,
 			disconnectedId,
+			winnerId,
 		);
 
 		return gameState;
@@ -79,7 +86,7 @@ export default class GameStateAdapter implements GameStateInterface {
 
 	public async createSecondPlayer(playerId: number, gameId: number, playerName: string): Promise<GameState> {
 		let player: Player = this.createPlayer(playerId, 2, playerName);
-		let gameState: GameState = this.runningGames.get(gameId);
+		let gameState: GameState = this.openedGames.get(gameId);
 		gameState.player2 = player;
 		gameState.status = Status.Running;
 
@@ -89,7 +96,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			player.id
 		);
 
-		this.runningGames.set(gameId, gameState);
+		this.openedGames.set(gameId, gameState);
 
 		return gameState;
 	}
@@ -108,13 +115,16 @@ export default class GameStateAdapter implements GameStateInterface {
 		 */
 		if (this.isMaxScore(gameState.player1Score, gameState.player2Score)) {
 			gameState.status = Status.Finished;
-			this.runningGames.delete(gameId);
+			this.openedGames.delete(gameId);
+
+			const winnerId: number = this.calculateWinner(gameState);
 
 			await this.gameHistoryRepository.updateGameHistoryWithMaxScore(
 				gameId,
 				gameState.player1Score,
 				gameState.player2Score,
 				gameState.status,
+				winnerId,
 			);
 
 			this.finishedGames.push(gameState);
@@ -208,7 +218,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		gameState.player2 = updatePlayer(gameState.player2);
 		gameState.ball = updateBall(gameState.ball);
 
-		this.runningGames.set(gameId, gameState);
+		this.openedGames.set(gameId, gameState);
 		return ;
 	}
 
@@ -219,7 +229,7 @@ export default class GameStateAdapter implements GameStateInterface {
 	public collectUpdatePromises(): Promise<void>[] {
 		const updatePromises: Promise<void>[] = [];
 	
-		for (let [gameId, gameState] of this.runningGames) {
+		for (let [gameId, gameState] of this.openedGames) {
 			updatePromises.push(this.updateGame(gameId, gameState));
 		}
 	
@@ -265,11 +275,11 @@ export default class GameStateAdapter implements GameStateInterface {
 	}
 
 	public getGames(): Map<number, GameState> {
-		return this.runningGames;
+		return this.openedGames;
 	}
 
 	public updatePlayerSpeed(gameId: number, playerId: number, action: string): void {
-		const gameState = this.runningGames.get(gameId);
+		const gameState = this.openedGames.get(gameId);
 		
 		if (gameState.status != Status.Running) {
 			return ;
@@ -281,7 +291,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			gameState.player2.speed = this.calculateSpeed(action);
 		}
 
-		this.runningGames.set(gameId, gameState);
+		this.openedGames.set(gameId, gameState);
 	}
 
 	private calculateSpeed(action: string): number {
@@ -298,7 +308,7 @@ export default class GameStateAdapter implements GameStateInterface {
 	}
 
 	public getGame(gameId: number): GameState | undefined {
-		return this.runningGames.get(gameId);
+		return this.openedGames.get(gameId);
 	}
 
 	public getFinishedGames(): GameState[] {
@@ -309,6 +319,57 @@ export default class GameStateAdapter implements GameStateInterface {
 		const index = this.finishedGames.indexOf(gameState);
 		if (index !== -1) {
 			this.finishedGames.splice(index, 1);
+		}
+	}
+
+	private calculateWinner(gameState: GameState, disconnectedId?: number): number | null {
+		if (disconnectedId) {
+			const winnerId: number = this.selectWinnerByDisconnect(
+				disconnectedId,
+				gameState.player1.id,
+				gameState.player2.id,
+			);
+			return winnerId;
+		}
+
+		if (gameState.player1Score == gameState.player2Score) {
+			return null;
+		}
+
+		return this.selectWinnerByPoints(
+			gameState.player1.id,
+			gameState.player1Score,
+			gameState.player2.id,
+			gameState.player2Score,
+		);
+	}
+
+	private selectWinnerByDisconnect(
+		disconnectId: number,
+		player1Id: number,
+		player2Id: number,
+	): number | null {
+		if (disconnectId == player1Id) {
+			return player2Id;
+		}
+
+		if (disconnectId == player2Id) {
+			return player1Id;
+		}
+
+		return null;
+	}
+
+	private selectWinnerByPoints(
+		player1Id: number,
+		player1Score: number,
+		player2Id: number,
+		player2Score: number,
+	): number {
+		if (player1Score > player2Score) {
+			return player1Id;
+		} else if (player2Score > player1Score) {
+			return player2Id;
 		}
 	}
 }
