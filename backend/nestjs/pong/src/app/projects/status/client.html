@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client</title>
+</head>
+<body>
+
+  <label for="userId">UserId:</label>
+  <input type="text" id="userId">
+  <button onclick="saveUser()">Save User</button>
+
+  <label for="friendUserId">FriendUserId:</label>
+  <input type="text" id="friendUserId">
+
+  <label for="status">Status:</label>
+  <input type="text" id="status">
+
+  <button onclick="sendStatus()">Send Status</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    const socket = io('http://localhost:8080', { path: '/websocket/status' });
+
+    function saveUser() {
+        const userId = document.getElementById('userId').value
+        socket.on((userId + '-friend-status-change'), (data) => {
+        console.log('listen-on:', (userId + '-friend-status-change'), 'message:', data);
+      });
+    }
+
+    function sendStatus() {
+      const friendUserId = document.getElementById('friendUserId').value
+      const status = document.getElementById('status').value;
+
+      socket.emit('statusRouter', JSON.stringify({ "userId":friendUserId, "status":status}));
+    }
+
+  </script>
+</body>
+</html>

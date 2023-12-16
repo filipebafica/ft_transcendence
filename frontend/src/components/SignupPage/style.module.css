@@ -30,3 +30,33 @@
 	align-items: center;
 	justify-content: space-between;
 }
+
+.profile {
+	display: flex;
+	align-items: center;
+	height: 100px;
+	gap: 80px;
+	padding-top: 20px;
+	padding-bottom: 80px;
+}
+
+.avatar {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.avatar input {
+	width: 200px;
+	height: 20px;
+}
+
+.avatar button {
+	width: 180px;
+	height: 180px;
+	border: 0.2px solid black;
+}
+
+.twoFactor button {
+	width: 200px;
+	padding: 10px;
+}

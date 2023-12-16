@@ -12,6 +12,10 @@ import { AuthContext } from 'auth'
 // Constants
 // import { testUsers } from 'constants/fake'
 
+// Socket
+
+import { friendsStatusSocket } from 'socket'
+
 // Components
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -62,6 +66,14 @@ function FriendsList() {
     }
 
     fetchFriends()
+  }, [userId])
+
+  useEffect(() => {
+    if (!userId) return
+
+    friendsStatusSocket.on(`${userId}-friend-status-change`, (data: any) => {
+      console.log('friend-status-change', data);
+    })
   }, [userId])
 
   return (

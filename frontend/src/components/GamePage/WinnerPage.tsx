@@ -21,11 +21,10 @@ function WinnerPage(props: WinnerProps) {
 
 	const gameId = props.gameId;
 	const playerId = props.playerId;
-	let result;
+	let result: string;
 
 	// TODO: get result from backend
 	let matchResult = 1;
-	// single page
 	if (matchResult === 0) {
 		result = "Empate!";
 	} else if (matchResult === 1) {
@@ -33,6 +32,11 @@ function WinnerPage(props: WinnerProps) {
 	} else {
 		result = "Jogador 2 venceu!";
 	}
+	// if (playerId === matchResult.winnerId) {
+	// 	result = "You won!\nCongratulations!";
+	// } else {
+	// 	result = "You lose!\n:(";
+	// }
 
 	return (
 		<div className={styles.container}>

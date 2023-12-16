@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from "react-router-dom";
 
 import GamePage from '../components/GamePage'
 import LoginPage from '../components/LoginPage'
@@ -6,7 +6,7 @@ import ChatPage from '../components/ChatPage'
 import LandingPage from '../components/LandingPage'
 import FriendsList from '../components/FriendsList'
 
-import LayoutWrapper from './layoutWrapper'
+import LayoutWrapper from "./layoutWrapper";
 
 const router = createBrowserRouter([
   {
@@ -35,4 +35,4 @@ const router = createBrowserRouter([
   }
 ])
 
-export default router
+export default router;

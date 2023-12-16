@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { Friend } from "src/app/entities/friend.entity";
-import { User } from "src/app/entities/user.entity";
 import FriendDTO from "src/core/projects/friend/listByUserId/dtos/friend.dto";
 import FriendGateway from "src/core/projects/friend/shared/gateways/friend.gateway";
 import { EntityManager, Repository } from "typeorm";
@@ -15,22 +14,10 @@ export default class FriendAdapter implements FriendGateway {
         this.friendRepository = entityManager.getRepository(Friend);
     }
 
-    async create(
+    create(
         userId: number,
         friedUserId: number
     ) {
-        let user = this.friendRepository.create({
-            user: { id: userId } as User,
-            friendship: { id: friedUserId } as User
-        });
-
-        let friend = this.friendRepository.create({
-            user: { id: friedUserId } as User,
-            friendship: { id: userId } as User
-        });
-
-        await this.friendRepository.save(user);
-        await this.friendRepository.save(friend);
     }
 
     async getByUserId(
@@ -46,15 +33,9 @@ export default class FriendAdapter implements FriendGateway {
         return entity.map((row) => row.friendship);
     }
 
-    async delete(
+    delete(
         userId: number,
         friedUserId: number
     ) {
-        let entity = this.friendRepository.create({
-            user: { id: userId } as User,
-            friendship: { id: friedUserId } as User
-        });
-
-        await this.friendRepository.delete(entity);
     }
 }
