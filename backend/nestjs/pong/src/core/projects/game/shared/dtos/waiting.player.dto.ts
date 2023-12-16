@@ -1,8 +1,6 @@
-export class Request {
+export class WaitingPlayerDTO {
 	constructor(
 		public playerId: number,
 		public gameId: number,
-		public action: string,
-	) {
-	}
+	){}
 }

@@ -1,11 +1,9 @@
-import { randomUUID } from "crypto";
-import { Server } from "http";
 import Ball from "src/core/projects/game/shared/entities/ball";
 import Canvas from "src/core/projects/game/shared/entities/canvas";
 import GameState from "src/core/projects/game/shared/entities/game.state";
 import Player from "src/core/projects/game/shared/entities/player";
+import { GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
 import { GameStateInterface } from "src/core/projects/game/shared/interfaces/game.state.interface";
-import { arrayBuffer } from "stream/consumers";
 
 enum Status {
 	Waiting,
@@ -13,13 +11,13 @@ enum Status {
 	Finished,
 }
 
-export default class MemoryGameStateAdapter implements GameStateInterface {
-	public runningGames: Map<string | number, GameState> = new Map<string | number, GameState>();
+export default class GameStateAdapter implements GameStateInterface {
+	public runningGames: Map<number, GameState> = new Map<number, GameState>();
 	public finishedGames: GameState[] = [];
 
 	private interval: number = 1000 / 40;
 	private step: number = 3;
-	private maxScore: number = 1;
+	private maxScore: number = 3;
 
 	private boardHeight: number = 600;
 	private boardWidth: number = 800;
@@ -29,12 +27,23 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 	private ballHeight: number = 10;
 	private initialPlayerSpeed: number = 0;
 
-	public 	createGame(playerId: string | number, playerName: string): GameState {
+	constructor(
+		private gameHistoryRepository: GameHistoryRepository,
+	){}
+
+	public async createGame(playerId: number, playerName: string): Promise<GameState> {
+		const gameId: number = await this.gameHistoryRepository.createGame(
+			Status.Waiting,
+			0,
+			0,
+			playerId,
+		);
+
 		let player: Player = this.createPlayer(playerId, 1, playerName);
 		let ball: Ball = this.createBall();
 		let board: Canvas = this.createBoard();
 		let gameState: GameState = {
-			id: randomUUID(),
+			id: gameId,
 			player1: player,
 			ball: ball,
 			player1Score: 0,
@@ -47,7 +56,7 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		return gameState;
 	}
 
-	public closeGame(gameId: string): GameState | undefined {
+	public async closeDisconnectedGame(gameId: number, disconnectedId: number): Promise<GameState | undefined> {
 		let gameState: GameState = this.runningGames.get(gameId);
 		if (gameState == undefined) {
 			//gameId doens't exist
@@ -56,25 +65,42 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		this.runningGames.delete(gameId);
 
 		gameState.status = Status.Finished;
+
+		await this.gameHistoryRepository.updateGameHistoryWithDisconnect(
+			gameState.id,
+			gameState.player1Score,
+			gameState.player2Score,
+			gameState.status,
+			disconnectedId,
+		);
+
 		return gameState;
 	}
 
-	public createSecondPlayer(playerId: string | number, gameId: string | number, playerName: string): GameState {
+	public async createSecondPlayer(playerId: number, gameId: number, playerName: string): Promise<GameState> {
 		let player: Player = this.createPlayer(playerId, 2, playerName);
 		let gameState: GameState = this.runningGames.get(gameId);
 		gameState.player2 = player;
 		gameState.status = Status.Running;
+
+		await this.gameHistoryRepository.updateGameHistoryWithSecondPlayer(
+			gameState.id,
+			gameState.status,
+			player.id
+		);
+
 		this.runningGames.set(gameId, gameState);
+
 		return gameState;
 	}
 
-	public async updateGame(gameId: string | number, currentGameState: GameState): Promise<void> {
+	public async updateGame(gameId: number, currentGameState: GameState): Promise<void> {
 		if (currentGameState.status != Status.Running) {
 			return ;
 		}
 
 		let gameState: GameState = currentGameState;
-		
+
 		/**
 		 * @brief: If max score is reached it removes from running games and adds to finished games
 		 * Finished games will be read asynchronously by handleFinished service.
@@ -83,6 +109,14 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		if (this.isMaxScore(gameState.player1Score, gameState.player2Score)) {
 			gameState.status = Status.Finished;
 			this.runningGames.delete(gameId);
+
+			await this.gameHistoryRepository.updateGameHistoryWithMaxScore(
+				gameId,
+				gameState.player1Score,
+				gameState.player2Score,
+				gameState.status,
+			);
+
 			this.finishedGames.push(gameState);
 		}
 
@@ -200,7 +234,7 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		return new Promise(resolve => setTimeout(resolve, this.interval));
 	}
 
-	private createPlayer(id: string | number, playerNumber: number, playerName: string): Player {
+	private createPlayer(id: number, playerNumber: number, playerName: string): Player {
 		return {
 			id: id,
 			name: playerName,
@@ -230,11 +264,11 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		};
 	}
 
-	public getGames(): Map<string | number, GameState> {
+	public getGames(): Map<number, GameState> {
 		return this.runningGames;
 	}
 
-	public updatePlayerSpeed(gameId: string | number, playerId: string | number, action: string): void {
+	public updatePlayerSpeed(gameId: number, playerId: number, action: string): void {
 		const gameState = this.runningGames.get(gameId);
 		
 		if (gameState.status != Status.Running) {
@@ -263,7 +297,7 @@ export default class MemoryGameStateAdapter implements GameStateInterface {
 		}
 	}
 
-	public getGame(gameId: string): GameState | undefined {
+	public getGame(gameId: number): GameState | undefined {
 		return this.runningGames.get(gameId);
 	}
 

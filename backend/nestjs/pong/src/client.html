@@ -19,7 +19,7 @@
 	<div id="gameId"></div>
 
 	<script>
-		const gameSocket = io('/game');
+		const gameSocket = io('/websocket/game');
 
 		gameSocket.on('connect', () => {
 			document.getElementById('gameStatus').innerText = 'Connected to Game';
@@ -32,7 +32,7 @@
 			if (playerId) {
 				gameSocket.emit('joinGame', playerId);
 				gameSocket.on(playerId, (gameId) => {
-					document.getElementById('gameId').innerText = gameId;
+					document.getElementById('gameId').innerText = gameId.toString();
 					gameSocket.on(gameId, (gameState) => {
 						console.log(gameState.status);
 					});

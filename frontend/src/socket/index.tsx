@@ -9,9 +9,4 @@ export const chatSocket = io(URL!, { path: '/websocket/chat' })
 
 export const roomSocket = io(URL!, { path: '/websocket/room' })
 
-// export const gameSocket = io(URL!, { path: '/game' })
-
-export const gameSocket = io('http://localhost:8080/game')
-
-export const friendsStatusSocket = io(URL!, { path: '/websocket/status' })
-
+export const gameSocket = io(URL!, { path: '/websocket/game' })

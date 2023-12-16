@@ -1,5 +1,7 @@
 export interface ClientManagerInterface {
-	addClientGameMask(clientId: any, gameId: string): void
-	removeGameMask(gameId: string, clientId?: any): void
-	getClientGameMask(clientId: any): string | undefined
+	addClientGameMask(clientId: string, playerId: number, gameId: number): Promise<void>
+	removeClientGameMask(gameId: number): Promise<void>
+	getClientGameIdMask(clientId: string): Promise<number>
+	getClientPlayerIdMask(clientId: string): Promise<number>
+	hasMask(clientId: string): Promise<boolean>
 }

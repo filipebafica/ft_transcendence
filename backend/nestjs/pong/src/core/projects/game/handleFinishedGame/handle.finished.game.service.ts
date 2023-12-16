@@ -32,7 +32,7 @@ export class HandleFinishedGameService {
 
 	private async finishGameRoutine(gameState: GameState): Promise<GameState> {
 		//adapter para atualizar a tabela
-		this.clientManager.removeGameMask(gameState.id);
+		this.clientManager.removeClientGameMask(gameState.id);
 		this.gameStateManager.deleteFinishedGame(gameState);
 		return gameState;
 	}

@@ -1,7 +1,8 @@
+import { WaitingPlayerDTO } from "../dtos/waiting.player.dto";
+
 export interface QueueInterface {
-	isOnQueue(playerId: string | number): boolean;
-	add(playerId: string | number, gameId: string | number): void;
-	remove(playerId: string | number): void;
-	isEmpty(): boolean;
-	first(): [string | number, string | number]
+	isOnQueue(playerId: number): Promise<boolean>;
+	add(playerId: number, gameId: number): void;
+	remove(playerId: number): void;
+	first(): Promise<WaitingPlayerDTO | null>;
 }
