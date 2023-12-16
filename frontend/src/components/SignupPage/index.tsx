@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "@mui/material";
 import styles from "./style.module.css";
 
 import LoginPage from "../LoginPage";
@@ -41,13 +42,13 @@ function SignupPage() {
 					<label htmlFor="password">Confirm password:</label>
 					<input type="password" id="confirmPassword" />
 				</div>
-				<button type="submit">Signup</button>
-				<button type="submit" onClick={() => setRedirectLogin(true)}>
+				<Button type="submit">Signup</Button>
+				<Button type="submit" onClick={() => setRedirectLogin(true)}>
 					Login
-				</button>
-				<button onClick={handleReturnHome} className={styles.button}>
+				</Button>
+				<Button onClick={handleReturnHome} className={styles.button}>
 					Home
-				</button>
+				</Button>
 			</form>
 		</div>
 	);
