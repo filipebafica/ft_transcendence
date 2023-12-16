@@ -13,15 +13,14 @@ interface LayoutProps {
 }
 
 const Layout = (props: LayoutProps) => {
-	console.log(props)
   const { children, disableFooter } = props
 
   return (
-    <>
+    <div className={styles.mainContainer}>
       <Header />
       <div className={styles.mainContent}>{children}</div>
       {!disableFooter && <Footer />}
-    </>
+    </div>
   )
 }
 

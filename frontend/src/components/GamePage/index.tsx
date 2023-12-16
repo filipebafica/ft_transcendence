@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "./style.module.css";
 
 import { gameSocket } from "../../socket/index";
 
+// Context
+import { AuthContext } from '../../auth'
+
+// Components
 import LoadingPage from "./LoadingPage";
+import GameConfig from "./GameConfig";
 
 interface GamePageProps {
 	// Define the props for the GamePage component here
 }
 
 function GamePage(props: GamePageProps) {
-	const [user, setUser] = useState({ name: "", id: "" });
+	const { user } = useContext(AuthContext)
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
 	const [gameId, setGameId] = useState("");
 
-	const handleMatching = () => {
-		if (user.id) {
+	const handleMatching = (config: { paddle: number, fan: number, field: number }) => {
+		if (user && user.id) {
 			console.log("Joining game");
 			gameSocket.emit("joinGame", user.id);
 		} else {
@@ -23,16 +28,15 @@ function GamePage(props: GamePageProps) {
 		}
 	};
 
-	const handleReturnHome = () => {};
-
 	useEffect(() => {
+		if (!user || !user.id) return;
 		gameSocket.on(user.id, (newGameId) => {
 			setGameId(newGameId);
 			setIsConfigComplete(true);
 		});
-	}, [user.id]);
+	}, [user]);
 
-	if (isConfigComplete) {
+	if (isConfigComplete && gameId && user) {
 		return (
 			<LoadingPage
 				userName={user.name}
@@ -44,24 +48,11 @@ function GamePage(props: GamePageProps) {
 
 	return (
 		<div className={styles.container}>
-			<input
-				type="text"
-				value={user.name}
-				onChange={(e) => setUser({ ...user, name: e.target.value })}
-				placeholder="Username"
-			/>
-			<input
-				type="id"
-				value={user.id}
-				onChange={(e) => setUser({ ...user, id: e.target.value })}
-				placeholder="User ID"
-			/>
-			<button onClick={handleMatching} className={styles.button}>
-				Find Match
-			</button>
-			<button onClick={handleReturnHome} className={styles.button}>
-				Home
-			</button>
+			<GameConfig onJoinGame={(paddle, fan, field) => handleMatching({
+				paddle: paddle,
+				fan: fan,
+				field: field,
+			})}/>
 		</div>
 	);
 }

@@ -16,7 +16,7 @@ const Header = () => {
 
   const handleSignIn = () => {
     const randomNumber = Math.floor(Math.random() * 10000) + 1
-    signIn({ username: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
+    signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
   }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
