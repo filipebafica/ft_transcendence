@@ -8,29 +8,55 @@ import { EntityManager, Repository } from "typeorm";
 @Injectable()
 export default class FriendAdapter implements FriendGateway {
     private friendRepository: Repository<Friend>;
+    private userRepository: Repository<User>;
 
     constructor(
         private readonly entityManager: EntityManager
     ) {
         this.friendRepository = entityManager.getRepository(Friend);
+        this.userRepository = entityManager.getRepository(User);
     }
 
     async create(
         userId: number,
-        friedUserId: number
+        friedUserId?: number,
+        friendNickName?: string
+
     ) {
-        let user = this.friendRepository.create({
-            user: { id: userId } as User,
-            friendship: { id: friedUserId } as User
-        });
+        if (friedUserId) {
+            let user = this.friendRepository.create({
+                user: { id: userId } as User,
+                friendship: { id: friedUserId } as User
+            });
 
-        let friend = this.friendRepository.create({
-            user: { id: friedUserId } as User,
-            friendship: { id: userId } as User
-        });
+            let friend = this.friendRepository.create({
+                user: { id: friedUserId } as User,
+                friendship: { id: userId } as User
+            });
 
-        await this.friendRepository.save(user);
-        await this.friendRepository.save(friend);
+            await this.friendRepository.save(user);
+            await this.friendRepository.save(friend);
+            return ;
+        }
+
+        if (friendNickName) {
+            let friedUserId = await this.userRepository.findOne({
+                where: { nick_name: friendNickName },
+            });
+
+            let user = this.friendRepository.create({
+                user: { id: userId } as User,
+                friendship: { id: friedUserId.id } as User
+            });
+
+            let friend = this.friendRepository.create({
+                user: { id: friedUserId.id } as User,
+                friendship: { id: userId } as User
+            });
+
+            await this.friendRepository.save(user);
+            await this.friendRepository.save(friend);
+        }
     }
 
     async getByUserId(
@@ -50,11 +76,17 @@ export default class FriendAdapter implements FriendGateway {
         userId: number,
         friedUserId: number
     ) {
-        let entity = this.friendRepository.create({
+        let user = this.friendRepository.create({
             user: { id: userId } as User,
             friendship: { id: friedUserId } as User
         });
 
-        await this.friendRepository.delete(entity);
+        let friend = this.friendRepository.create({
+            user: { id: friedUserId } as User,
+            friendship: { id: userId } as User
+        });
+
+        await this.friendRepository.delete(user);
+        await this.friendRepository.delete(friend);
     }
 }

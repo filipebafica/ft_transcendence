@@ -16,7 +16,8 @@ export default class FriendAdapter implements FriendGateway {
 
     create(
         userId: number,
-        friedUserId: number
+        friedUserId?: number,
+        friendNickName?: string
     ) {
     }
 
