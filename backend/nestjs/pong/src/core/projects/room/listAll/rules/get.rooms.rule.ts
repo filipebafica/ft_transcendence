@@ -1,13 +1,13 @@
 import RoomDTO from "../../shared/dtos/room.dto";
-import GetRoomsGateway from "../../shared/gateways/get.rooms.gateway";
+import RoomGateway from "../../shared/gateways/room.gateway";
 
 export default class GetRoomsRule {
     constructor(
-        private readonly getRoomsGateway: GetRoomsGateway
+        private readonly roomGateway: RoomGateway
     ) {
     }
 
     apply(): Promise<RoomDTO[]> {
-        return this.getRoomsGateway.get();
+        return this.roomGateway.get();
     }
 }

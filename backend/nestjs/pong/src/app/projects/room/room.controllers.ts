@@ -14,10 +14,8 @@ import { ResponseDTO as ListByUserIdResponseDTO} from 'src/core/projects/room/li
 import { JoinService } from 'src/core/projects/room/join/join.service';
 import { JoinDTO } from './join.dto';
 import { RequestDTO as JoinRequestDTO } from 'src/core/projects/room/join/dtos/request.dto';
-import { ResponseDTO as JoinResponseDTO} from 'src/core/projects/room/join/dtos/response.dto';
 import { EntityManager } from 'typeorm';
 import RoomParticipantsAdapter from './room.participants.adapter';
-import RoomPartitipantsDTO from 'src/core/projects/room/join/dtos/room.participants.dto';
 
 
 @Controller('/room')
@@ -211,7 +209,7 @@ export class RoomController {
         }
     }
 
-    @Get('/list/all')
+    @Get('/list')
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Successful response',

@@ -3,13 +3,13 @@ import { plainToInstance } from "class-transformer";
 import { Room } from "src/app/entities/room.entity";
 import CreateGateway from "src/core/projects/room/create/gateways/create.gateway";
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
-import GetRoomsGateway from "src/core/projects/room/shared/gateways/get.rooms.gateway";
+import RoomGateway from "src/core/projects/room/shared/gateways/room.gateway";
 import { EntityManager, QueryFailedError, Repository } from "typeorm";
 
 
 // Room tabele has id, name, ownerId, adminId, type, participants,
 @Injectable()
-export default class RoomAdapter implements CreateGateway, GetRoomsGateway {
+export default class RoomAdapter implements CreateGateway, RoomGateway {
     private roomRepository: Repository<Room>;
 
     constructor(
