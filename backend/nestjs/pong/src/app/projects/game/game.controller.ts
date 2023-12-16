@@ -48,12 +48,13 @@ export class GameController {
 		}
 	}
 
-	@Get('/list/:userId')
+	@Get('/list/:userId/:index?')
 	public async listByUserId(
-		@Param('userId') userId: number
+		@Param('userId') userId: number,
+		@Param('index') index: number | null = null
 	) {
 		try {
-			const request: ListByUserIdRequest = new ListByUserIdRequest(userId);
+			const request: ListByUserIdRequest = new ListByUserIdRequest(userId, index);
 
 			const response: ListByUserIdResponse = await this.listByUserIdService.execute(request);
 

@@ -24,6 +24,7 @@ export interface GameHistoryRepository {
 		player2Score: number,
 		status: number,
 		disconnectedId: number,
+		winnerId: number | null,
 	): Promise<number>;
 
 	updateGameHistoryWithSecondPlayer(
@@ -37,7 +38,16 @@ export interface GameHistoryRepository {
 		player1Score: number,
 		player2Score: number,
 		status: number,
+		winnerId: number,
 	): Promise<number>;
+
+	removeUncompleteGameHistory(
+		gameId: number
+	): Promise<void>;
+
+	getWinnerByGameId(
+		gameId: number
+	): Promise<number | null>;
 }
 
 //result can be draw, normal, disconnect
