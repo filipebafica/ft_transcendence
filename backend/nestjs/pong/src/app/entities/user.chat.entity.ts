@@ -12,5 +12,5 @@ export class UserChat {
 
     @ManyToOne(() => User, user => user.id)
     @JoinColumn({ name: 'blocked_user_id' })
-    blockedUser: User;
+    blocked_user: User;
 }

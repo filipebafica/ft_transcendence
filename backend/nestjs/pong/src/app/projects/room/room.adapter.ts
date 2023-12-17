@@ -3,6 +3,8 @@ import { plainToInstance } from "class-transformer";
 import { Room } from "src/app/entities/room.entity";
 import CreateGateway from "src/core/projects/room/create/gateways/create.gateway";
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
+import RoomParticipantsDTO from "src/core/projects/room/shared/dtos/room.participants.dto";
+import UserDTO from "src/core/projects/room/shared/dtos/user.dto";
 import RoomGateway from "src/core/projects/room/shared/gateways/room.gateway";
 import { EntityManager, QueryFailedError, Repository } from "typeorm";
 
@@ -54,8 +56,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             'room.id',
             'room.name',
             'participants.id',
-            'participants.isOwner',
-            'participants.isAdmin'
+            'participants.is_owner',
+            'participants.is_admin'
         ])
         .getMany();
 

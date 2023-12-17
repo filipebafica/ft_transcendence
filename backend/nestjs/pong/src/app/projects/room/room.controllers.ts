@@ -16,6 +16,8 @@ import { JoinDTO } from './join.dto';
 import { RequestDTO as JoinRequestDTO } from 'src/core/projects/room/join/dtos/request.dto';
 import { EntityManager } from 'typeorm';
 import RoomParticipantsAdapter from './room.participants.adapter';
+import RoomParticipantsDTO from 'src/core/projects/room/shared/dtos/room.participants.dto';
+import UserDTO from 'src/core/projects/room/shared/dtos/user.dto';
 
 
 @Controller('/room')
@@ -45,7 +47,7 @@ export class RoomController {
         );
 
         this.listByUserIdService = new ListByUserIdService(
-            new Logger(ListAllService.name),
+            new Logger(ListByUserIdService.name),
             new RoomAdapter(entityManager)
         );
     }
@@ -222,9 +224,16 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListAllResponseDTO([
-                    new RoomDTO(1, 'room1', [1, 2, 3]),
-                    new RoomDTO(2, 'room2', [1, 2, 3]),
-                    new RoomDTO(3, 'room3', [1, 2, 3]),
+                    new RoomDTO(1, 'room1', [new RoomParticipantsDTO(
+                        1,
+                        true,
+                        false,
+                        new UserDTO(
+                            1,
+                            'user',
+                            'nickname'
+                        )
+                    )]),
                 ])
             }
         }
@@ -274,9 +283,16 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListByUserIdResponseDTO([
-                        new RoomDTO(1, 'room1', [1, 2, 3]),
-                        new RoomDTO(2, 'room2', [1, 2, 3]),
-                        new RoomDTO(3, 'room3', [1, 2, 3]),
+                        new RoomDTO(1, 'room1', [new RoomParticipantsDTO(
+                            1,
+                            true,
+                            false,
+                            new UserDTO(
+                                1,
+                                'user',
+                                'nickname'
+                            )
+                        )])
                 ])
             }
         }

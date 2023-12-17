@@ -1,16 +1,16 @@
 import { Logger } from '@nestjs/common';
 import CreateRule from './rules/create.rule';
 import { RequestDTO } from './dtos/request.dto';
-import FriendGateway from '../shared/gateways/friend.gateway';
+import StatusGateway from './gateways/status.gateway';
 
-export class CreateService {
+export class CreateStatusService {
     private createRule: CreateRule;
 
     constructor(
         private readonly logger: Logger,
-        friendGateway: FriendGateway
+        statusGateway: StatusGateway
     ) {
-        this.createRule = new CreateRule(friendGateway);
+        this.createRule = new CreateRule(statusGateway);
     }
 
     async execute(requestDTO: RequestDTO) {
@@ -19,11 +19,10 @@ export class CreateService {
 
             await this.createRule.apply(
                 requestDTO.userId,
-                requestDTO.friendUserId,
-                requestDTO.friendNickName
+                requestDTO.newStatus
             );
 
-            this.logger.log(JSON.stringify({"Service has finished": "friendship has been created"}));
+            this.logger.log(JSON.stringify({"Service has finished": "status has been created"}));
         } catch (error) {
             this.logger.error(JSON.stringify({"Service has faield": error.message}))
             throw error;

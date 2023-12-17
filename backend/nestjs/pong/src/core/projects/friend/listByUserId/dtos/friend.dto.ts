@@ -1,7 +1,10 @@
+import { StatusDTO } from "./status.dto";
+
 export default class FriendDTO {
     constructor(
         public readonly id: number,
-        public readonly name: string
+        public readonly nickName: string,
+        public readonly userStatus?: StatusDTO
     ) {
     }
 }
