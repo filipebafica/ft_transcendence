@@ -60,8 +60,13 @@ function FriendsList() {
     if (!userId) return
 
     const fetchFriends = async () => {
-      const friends = await listFriends(userId)
-      console.log(friends)
+      let friends
+      try {
+        friends = await listFriends(userId)
+      }
+      catch (err) {
+        console.log(err)
+      }
       setFriends(friends)
     }
 
