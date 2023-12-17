@@ -6,6 +6,7 @@ import ChatPage from '../components/ChatPage'
 import LandingPage from '../components/LandingPage'
 import FriendsList from '../components/FriendsList'
 import StatsPage from '../components/StatsPage'
+import Profile from '../components/SignupPage/Profile';
 
 import LayoutWrapper from "./layoutWrapper";
 
@@ -37,7 +38,11 @@ const router = createBrowserRouter([
   {
     path: '/stats/:userId',
     Component: LayoutWrapper(StatsPage),
-  }
+  },
+  {
+		path: '/settings',
+		Component: LayoutWrapper(Profile),
+	},
 ])
 
 export default router;

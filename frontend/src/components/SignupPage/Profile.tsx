@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Button, IconButton, TextField } from "@mui/material";
-import default_image from "../../assets/default_image.png";
+import default_avatar from "../../assets/default_avatar.png";
 import styles from "./style.module.css";
 
 function Profile() {
@@ -28,7 +28,7 @@ function Profile() {
 					<label htmlFor="contained-button-file">
 						<IconButton onClick={handleAvatarUpload}>
 							<Avatar
-								src={default_image}
+								src={default_avatar}
 								sx={{ width: 175, height: 175 }}
 							></Avatar>
 						</IconButton>

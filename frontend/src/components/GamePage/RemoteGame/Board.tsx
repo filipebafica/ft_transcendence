@@ -36,8 +36,6 @@ interface GameState {
 }
 
 interface BoardProps {
-	player1Score: number;
-	player2Score: number;
 	gameState: GameState;
 	playerId: string;
 }
@@ -89,22 +87,34 @@ function Board(props: BoardProps) {
 		if (!context) return;
 
 		const renderGameState = (gameState: GameState) => {
-			context.clearRect(0, 0, boardWidth, boardHeight);
+			// context.fillStyle = player1Background
+			context.clearRect(0, 0, boardWidth / 2, boardHeight);
 
-			context.fillStyle = "rebeccapurple";
+			// context.fillStyle = player2Background
+			context.clearRect(
+				boardWidth / 2 + 1,
+				0,
+				boardWidth / 2,
+				boardHeight
+			);
 
+			// context.fillStyle = paddle1Color;
 			context.fillRect(
 				gameState.player1.x,
 				gameState.player1.y,
 				gameState.player1.width,
 				gameState.player1.height
 			);
+
+			// context.fillStyle = paddle2Color;
 			context.fillRect(
 				gameState.player2.x,
 				gameState.player2.y,
 				gameState.player2.width,
 				gameState.player2.height
 			);
+
+			context.fillStyle = "black";
 			context.fillRect(
 				gameState.ball.x,
 				gameState.ball.y,

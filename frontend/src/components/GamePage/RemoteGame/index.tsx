@@ -15,14 +15,23 @@ function PongGame(props: PlayersProps) {
 
 	return (
 		<div className={styles.screen}>
-			<Score player={gameState.player1.id} score={gameState.player1Score} />
-			<Board
-				player1Score={gameState.player1Score}
-				player2Score={gameState.player2Score}
-				gameState={gameState}
-				playerId={props.playerId}
+			<Score
+				player={props.player1UserName}
+				score={gameState.player1Score}
 			/>
-			<Score player={gameState.player2.id} score={gameState.player2Score} />
+			<div className={styles.board}>
+				<div className={styles.fans}>
+					<h2>FANS</h2>
+					<h2>FANS</h2>
+					<h2>FANS</h2>
+					<h2>FANS</h2>
+				</div>
+				<Board gameState={gameState} playerId={props.playerId} />
+			</div>
+			<Score
+				player={props.player2UserName}
+				score={gameState.player2Score}
+			/>
 		</div>
 	);
 }
