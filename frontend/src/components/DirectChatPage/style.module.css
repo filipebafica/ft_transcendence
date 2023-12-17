@@ -1,6 +1,6 @@
 .container {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: left;
 	margin: 20px;
 }
@@ -11,9 +11,12 @@
 	padding: 3px;
 }
 
-.container input {
-	width: 300px;
-	padding: 3px;
+.inputContainer > div{
+	width: 310px;
+}
+
+.inputContainer > button{
+	height: 79px;
 }
 
 .messagesBox {
@@ -41,7 +44,15 @@
 	margin-left: 15px;
 }
 
-.messageContainer .timestamp {
+.messageContainer .timeStamp {
 	font-size: 13px;
 	width: 60px;
+}
+
+.chatSection {
+	margin: 0px;
+}
+
+.friendCard > div {
+	margin-top: 0px;
 }

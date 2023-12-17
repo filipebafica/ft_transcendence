@@ -6,6 +6,7 @@ import styles from './style.module.css'
 // Components
 import Avatar from '@mui/material/Avatar'
 import StyledBadge from '@mui/material/Badge'
+import Chip from '@mui/material/Chip'
 
 // Context
 import { DirectChatContext } from 'providers/directChat'
@@ -48,9 +49,7 @@ function Friend(props: FriendProps) {
         <p>{friend.userStatus ? userStatuses[friend.userStatus as 'online'] : userStatuses.offline }</p>
       </div>
       {pendingMessages !== 0 && (
-        <div className={styles.pendingMessages}>
-          <p> {pendingMessages}</p>
-        </div>
+        <Chip className={styles.newMessages} label={`${pendingMessages} new message${pendingMessages > 1 ? "s" : ""}`} variant="outlined" />
       )}
     </div>
   )

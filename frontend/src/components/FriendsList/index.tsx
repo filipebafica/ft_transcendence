@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // API
-import { addFriend, listFriends } from 'api/friend'
+import { listFriends } from 'api/friend'
 
 // Style
 import styles from './style.module.css'

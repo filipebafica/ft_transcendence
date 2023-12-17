@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState, useContext } from 'react'
 
 // Socket
-import { chatSocket } from '../socket'
+import { chatSocket } from 'socket'
 
 // Provider
 import { AuthContext } from 'auth'
@@ -10,7 +10,7 @@ interface Message {
   from: string
   to: string
   message: string
-  timestamp: number
+  timeStamp: number
 }
 
 interface MessagesData {
@@ -41,6 +41,7 @@ export const DirectChatProvider = (props: { children: any }) => {
 
   useEffect(() => {
     if (!user) return
+    console.log('connecting to socket', `${user.id}-direct-message`)
     chatSocket.on(`${user.id}-direct-message`, (message: any) => {
       console.log('direct message received', message)
       setMessagesData((prevMessages: MessagesData) => { 

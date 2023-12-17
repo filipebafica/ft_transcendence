@@ -11,6 +11,11 @@ import { DirectChatContext } from 'providers/directChat'
 // Socket
 import { chatSocket } from 'socket'
 
+// Component
+import FriendCard from './FriendCard'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+
 interface UserMessage {
   name: string
   id: string
@@ -20,7 +25,7 @@ interface Message {
   from: string
   to: string
   message: string
-  timestamp: number
+  timeStamp: number
 }
 
 interface MessageBoxProps {
@@ -45,13 +50,14 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
   const sendMessage = () => {
     if (newMessage.trim() !== '') {
+      console.log('sending message to event', `messageRouter`)
       chatSocket.emit(
-        `${friendId}-direct-message`,
+        `messageRouter`,
         JSON.stringify({
           from: userId,
           to: friendId,
           message: newMessage,
-          timestamp: Date.now(),
+          timeStamp: Date.now(),
         }),
       )
     }
@@ -80,27 +86,44 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.messagesBox} id="message-list">
-        {messagesData.messages.map((msg: Message, index) => (
-          <div key={index} className={styles.messageContainer}>
-            <div className={styles.from}>{msg.from}</div>
-            <div className={styles.timestamp}>{`[${new Date(msg.timestamp).toLocaleTimeString(
-              undefined,
-              { hour12: false },
-            )}]:`}</div>
-            <div className={styles.message}>{msg.message}</div>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+      <div className={styles.chatSection}>
+        <div className={styles.messagesBox} id="message-list">
+          {messagesData.messages.map((msg: Message, index) => (
+            <div key={index} className={styles.messageContainer}>
+              <div className={styles.from}>{msg.from}</div>
+              <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
+                undefined,
+                { hour12: false },
+              )}]:`}</div>
+              <div className={styles.message}>{msg.message}</div>
+            </div>
+          ))}
+
+          <div ref={messagesEndRef} />
+        </div>
+        <div className={styles.inputContainer}>
+          <TextField
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message..."
+            multiline
+            rows={2}
+          />
+          <Button onClick={sendMessage} variant="outlined">
+            Send
+          </Button>
+        </div>
       </div>
-      <div id="message-input">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
+      <div className={styles.friendCard}>
+        <FriendCard
+          friend={{
+            id: '243',
+            nickName: 'Friend No data',
+            userStatus: 'no data',
+            avatar: 'https://i.imgur.com/sd64OhO.png',
+          }}
         />
-        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   )

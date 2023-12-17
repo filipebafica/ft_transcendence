@@ -11,6 +11,7 @@ import { DirectChatContext } from '../../../providers/directChat'
 
 // Components
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
+import { Badge } from '@mui/material'
 
 // Socket
 import { friendsStatusSocket } from 'socket'
@@ -29,10 +30,13 @@ const Header = () => {
     const randomNumber = id
     signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
 
-    friendsStatusSocket.emit('statusRouter', JSON.stringify({
-      userId: id,
-      status: 'online'
-    }))
+    friendsStatusSocket.emit(
+      'statusRouter',
+      JSON.stringify({
+        userId: id,
+        status: 'online',
+      }),
+    )
   }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -57,8 +61,13 @@ const Header = () => {
   const handleClickSignOut = () => {
     signOut()
     setAnchorElUser(null)
-    window.location.href = "/";
+    window.location.href = '/'
   }
+
+  const totalPendingMessages = Object.keys(messagesData.pendingMessages).reduce((acc, key) => {
+    if (key === user?.id) return acc
+    return acc + messagesData.pendingMessages[key]
+  }, 0)
 
   return (
     <header className={styles.header}>
@@ -83,14 +92,15 @@ const Header = () => {
           >
             Chat Rooms
           </Button>
-          <Button
-            onClick={() => {
-              navigate('/friends')
-            }}
-          >
-            Buddy List
-          </Button>
-          { <p>{messagesData.messages.length}</p>}
+          <Badge color="secondary" badgeContent={totalPendingMessages} className={styles.badgePending}>
+            <Button
+              onClick={() => {
+                navigate('/friends')
+              }}
+            >
+              Buddy List
+            </Button>
+          </Badge>
           <div>
             <Button onClick={(e) => handleOpenUserMenu(e)}>Profile</Button>
             <Menu
