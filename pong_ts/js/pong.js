@@ -237,14 +237,21 @@ function detectCollision(ball, player) {
         ball.y + ballHeight >= player.y &&
         ball.y <= player.y + playerHeight);
 }
+function generateRandomAngle() {
+    const positive = Math.floor(Math.random() * 2);
+    const angle = (Math.floor(Math.random() * 4) + 1) * 15;
+    const direction = positive === 0 ? -angle : angle;
+    return (direction * Math.PI) / 180;
+}
 function resetGameState(direction) {
+    const randomDirection = generateRandomAngle();
     ball = {
         x: (boardWidth - ballWidth) / 2,
         y: (boardHeight - ballHeight) / 2,
         width: ballWidth,
         height: ballHeight,
-        vX: direction,
-        vY: 2,
+        vX: direction * Math.cos(randomDirection),
+        vY: -2 * Math.sin(randomDirection),
     };
     player1.numTouches = 0;
     player2.numTouches = 0;
@@ -271,8 +278,8 @@ function recreateGame() {
         y: (boardHeight - ballHeight) / 2,
         width: ballWidth,
         height: ballHeight,
-        vX: 2,
-        vY: 2,
+        vX: 2 * Math.cos(Math.PI / 4),
+        vY: -2 * Math.sin(Math.PI / 4),
     };
     player1.numTouches = 0;
     player2.numTouches = 0;
