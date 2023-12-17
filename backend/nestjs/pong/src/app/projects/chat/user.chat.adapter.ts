@@ -20,7 +20,7 @@ export default class UserChatAdapter implements UserChatGateway {
     async create(blockerUserId: number, targetUserId: number) {
         let entity = this.userChatRepository.create({
             user: { id: blockerUserId } as User,
-            blockedUser: { id: targetUserId } as User
+            blocked_user: { id: targetUserId } as User
         });
 
         return await this.userChatRepository.save(entity);
@@ -30,10 +30,10 @@ export default class UserChatAdapter implements UserChatGateway {
         const entity: UserChat[] = await this.userChatRepository
         .createQueryBuilder('userChat')
         .innerJoinAndSelect('userChat.user', 'user')
-        .innerJoinAndSelect('userChat.blockedUser', 'blockedUser')
+        .innerJoinAndSelect('userChat.blocked_user', 'blocked_user')
         .where('user.id = :userId', {userId})
         .getMany();
 
-        return entity.map((row) => row.blockedUser.id);
+        return entity.map((row) => row.blocked_user.id);
     }
 }
