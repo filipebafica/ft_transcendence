@@ -1,0 +1,16 @@
+.tableContainer {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 100%;
+	overflow-x: auto;
+	background-color: white;
+}
+
+.tableHeader {
+	background-color: #2e2c33;
+	color: white;
+}
+
+.tableHeader > th {
+	color: white;
+}

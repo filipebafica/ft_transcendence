@@ -1,15 +1,15 @@
 -- Users
 
-INSERT INTO public.user (name) VALUES ('Ringo');
-INSERT INTO public.user (name) VALUES ('John');
-INSERT INTO public.user (name) VALUES ('Paul');
-INSERT INTO public.user (name) VALUES ('George');
-INSERT INTO public.user (name) VALUES ('Mick');
-INSERT INTO public.user (name) VALUES ('Keith');
-INSERT INTO public.user (name) VALUES ('Freddie');
-INSERT INTO public.user (name) VALUES ('Brian');
-INSERT INTO public.user (name) VALUES ('Roger');
-INSERT INTO public.user (name) VALUES ('David');
+INSERT INTO public.user (name, nick_name) VALUES ('Ringo', 'Starrman');
+INSERT INTO public.user (name, nick_name) VALUES ('John', 'GlassesGuru');
+INSERT INTO public.user (name, nick_name) VALUES ('Paul', 'BassBoss');
+INSERT INTO public.user (name, nick_name) VALUES ('George', 'QuietRocker');
+INSERT INTO public.user (name, nick_name) VALUES ('Mick', 'JumpingJack');
+INSERT INTO public.user (name, nick_name) VALUES ('Keith', 'GuitarHero');
+INSERT INTO public.user (name, nick_name) VALUES ('Freddie', 'QueenBee');
+INSERT INTO public.user (name, nick_name) VALUES ('Brian', 'AstroRocker');
+INSERT INTO public.user (name, nick_name) VALUES ('Roger', 'DrumDynamo');
+INSERT INTO public.user (name, nick_name) VALUES ('David', 'SpaceOddity');
 
 -- Friends
 

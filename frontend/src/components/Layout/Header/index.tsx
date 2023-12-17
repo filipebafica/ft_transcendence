@@ -46,7 +46,8 @@ const Header = () => {
   }
 
   const handleClickStats = () => {
-    navigate('/stats')
+    if (!user) return
+    navigate(`/stats/${user.id}`)
     setAnchorElUser(null)
   }
 
