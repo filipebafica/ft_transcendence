@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import styles from "./style.module.css";
 
+import { paddleColors, fieldColors } from "constants/colors";
+
 import { gameSocket } from "../../../socket/index";
 
 interface Player {
@@ -88,10 +90,12 @@ function Board(props: BoardProps) {
 
 		const renderGameState = (gameState: GameState) => {
 			// context.fillStyle = player1Background
-			context.clearRect(0, 0, boardWidth / 2, boardHeight);
+			context.fillStyle = fieldColors[0];
+			context.fillRect(0, 0, boardWidth / 2, boardHeight);
 
 			// context.fillStyle = player2Background
-			context.clearRect(
+			context.fillStyle = fieldColors[1];
+			context.fillRect(
 				boardWidth / 2 + 1,
 				0,
 				boardWidth / 2,
@@ -99,6 +103,7 @@ function Board(props: BoardProps) {
 			);
 
 			// context.fillStyle = paddle1Color;
+			context.fillStyle = paddleColors[2];
 			context.fillRect(
 				gameState.player1.x,
 				gameState.player1.y,
@@ -107,6 +112,7 @@ function Board(props: BoardProps) {
 			);
 
 			// context.fillStyle = paddle2Color;
+			context.fillStyle = paddleColors[3];
 			context.fillRect(
 				gameState.player2.x,
 				gameState.player2.y,

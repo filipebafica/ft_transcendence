@@ -21,7 +21,8 @@
 .center {
 	height: 100vh;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	background: white;
+	gap: 50px;
 }
