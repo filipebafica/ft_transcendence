@@ -29,9 +29,9 @@ function WinnerPage(props: WinnerProps) {
 	if (!winnerId) {
 		result = "Empate!";
 	} else if (playerId === winnerId) {
-		result = "You won!\nCongratulations!";
+		result = "You won! Congratulations!";
 	} else {
-		result = "You lose!\n:(";
+		result = "You lose! :(";
 	}
 
 	return (
