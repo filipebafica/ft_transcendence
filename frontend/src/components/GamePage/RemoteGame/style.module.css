@@ -29,3 +29,8 @@
 	display: flex;
 	flex-direction: row;
 }
+
+.playerFans {
+	display: flex;
+	flex-direction: row;
+}

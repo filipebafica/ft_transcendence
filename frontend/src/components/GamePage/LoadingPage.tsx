@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Button, CircularProgress } from "@mui/material";
 import styles from "./style.module.css";
-import loading from "../../assets/loading.gif";
-import { Button } from "@mui/material";
 
 import { gameSocket } from "socket";
 
@@ -42,10 +41,9 @@ function LoadingPage(props: LoadingProps) {
 		return <RemoteGame gameState={gameState} playerId={playerId} />;
 	}
 
-	// https://loading.io/
 	return (
 		<div className={styles.center}>
-			<img src={loading} alt="loading..." />
+			<CircularProgress size={100} />
 			<Button
 				variant="outlined"
 				onClick={() => window.location.reload()}

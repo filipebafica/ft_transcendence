@@ -3,6 +3,9 @@ import styles from "./style.module.css";
 import Score from "./Score";
 import Board from "./Board";
 
+import fans1 from "../../../assets/fan_1.png";
+import fans2 from "../../../assets/fan_3.png";
+
 interface PlayersProps {
 	player1UserName?: string;
 	player2UserName?: string;
@@ -21,10 +24,18 @@ function PongGame(props: PlayersProps) {
 			/>
 			<div className={styles.board}>
 				<div className={styles.fans}>
-					<h2>FANS</h2>
-					<h2>FANS</h2>
-					<h2>FANS</h2>
-					<h2>FANS</h2>
+					<div className={styles.playerFans}>
+						<img src={fans1} alt="" width={100} height={100} />
+						<img src={fans1} alt="" width={100} height={100} />
+						<img src={fans1} alt="" width={100} height={100} />
+						<img src={fans1} alt="" width={100} height={100} />
+					</div>
+					<div className={styles.playerFans}>
+						<img src={fans2} alt="" width={100} height={100} />
+						<img src={fans2} alt="" width={100} height={100} />
+						<img src={fans2} alt="" width={100} height={100} />
+						<img src={fans2} alt="" width={100} height={100} />
+					</div>
 				</div>
 				<Board gameState={gameState} playerId={props.playerId} />
 			</div>
