@@ -22,7 +22,7 @@ import { Socket } from "socket.io";
 import GameStateAdapter from "./game.state.adapter";
 
 @WebSocketGateway({
-	namespace: '/websocket/game',
+	path: '/websocket/game',
 	cors: {
 		origin: '*',
 	},
