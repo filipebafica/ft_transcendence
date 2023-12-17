@@ -17,7 +17,7 @@ import StatusAdapter from './status.adapter';
 import { RequestDTO as CreateStatusRequestDTO } from 'src/core/projects/status/create/dtos/request.dto';
 
 @WebSocketGateway({
-    path: '/websocket/status',
+    namespace: '/websocket/status',
     cors: {
         origin: '*',
     }
