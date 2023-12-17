@@ -18,3 +18,14 @@
 	font-family: sans-serif;
 	text-align: center;
 }
+
+.board {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.fans {
+	display: flex;
+	flex-direction: row;
+}

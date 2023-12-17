@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./style.module.css";
 import loading from "../../assets/loading.gif";
+import { Button } from "@mui/material";
 
 import { gameSocket } from "socket";
 
@@ -45,6 +46,13 @@ function LoadingPage(props: LoadingProps) {
 	return (
 		<div className={styles.center}>
 			<img src={loading} alt="loading..." />
+			<Button
+				variant="outlined"
+				onClick={() => window.location.reload()}
+				color="error"
+			>
+				Cancel
+			</Button>
 		</div>
 	);
 }
