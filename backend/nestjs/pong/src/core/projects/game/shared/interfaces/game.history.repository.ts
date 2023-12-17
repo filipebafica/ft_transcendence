@@ -48,6 +48,18 @@ export interface GameHistoryRepository {
 	getWinnerByGameId(
 		gameId: number
 	): Promise<number | null>;
+
+	createPrivateGame(
+		status: number,
+		player1Score: number,
+		player2Score: number,
+		player1Id: number,
+		player2Id: number,
+	): Promise<number>;
+
+	getRunningGameByPlayerId(
+		playerId: number,
+	): Promise<number | null>;
 }
 
 //result can be draw, normal, disconnect

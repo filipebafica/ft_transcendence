@@ -219,4 +219,48 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			throw error;
 		}
 	}
+
+	public async createPrivateGame(
+		status: number,
+		player1Score: number,
+		player2Score: number,
+		player1Id: number,
+		player2Id: number,
+	): Promise<number> {
+		try {
+			let entity = await this.gameHistoryRepository.create({
+				status: status,
+				player_one_id: player1Id,
+				player_two_id: player2Id,
+				player_one_score: player1Score,
+				player_two_score: player2Score,
+			})
+
+			entity = await this.gameHistoryRepository.save(entity);
+			return entity.id;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async getRunningGameByPlayerId(
+		playerId: number,
+	): Promise<number | null> {
+		try {
+			const result = await this.gameHistoryRepository.findOne({
+				where: [
+					{ player_one_id: playerId },
+					{ player_two_id: playerId },
+				],
+			});
+
+			if (result == undefined) {
+				return null;
+			}
+
+			return result.id;
+		} catch (error) {
+			throw error;
+		}
+	}
 }
