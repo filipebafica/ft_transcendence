@@ -12,6 +12,7 @@ import { ResponseDTO as ListByUserIdResponseDTO } from 'src/core/projects/friend
 import FriendDTO from 'src/core/projects/friend/listByUserId/dtos/friend.dto';
 import { DeleteDTO } from './delete.dto';
 import { RequestDTO as DeleteRequestDTO } from 'src/core/projects/friend/delete/dtos/request.dto';
+import { StatusDTO as FriendStatusDTO } from 'src/core/projects/friend/listByUserId/dtos/status.dto';
 
 @Controller('/friend')
 @ApiTags('friend')
@@ -130,9 +131,9 @@ export class FriendController {
             example: {
                 status: 'success',
                 data: new ListByUserIdResponseDTO([
-                    new FriendDTO(1, 'monica'),
-                    new FriendDTO(2, 'ross'),
-                    new FriendDTO(3, 'rachel'),
+                    new FriendDTO(1, 'monica', new FriendStatusDTO(1, 'on-line')),
+                    new FriendDTO(2, 'ross', new FriendStatusDTO(1, 'in-game')),
+                    new FriendDTO(3, 'rachel', new FriendStatusDTO(1, 'off-line')),
                 ])
             }
         }

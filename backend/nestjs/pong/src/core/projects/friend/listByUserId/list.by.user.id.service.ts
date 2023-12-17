@@ -19,8 +19,8 @@ export class ListByUserIdService {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            const rooms = await this.getFriendsRule.apply(requestDTO.userId);
-            const responseDTO = new ResponseDTO(rooms);
+            const friends = await this.getFriendsRule.apply(requestDTO.userId);
+            const responseDTO = new ResponseDTO(friends);
 
             this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));
             return responseDTO;

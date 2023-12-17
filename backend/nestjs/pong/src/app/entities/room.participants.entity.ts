@@ -8,16 +8,16 @@ export class RoomParticipants {
     id: number;
 
     @Column({ nullable: true, name: 'is_owner' })
-    isOwner: boolean;
+    is_owner: boolean;
 
     @Column({ nullable: true, name: 'is_admin'})
-    isAdmin: boolean;
+    is_admin: boolean;
 
     @ManyToOne(() => Room, room => room.id)
     @JoinColumn({ name: 'room_id' })
-    room: number;
+    room: Room;
 
     @ManyToOne(() => User, user => user.id)
     @JoinColumn({ name: 'user_id' })
-    user: number;
+    user: User;
 }

@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import CreateRule from './rules/join.rule';
+import CreateRule from './rules/create.rule';
 import { RequestDTO } from './dtos/request.dto';
 import FriendGateway from '../shared/gateways/friend.gateway';
 

@@ -4,6 +4,8 @@ import { EntityManager, Repository } from "typeorm";
 import { RoomParticipants } from "src/app/entities/room.participants.entity";
 import RoomPartitipantsDTO from "src/core/projects/room/join/dtos/room.participants.dto";
 import { plainToInstance } from "class-transformer";
+import { User } from "src/app/entities/user.entity";
+import { Room } from "src/app/entities/room.entity";
 
 @Injectable()
 export default class RoomParticipantsAdapter implements RoomParticipantsGateway {
@@ -21,10 +23,10 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         isAdmin: boolean
     ): Promise<RoomPartitipantsDTO> {
         let entity = this.roomParticipantsRepository.create({
-            isOwner: isOwner,
-            isAdmin: isAdmin,
-            room: roomId,
-            user: userId
+            is_owner: isOwner,
+            is_admin: isAdmin,
+            room: { id: roomId } as Room,
+            user: { id: userId } as User
         });
 
         entity = await this.roomParticipantsRepository.save(entity);

@@ -66,10 +66,21 @@ export default class FriendAdapter implements FriendGateway {
         .createQueryBuilder('friend')
         .innerJoinAndSelect('friend.user', 'user')
         .innerJoinAndSelect('friend.friendship', 'friendship')
+        .leftJoinAndSelect('friendship.user_status', 'user_status')
         .where('user.id = :userId', {userId})
         .getMany();
 
-        return entity.map((row) => row.friendship);
+        let friendDTOs = new Array<FriendDTO>;
+
+        entity.map(
+            (row) => friendDTOs.push(new FriendDTO(
+                row.friendship.id,
+                row.friendship.nick_name,
+                row.friendship.user_status,
+            ))
+        );
+
+        return friendDTOs;
     }
 
     async delete(
