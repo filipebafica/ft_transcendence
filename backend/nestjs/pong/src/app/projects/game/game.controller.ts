@@ -7,6 +7,9 @@ import { Request as ListByUserIdRequest} from "src/core/projects/game/matchHisto
 import { Response as ListByUserIdResponse } from "src/core/projects/game/matchHistory/listByUserId/dtos/response.dto";
 import { GameHistoryAdapter } from "./game.history.adapter";
 import { EntityManager } from "typeorm";
+import { ListStatsByUserIdService } from "src/core/projects/game/stats/listByUserId/list.stats.by.user.id.service";
+import { RequestDTO as ListStatsByUserIdServiceRquestDTO } from 'src/core/projects/game/stats/listByUserId/dtos/request.dto';
+
 
 @Controller('/game')
 export class GameController {
@@ -14,22 +17,27 @@ export class GameController {
 	private logger: Logger;
 	private getWinnerByGameIdService: GetWinnerByGameIdService;
 	private listByUserIdService: ListByUserIdService;
+	private listStatsByUserIdService: ListStatsByUserIdService;
 
 	constructor(
 		private readonly entityManager: EntityManager
 	){
 		this.gameHistoryAdapter = new GameHistoryAdapter(entityManager);
-		this.logger = new Logger();
 
 		this.getWinnerByGameIdService = new GetWinnerByGameIdService(
-			this.logger,
+			new Logger(GetWinnerByGameIdService.name),
 			this.gameHistoryAdapter,
 		);
 
 		this.listByUserIdService = new ListByUserIdService(
-			this.logger,
+			new Logger(ListByUserIdService.name),
 			this.gameHistoryAdapter,
 		);
+
+		this.listStatsByUserIdService = new ListStatsByUserIdService(
+			new Logger(ListStatsByUserIdService.name),
+			this.gameHistoryAdapter,
+		)
 	}
 
 	@Get('/:gameId/winner')
@@ -61,6 +69,20 @@ export class GameController {
 			return response.toJson();
 		} catch (error) {
 			console.log("[ CONTROLLER] Error happened when trying to list match history by user id");
+		}
+	}
+
+	@Get('/stats/:userId/')
+	public async listStatsByUserId(
+		@Param('userId') userId: string
+	) {
+		try {
+			const response = await this.listStatsByUserIdService.execute(
+				new ListStatsByUserIdServiceRquestDTO(parseInt(userId))
+			);
+			return response.toJson();
+		} catch (error) {
+			console.log("[ CONTROLLER] Error happened when trying to list game stats by user id");
 		}
 	}
 }

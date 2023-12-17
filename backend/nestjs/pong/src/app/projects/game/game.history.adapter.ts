@@ -38,7 +38,6 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 	  
 		  const startIndex = (adjustedIndex - 1) * recordsPerPage;
 		  const endIndex = startIndex + recordsPerPage;
-	  
 		  const games = await this.gameHistoryRepository.find({
 			where: [
 			  { player_one_id: userId },
@@ -56,7 +55,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  console.error(error.message);
 		  throw error;
 		}
-	  }
+	}
 
 	public async createGame(
 		status: number,
@@ -181,6 +180,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  game.player_two_id,
 		  game.player_one_score,
 		  game.player_two_score,
+		  game.winner_id,
 		  game.disconnected_id,
 		);
 	}

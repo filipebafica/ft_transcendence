@@ -6,6 +6,7 @@ export class GameHistoryDTO {
 		public player2Id: number,
 		public player1Score: number,
 		public player2Score: number,
-		public disconnectedId?: number,
+		public winnerId: number,
+		public disconnectedId?: number
 	){}
 }
