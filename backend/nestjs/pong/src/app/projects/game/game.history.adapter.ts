@@ -1,5 +1,6 @@
 import { GameHistory } from "src/app/entities/game.history.entity";
 import { GameHistoryDTO } from "src/core/projects/game/shared/dtos/game.history.dto";
+import { GameStatus } from "src/core/projects/game/shared/enums/game.status";
 import { GameHistoryRepository as GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
 import { EntityManager, Repository } from "typeorm";
 
@@ -251,6 +252,7 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 				where: [
 					{ player_one_id: playerId },
 					{ player_two_id: playerId },
+					{ status: GameStatus.Running},
 				],
 			});
 
