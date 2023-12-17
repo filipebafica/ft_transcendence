@@ -18,11 +18,24 @@
 	padding: 3px;
 }
 
-.center {
+.loading {
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	gap: 50px;
+}
+
+.winner {
+	height: 50vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 70px;
+}
+
+.result {
+	font-size: 60px;
 }
