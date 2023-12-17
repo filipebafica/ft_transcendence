@@ -42,7 +42,7 @@ function LoadingPage(props: LoadingProps) {
 	}
 
 	return (
-		<div className={styles.center}>
+		<div className={styles.loading}>
 			<CircularProgress size={100} />
 			<Button
 				variant="outlined"

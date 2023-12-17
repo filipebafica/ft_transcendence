@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "@mui/material";
 import styles from "./style.module.css";
 
 import GamePage from ".";
@@ -20,33 +21,26 @@ function WinnerPage(props: WinnerProps) {
 	}
 
 	const gameId = props.gameId;
-	const playerId = props.playerId;
+	const playerId = Number(props.playerId);
 	let result: string;
 
 	// TODO: get result from backend
-	let matchResult = 1;
-	if (matchResult === 0) {
+	const winnerId = 1;
+	if (!winnerId) {
 		result = "Empate!";
-	} else if (matchResult === 1) {
-		result = "Jogador 1 venceu!";
+	} else if (playerId === winnerId) {
+		result = "You won!\nCongratulations!";
 	} else {
-		result = "Jogador 2 venceu!";
+		result = "You lose!\n:(";
 	}
-	// if (playerId === matchResult.winnerId) {
-	// 	result = "You won!\nCongratulations!";
-	// } else {
-	// 	result = "You lose!\n:(";
-	// }
 
 	return (
-		<div className={styles.container}>
-			<div>
-				gameId: {gameId}; playerId: {playerId}
-			</div>
-			<div>Result: {result}</div>
-			<button onClick={handleGamePage} className={styles.button}>
+		<div className={styles.winner}>
+			<div>gameId: {gameId}</div>
+			<div className={styles.result}>{result}</div>
+			<Button variant="outlined" size="large" onClick={handleGamePage}>
 				New Game
-			</button>
+			</Button>
 		</div>
 	);
 }
