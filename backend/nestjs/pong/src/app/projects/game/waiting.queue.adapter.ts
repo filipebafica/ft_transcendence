@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { WaitingQueue } from "src/app/entities/waiting.queue.entity";
 import { WaitingPlayerDTO } from "src/core/projects/game/shared/dtos/waiting.player.dto";
+import { GameType } from "src/core/projects/game/shared/enums/game.type";
 import { QueueInterface } from "src/core/projects/game/shared/interfaces/queue.interface";
 import { EntityManager, Repository } from "typeorm";
 
@@ -36,12 +37,14 @@ export class WaitingQueueAdapter implements QueueInterface {
 
 	public async add(
 	playerId: number,
-	gameId: number,
+	gameType: GameType,
+	gameId: number | null = null,
 	): Promise<void> {
 		try {
 			let entity: WaitingQueue = this.waitingQueueRepository.create({
 				player_id: playerId,
 				game_id: gameId,
+				game_type: gameType,
 			});
 	
 			entity = await this.waitingQueueRepository.save(entity);
