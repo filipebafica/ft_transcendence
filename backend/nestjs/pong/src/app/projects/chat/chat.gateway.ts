@@ -24,14 +24,14 @@ export class ChatGateway {
         ): void {
             const messageDTO: MessageDTO = JSON.parse(message);
 
-            this.server.emit(messageDTO.from + messageDTO.to, {
+            this.server.emit(messageDTO.from + '-direct-message', {
                 from: messageDTO.from,
                 to: messageDTO.to,
                 message: messageDTO.message,
                 timeStamp: messageDTO.timeStamp,
             })
 
-            this.server.emit(messageDTO.to + messageDTO.from, {
+            this.server.emit(messageDTO.to + '-direct-message', {
                 from: messageDTO.from,
                 to: messageDTO.to,
                 message: messageDTO.message,
