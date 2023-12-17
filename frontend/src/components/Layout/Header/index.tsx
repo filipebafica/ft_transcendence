@@ -5,16 +5,19 @@ import logo from '../../../assets/logo_clean.png'
 
 import styles from './style.module.css'
 
+// Provider
 import { AuthContext } from '../../../auth'
+import { DirectChatContext } from '../../../providers/directChat'
 
+// Components
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
 
 // Socket
-
 import { friendsStatusSocket } from 'socket'
 
 const Header = () => {
   const { user, signIn, signOut } = useContext(AuthContext)
+  const { messagesData } = useContext(DirectChatContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
 
@@ -87,6 +90,7 @@ const Header = () => {
           >
             Buddy List
           </Button>
+          { <p>{messagesData.messages.length}</p>}
           <div>
             <Button onClick={(e) => handleOpenUserMenu(e)}>Profile</Button>
             <Menu
