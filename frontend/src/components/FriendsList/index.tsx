@@ -64,13 +64,29 @@ function FriendsList() {
     fetchFriends()
   }, [userId])
 
+  // Check user statuses
   useEffect(() => {
     if (!userId) return
 
     friendsStatusSocket.on(`${userId}-friend-status-change`, (data: any) => {
-      console.log('friend-status-change', data)
+      console.log('Friend status change', data)
+      setFriends((prevFriends) => {
+        const newFriends = prevFriends.map((friend) => {
+          if (friend.id.toString() === data.userId) {
+            return {
+              ...friend,
+              userStatus: data.status,
+            }
+          }
+          return friend
+        })
+        console.log('New friends', newFriends)
+        return newFriends
+      })
     })
   }, [userId])
+
+  console.log('Friends before render', friends)
 
   return (
     <div className={styles.friendsListContainer}>

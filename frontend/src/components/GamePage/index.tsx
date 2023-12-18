@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
-import styles from "./style.module.css";
+import React, { useState, useEffect, useContext } from 'react'
+import styles from './style.module.css'
 
-import { gameSocket } from "../../socket/index";
+// Socket
+import { gameSocket } from '../../socket/index'
+import { friendsStatusSocket } from 'socket'
 
 // Context
 import { AuthContext } from "../../auth";
 
 // Components
-import LoadingPage from "./LoadingPage";
-import GameConfig from "./GameConfig";
+import LoadingPage from './LoadingPage'
+import GameConfig from './GameConfig'
 
 interface GamePageProps {
-	// Define the props for the GamePage component here
+  // Define the props for the GamePage component here
 }
 
 function GamePage(props: GamePageProps) {
@@ -26,6 +28,13 @@ function GamePage(props: GamePageProps) {
 	}) => {
 		if (user && user.id) {
 			console.log("Joining game");
+      friendsStatusSocket.emit(
+        "statusRouter",
+        JSON.stringify({
+          userId: user.id,
+          status: "in-game",
+        }),
+      )
 			gameSocket.emit("joinGame", user.id);
 		} else {
 			alert("Please enter your username");
@@ -65,4 +74,4 @@ function GamePage(props: GamePageProps) {
 	);
 }
 
-export default GamePage;
+export default GamePage
