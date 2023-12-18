@@ -14,19 +14,17 @@ export class JoinService {
         this.joinRule = new JoinRule(roomPartipantsGatway);
     }
 
-    async execute(requestDTO: RequestDTO): Promise<ResponseDTO> {
+    async execute(requestDTO: RequestDTO): Promise<void> {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            const roomParticipants = await this.joinRule.apply(
+            await this.joinRule.apply(
                 requestDTO.userId,
                 requestDTO.roomId,
                 requestDTO.isOwner,
                 requestDTO.isAdamin
             );
-            const responseDTO = new ResponseDTO(roomParticipants);
-            this.logger.log(JSON.stringify({"Service has finished": {"response": responseDTO}}));
-            return responseDTO;
+            this.logger.log(JSON.stringify({"Service has finished": `User ${requestDTO.userId} has joined room ${requestDTO.roomId}`}));
         } catch (error) {
             this.logger.error(JSON.stringify({"Service has faield": error.message}))
             throw error;

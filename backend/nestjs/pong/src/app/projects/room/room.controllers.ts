@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Put, Param } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Put, Param, Delete } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateService } from 'src/core/projects/room/create/create.room.service';
 import RoomAdapter from './room.adapter';
@@ -6,7 +6,7 @@ import { CreateDTO } from './create.dto';
 import { RequestDTO as CreateRequestDTO } from 'src/core/projects/room/create/dtos/request.dto';
 import { ResponseDTO as CreateResponseDTO} from 'src/core/projects/room/create/dtos/response.dto';
 import { ListAllService } from 'src/core/projects/room/listAll/list.all.service';
-import { ResponseDTO as ListAllResponseDTO} from 'src/core/projects/room/listAll/dtos/response.dto';
+import { ResponseDTO as ListAllResponseDTO } from 'src/core/projects/room/listAll/dtos/response.dto';
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
 import { ListByUserIdService } from 'src/core/projects/room/listByUserId/list.by.user.id.service';
 import { RequestDTO as ListByUserIdRequestDTO } from 'src/core/projects/room/listByUserId/dtos/request.dto';
@@ -16,8 +16,12 @@ import { JoinDTO } from './join.dto';
 import { RequestDTO as JoinRequestDTO } from 'src/core/projects/room/join/dtos/request.dto';
 import { EntityManager } from 'typeorm';
 import RoomParticipantsAdapter from './room.participants.adapter';
-import RoomParticipantsDTO from 'src/core/projects/room/shared/dtos/room.participants.dto';
+import RoomByParticipantDTO from 'src/core/projects/room/listByUserId/dtos/room.by.participant.dto';
+import RoomParticipantDTO from 'src/core/projects/room/shared/dtos/room.participant.dto';
 import UserDTO from 'src/core/projects/room/shared/dtos/user.dto';
+import { RemoveUserService } from 'src/core/projects/room/removeUser/remove.user.service';
+import {RequestDTO as RemoveUserRequestDTO } from 'src/core/projects/room/removeUser/dtos/request.dto';
+import { RemoveUserDTO } from './remove.user.dto';
 
 
 @Controller('/room')
@@ -25,6 +29,7 @@ import UserDTO from 'src/core/projects/room/shared/dtos/user.dto';
 export class RoomController {
     private createService: CreateService;
     private joinService: JoinService;
+    private removeUserService: RemoveUserService;
     private listAllService: ListAllService;
     private listByUserIdService: ListByUserIdService;
 
@@ -49,6 +54,12 @@ export class RoomController {
         this.listByUserIdService = new ListByUserIdService(
             new Logger(ListByUserIdService.name),
             new RoomAdapter(entityManager)
+        );
+
+        this.removeUserService = new RemoveUserService(
+            new Logger(RemoveUserService.name),
+            new RoomAdapter(entityManager),
+            new RoomParticipantsAdapter(entityManager)
         );
     }
 
@@ -86,7 +97,7 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new CreateResponseDTO(
-                        new RoomDTO(1, 'room1')
+                        new RoomDTO(1, 'room1', true)
                 )
             }
         }
@@ -166,7 +177,7 @@ export class RoomController {
             },
             example: {
                 status: 'success',
-                message: 'user has joined the room'
+                message: 'user {userID} has joined the room'
             }
         }
     })
@@ -200,7 +211,84 @@ export class RoomController {
 
             return {
                 "status": "success",
-                "message": "user has joined the room"
+                "message": `user ${joinDTO.userId} has joined the room ${joinDTO.roomId}`
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Delete('/user/remove')
+    @ApiBody({
+        description: 'Data to remove a user from a room',
+        schema: {
+            type: 'Object',
+            properties: {
+                removerUserId: {type: 'number'},
+                removeUserId: {type: 'number'},
+                roomId: {type: 'number'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    removerUserId: 1,
+                    removeUserId: 2,
+                    roomId: 1
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has been removed from room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async removeUser(
+        @Body() removeUserDTO: RemoveUserDTO
+    ) {
+        try {
+            await this.removeUserService.execute(
+                new RemoveUserRequestDTO(
+                    removeUserDTO.removerUserId,
+                    removeUserDTO.removedUserId,
+                    removeUserDTO.roomId,
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${removeUserDTO.removedUserId} has been removed from room ${removeUserDTO.roomId}`
             };
 
         } catch (error) {
@@ -224,8 +312,7 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListAllResponseDTO([
-                    new RoomDTO(1, 'room1', [new RoomParticipantsDTO(
-                        1,
+                    new RoomDTO(1, 'room1', true, [new RoomParticipantDTO(
                         true,
                         false,
                         new UserDTO(
@@ -283,16 +370,8 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListByUserIdResponseDTO([
-                        new RoomDTO(1, 'room1', [new RoomParticipantsDTO(
-                            1,
-                            true,
-                            false,
-                            new UserDTO(
-                                1,
-                                'user',
-                                'nickname'
-                            )
-                        )])
+                        new RoomByParticipantDTO(1, "room1", true, true),
+                        new RoomByParticipantDTO(2, "room2", false, true)
                 ])
             }
         }
