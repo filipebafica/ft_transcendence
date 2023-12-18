@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Button } from "@mui/material";
 import styles from "./style.module.css";
 
@@ -10,6 +11,10 @@ interface WinnerProps {
 }
 
 function WinnerPage(props: WinnerProps) {
+	const [winnerResults, setWinnerResults] = useState({
+		result: "",
+		winnerId: 0,
+	});
 	const [returnGamePage, setReturnGamePage] = useState(false);
 
 	const handleGamePage = () => {
@@ -20,23 +25,21 @@ function WinnerPage(props: WinnerProps) {
 		return <GamePage />;
 	}
 
-	const gameId = props.gameId;
-	const playerId = Number(props.playerId);
-	let result: string;
+	axios
+		.get(`http://localhost:8080/game/${props.gameId}/winner`)
+		.then((response) => setWinnerResults(response.data));
 
-	// TODO: get result from backend
-	const winnerId = 1;
-	if (!winnerId) {
+	let result: string;
+	if (winnerResults.result === "draw") {
 		result = "Empate!";
-	} else if (playerId === winnerId) {
-		result = "You won!\nCongratulations!";
+	} else if (Number(props.playerId) === winnerResults.winnerId) {
+		result = "You won! Congratulations!";
 	} else {
-		result = "You lose!\n:(";
+		result = "You lose! :(";
 	}
 
 	return (
 		<div className={styles.winner}>
-			<div>gameId: {gameId}</div>
 			<div className={styles.result}>{result}</div>
 			<Button variant="outlined" size="large" onClick={handleGamePage}>
 				New Game
