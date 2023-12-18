@@ -1,4 +1,4 @@
-export interface MessageDTO {
+export interface InviteMessageDTO {
 	meta: string;
 	data: {
 		to: number;

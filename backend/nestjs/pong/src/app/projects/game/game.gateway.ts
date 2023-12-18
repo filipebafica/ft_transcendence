@@ -22,9 +22,10 @@ import { Socket } from "socket.io";
 import GameStateAdapter from "./game.state.adapter";
 import { MessageEmitterAdapter } from "./message.emitter.adapter";
 import { InviteRouterService } from "src/core/projects/game/inviteRouter/invite.router.service";
-import { MessageDTO } from "./message.dto";
+import { InviteMessageDTO as InviteMessageDTO } from "./invite.message.dto";
 import { Request as InviteRequest } from "src/core/projects/game/inviteRouter/dtos/request.dto";
 import { InvitationRegisterAdapter } from "./invitation.register.adapter";
+import { JoinMessageDTO } from "./join.message.dto";
 
 @WebSocketGateway({
 	path: '/websocket/game',
@@ -64,23 +65,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 	//Handles Join Game Socket
 	@SubscribeMessage('joinGame')
 	public async joinGame(
-		@MessageBody() uuid: number,
+		@MessageBody() message: string,
 		@ConnectedSocket() client: Socket,
 	): Promise<void> {
 		try {
 			const joinGameService: JoinGameService = new JoinGameService(
-				new Logger(),
+				new Logger(JoinGameService.name),
 				this.clientManagerAdapter,
 				this.waitingQueue,
 				this.gameStateManager,
 			);
 
-			const request: JoinGameRequest = new JoinGameRequest(
-				new PlayerConfig(uuid, client.id),
-			);
-			const response: JoinGameResponse = await joinGameService.execute(request);
+			const joinMessageDTO: JoinMessageDTO  = JSON.parse(message);
 
-			this.server.emit(uuid.toString(), response.gameState.id);
+			const response: JoinGameResponse = await joinGameService.execute(
+				new  JoinGameRequest(
+					client.id,
+					joinMessageDTO,
+				)
+			);
+
+			this.server.emit(joinMessageDTO.uuid.toString(), response.gameState.id);
 		}
 		catch (error) {
 			console.log(`COULDN'T JOIN THE GAME: ${[error.message]}`);
@@ -172,11 +177,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 					this.clientManagerAdapter,
 				);
 
-				const messageDTO: MessageDTO = JSON.parse(message);
+				const inviteMessageDTO: InviteMessageDTO = JSON.parse(message);
 				await inviteRouterService.execute(
 					new InviteRequest(
 						client.id,
-						messageDTO,
+						inviteMessageDTO,
 					)
 				);
 			} catch (error) {
