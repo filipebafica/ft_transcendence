@@ -1,4 +1,3 @@
-import RoomPartitipantsDTO from "../../join/dtos/room.participants.dto";
 
 export default interface RoomParticipantsGateway {
     join(
@@ -6,5 +5,10 @@ export default interface RoomParticipantsGateway {
         roomId: number,
         isOwner: boolean,
         isAdamin: boolean
-    ): Promise<RoomPartitipantsDTO>;
+    ): Promise<void>;
+
+    remove(
+        userId: number,
+        roomId: number
+    ): Promise<void>;
 }

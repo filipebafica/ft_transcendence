@@ -1,6 +1,6 @@
 import RoomParticipantsGateway from "../../shared/gateways/room.participants.gateways";
 
-export default class JoinRule {
+export default class RemoveRule {
     constructor(
         private readonly roomParticipantsGateway: RoomParticipantsGateway
     ) {
@@ -8,15 +8,11 @@ export default class JoinRule {
 
     async apply(
         userId: number,
-        roomId: number,
-        isOwner: boolean,
-        isAdamin: boolean
+        roomId: number
     ): Promise<void> {
-        await this.roomParticipantsGateway.join(
+        await this.roomParticipantsGateway.remove(
             userId,
-            roomId,
-            isOwner,
-            isAdamin
+            roomId
         );
     }
 }

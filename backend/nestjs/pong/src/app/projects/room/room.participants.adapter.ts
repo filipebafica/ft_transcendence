@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import RoomParticipantsGateway from "src/core/projects/room/shared/gateways/room.participants.gateways";
 import { EntityManager, Repository } from "typeorm";
 import { RoomParticipants } from "src/app/entities/room.participants.entity";
-import RoomPartitipantsDTO from "src/core/projects/room/join/dtos/room.participants.dto";
-import { plainToInstance } from "class-transformer";
 import { User } from "src/app/entities/user.entity";
 import { Room } from "src/app/entities/room.entity";
 
@@ -21,7 +19,7 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         roomId: number,
         isOwner: boolean,
         isAdmin: boolean
-    ): Promise<RoomPartitipantsDTO> {
+    ): Promise<void> {
         let entity = this.roomParticipantsRepository.create({
             is_owner: isOwner,
             is_admin: isAdmin,
@@ -29,7 +27,20 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
             user: { id: userId } as User
         });
 
-        entity = await this.roomParticipantsRepository.save(entity);
-        return plainToInstance(RoomPartitipantsDTO, entity);
+        await this.roomParticipantsRepository.save(entity);
+    }
+
+    async remove(
+        userId: number,
+        roomId: number
+    ): Promise<void> {
+        let entity = await this.roomParticipantsRepository.findOne({
+            where: {
+                 user: { id: userId } as User,
+                 room: { id: roomId } as Room
+            },
+        });
+
+        await this.roomParticipantsRepository.remove(entity);
     }
 }
