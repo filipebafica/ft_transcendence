@@ -41,8 +41,8 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  const endIndex = startIndex + recordsPerPage;
 		  const games = await this.gameHistoryRepository.find({
 			where: [
-			  { player_one_id: userId },
-			  { player_two_id: userId },
+			  { player_one_id: userId, status: GameStatus.Finished },
+			  { player_two_id: userId, status: GameStatus.Finished },
 			],
 			order: { id: 'ASC' }, // Assuming id is the primary key and represents the order
 			skip: Math.max(startIndex, 0), // Ensure skip is not negative
@@ -263,6 +263,35 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			return result.id;
 		} catch (error) {
 			throw error;
+		}
+	}
+
+	public async listAndCountMatchesByUserId(userId: number, index: number): Promise<{games: GameHistoryDTO[], pages: number}> {
+		try {
+		  const recordsPerPage = 10;
+	  
+		  const adjustedIndex = Math.max(index, 1);
+	  
+		  const startIndex = (adjustedIndex - 1) * recordsPerPage;
+		  const endIndex = startIndex + recordsPerPage;
+		  const [games, gamesCount] = await this.gameHistoryRepository.findAndCount({
+			where: [
+			  { player_one_id: userId, status: GameStatus.Finished },
+			  { player_two_id: userId, status: GameStatus.Finished },
+			],
+			order: { id: 'ASC' }, // Assuming id is the primary key and represents the order
+			skip: Math.max(startIndex, 0), // Ensure skip is not negative
+			take: endIndex - Math.max(startIndex, 0), // Limit the number of records retrieved
+		  });
+
+		  const gameHistoryDTOs = games.map((game) => this.convertToDTO(game));
+
+		  const pages: number = Math.ceil(gamesCount / recordsPerPage);
+
+		  return {games: gameHistoryDTOs, pages: pages};
+		} catch (error) {
+		  console.error(error.message);
+		  throw error;
 		}
 	}
 }

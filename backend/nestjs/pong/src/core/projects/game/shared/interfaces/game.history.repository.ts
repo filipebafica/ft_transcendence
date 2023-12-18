@@ -60,6 +60,11 @@ export interface GameHistoryRepository {
 	getRunningGameByPlayerId(
 		playerId: number,
 	): Promise<number | null>;
+
+	listAndCountMatchesByUserId(
+		userId: number,
+		index: number
+	): Promise<{games: GameHistoryDTO[], pages: number}>;
 }
 
 //result can be draw, normal, disconnect
