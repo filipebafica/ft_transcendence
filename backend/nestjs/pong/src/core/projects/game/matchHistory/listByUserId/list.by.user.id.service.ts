@@ -20,8 +20,11 @@ export class ListByUserIdService {
 				}
 			));
 
-			const matchHistories = await this.gameHistoryRepository.listMatchesByUserId(request.userId, request.index);
-			const response: Response = new Response(matchHistories);
+			const result = await this.gameHistoryRepository.listAndCountMatchesByUserId(request.userId, request.index);
+			const response: Response = new Response(
+				result.games,
+				result.pages,
+			);
 
 			this.logger.log(JSON.stringify(
 				{
