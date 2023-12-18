@@ -7,6 +7,7 @@ import LandingPage from '../components/LandingPage'
 import FriendsList from '../components/FriendsList'
 import StatsPage from '../components/StatsPage'
 import Profile from '../components/SignupPage/Profile';
+import DirectChatPage from "components/DirectChatPage";
 
 import LayoutWrapper from "./layoutWrapper";
 
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 		path: '/settings',
 		Component: LayoutWrapper(Profile),
 	},
+  {
+    path: '/friends/chat/:friendId',
+    Component: LayoutWrapper(DirectChatPage),
+  }
 ])
 
 export default router;

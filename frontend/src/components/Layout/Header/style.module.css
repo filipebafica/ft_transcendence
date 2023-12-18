@@ -34,3 +34,8 @@
 .logo {
     cursor: pointer;
 }
+
+.badgePending > span {
+    top: 15px;
+    right: -5px;
+}
