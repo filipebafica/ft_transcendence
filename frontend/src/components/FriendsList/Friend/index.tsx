@@ -23,7 +23,7 @@ interface FriendProps {
 const userStatuses = {
   online: 'Online',
   offline: 'Offline',
-  [`in-game`]: 'In Game'
+  [`in-game`]: 'In Game',
 }
 
 function Friend(props: FriendProps) {
@@ -39,17 +39,27 @@ function Friend(props: FriendProps) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         variant="dot"
         className={`${styles.friendBadge} ${
-          friend.userStatus === 'online' ? styles.online : styles.offline
+          friend.userStatus === 'online'
+            ? styles.online
+            : friend.userStatus === 'in-game'
+            ? styles.inGame
+            : styles.offline
         }`}
       >
         <Avatar alt={friend.nickName} src={friend.avatar} />
       </StyledBadge>
       <div className={styles.friendInfo}>
         <h3>{friend.nickName}</h3>
-        <p>{friend.userStatus ? userStatuses[friend.userStatus as 'online'] : userStatuses.offline }</p>
+        <p>
+          {friend.userStatus ? userStatuses[friend.userStatus as 'online'] : userStatuses.offline}
+        </p>
       </div>
       {pendingMessages !== 0 && (
-        <Chip className={styles.newMessages} label={`${pendingMessages} new message${pendingMessages > 1 ? "s" : ""}`} variant="outlined" />
+        <Chip
+          className={styles.newMessages}
+          label={`${pendingMessages} new message${pendingMessages > 1 ? 's' : ''}`}
+          variant="outlined"
+        />
       )}
     </div>
   )

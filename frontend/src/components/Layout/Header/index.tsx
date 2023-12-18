@@ -59,6 +59,13 @@ const Header = () => {
   }
 
   const handleClickSignOut = () => {
+    friendsStatusSocket.emit(
+      'statusRouter',
+      JSON.stringify({
+        userId: id,
+        status: 'offline',
+      }),
+    )
     signOut()
     setAnchorElUser(null)
     window.location.href = '/'
