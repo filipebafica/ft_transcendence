@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "http";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Server } from "socket.io";
 import { JoinGameService } from "src/core/projects/game/joinGame/join.game.service";
 import { Response as JoinGameResponse } from "src/core/projects/game/joinGame/dtos/response.dto";
 import { Request as JoinGameRequest } from "src/core/projects/game/joinGame/dtos/request.dto";
@@ -20,6 +20,11 @@ import { ClientManagerAdapter } from "./client.manager.adapter";
 import { WaitingQueueAdapter } from "./waiting.queue.adapter";
 import { Socket } from "socket.io";
 import GameStateAdapter from "./game.state.adapter";
+import { MessageEmitterAdapter } from "./message.emitter.adapter";
+import { InviteRouterService } from "src/core/projects/game/inviteRouter/invite.router.service";
+import { MessageDTO } from "./message.dto";
+import { Request as InviteRequest } from "src/core/projects/game/inviteRouter/dtos/request.dto";
+import { InvitationRegisterAdapter } from "./invitation.register.adapter";
 
 @WebSocketGateway({
 	path: '/websocket/game',
@@ -27,11 +32,13 @@ import GameStateAdapter from "./game.state.adapter";
 		origin: '*',
 	},
 })
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
 	private waitingQueue: WaitingQueueAdapter;
 	private gameStateManager: GameStateAdapter;
 	private gameHistoryAdapter: GameHistoryAdapter;
 	private clientManagerAdapter: ClientManagerAdapter;
+	private messageEmitterAdapter: MessageEmitterAdapter;
+	private invitationRegisterAdapter: InvitationRegisterAdapter;
 
 	@WebSocketServer()
 	server: Server;
@@ -44,7 +51,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.clientManagerAdapter = new ClientManagerAdapter(entityManager);
 		this.waitingQueue = new WaitingQueueAdapter(entityManager);
 		this.gameStateManager = new GameStateAdapter(this.gameHistoryAdapter);
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
+		this.invitationRegisterAdapter = new InvitationRegisterAdapter(entityManager);
+	}
 
+	afterInit() {
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
 		this.handleGame();
 		this.handleFinishedGame();
 	}
@@ -68,8 +80,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			);
 			const response: JoinGameResponse = await joinGameService.execute(request);
 
-			console.log(`GAMESTATE_ID: ${response.gameState.id}`);
-			console.log(`TYPEOF: ${typeof(response.gameState.id)}`)
 			this.server.emit(uuid.toString(), response.gameState.id);
 		}
 		catch (error) {
@@ -145,6 +155,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			console.log(`COULDN'T MOVE PLAYER: ${error.message}`)
 		}
 	}
+
+	@SubscribeMessage('inviteRouter')
+	public async inviteRouter(
+		@MessageBody() message: string,
+		@ConnectedSocket() client: Socket,
+		) {
+			try {
+				const inviteRouterService: InviteRouterService = new InviteRouterService(
+					new Logger(InviteRouterService.name),
+					this.messageEmitterAdapter,
+					this.gameStateManager,
+					this.invitationRegisterAdapter,
+					this.gameHistoryAdapter,
+					this.waitingQueue,
+					this.clientManagerAdapter,
+				);
+
+				const messageDTO: MessageDTO = JSON.parse(message);
+				await inviteRouterService.execute(
+					new InviteRequest(
+						client.id,
+						messageDTO,
+					)
+				);
+			} catch (error) {
+				console.log(`ERROR INVITING ROUTER: ${[error.message]}`)
+			}
+		}
 
 	public handleConnection(client: Socket, ...args: any[]) {
 		console.log(`Client connected from game: ${client.id}`);
