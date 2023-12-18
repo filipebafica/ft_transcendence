@@ -4,7 +4,7 @@ import styles from "./style.module.css";
 import { gameSocket } from "../../socket/index";
 
 // Context
-import { AuthContext } from '../../auth'
+import { AuthContext } from "../../auth";
 
 // Components
 import LoadingPage from "./LoadingPage";
@@ -15,11 +15,15 @@ interface GamePageProps {
 }
 
 function GamePage(props: GamePageProps) {
-	const { user } = useContext(AuthContext)
+	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
 	const [gameId, setGameId] = useState("");
 
-	const handleMatching = (config: { paddle: number, fan: number, field: number }) => {
+	const handleMatching = (config: {
+		paddle: number;
+		fan: number;
+		field: number;
+	}) => {
 		if (user && user.id) {
 			console.log("Joining game");
 			gameSocket.emit("joinGame", user.id);
@@ -48,11 +52,15 @@ function GamePage(props: GamePageProps) {
 
 	return (
 		<div className={styles.container}>
-			<GameConfig onJoinGame={(paddle, fan, field) => handleMatching({
-				paddle: paddle,
-				fan: fan,
-				field: field,
-			})}/>
+			<GameConfig
+				onJoinGame={(paddle, fan, field) =>
+					handleMatching({
+						paddle: paddle,
+						fan: fan,
+						field: field,
+					})
+				}
+			/>
 		</div>
 	);
 }

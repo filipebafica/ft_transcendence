@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import { getMatchResult } from "api/matchResult";
 import styles from "./style.module.css";
 
 import GamePage from ".";
@@ -17,6 +17,20 @@ function WinnerPage(props: WinnerProps) {
 	});
 	const [returnGamePage, setReturnGamePage] = useState(false);
 
+	useEffect(() => {
+		const fetchWinnerResults = async () => {
+			let matchResult;
+			try {
+				matchResult = await getMatchResult(props.gameId);
+			} catch (err) {
+				console.log(err);
+			}
+			setWinnerResults(matchResult);
+		};
+
+		fetchWinnerResults();
+	}, [props.gameId]);
+
 	const handleGamePage = () => {
 		setReturnGamePage(true);
 	};
@@ -24,10 +38,6 @@ function WinnerPage(props: WinnerProps) {
 	if (returnGamePage) {
 		return <GamePage />;
 	}
-
-	axios
-		.get(`http://localhost:8080/game/${props.gameId}/winner`)
-		.then((response) => setWinnerResults(response.data));
 
 	let result: string;
 	if (winnerResults.result === "draw") {
