@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import MessageBox from "../../Shared/MessageBox";
-import RoomUserCard from "../RoomUser";
+import RoomUserCard from "../RoomUserCard";
 
 import { roomSocket } from "socket";
 
