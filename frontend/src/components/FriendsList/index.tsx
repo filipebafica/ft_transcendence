@@ -42,7 +42,16 @@ function FriendsList() {
     try {
       const res = await addFriend(userId, friendNickName)
       console.log('Add friend response', res)
-      navigate('/friends')
+
+      // Reload friends list
+      const friends = await listFriends(userId)
+      const friendsWithStatus = friends.map((friend: any) => {
+        return {
+          ...friend,
+          userStatus: friend.userStatus?.status,
+        }
+      })
+      setFriends(friendsWithStatus)
     } catch (err) {
       console.log(err)
     }
@@ -61,6 +70,7 @@ function FriendsList() {
     console.log('block', friendId)
   }
 
+  // Fetch friends list
   useEffect(() => {
     if (!userId) return
 
@@ -71,8 +81,16 @@ function FriendsList() {
       } catch (err) {
         console.log(err)
       }
-      console.log('Friends', friends)
-      setFriends(friends)
+      console.log('Friends',friends)
+
+      const friendsWithStatus = friends.map((friend: any) => {
+        return {
+          ...friend,
+          userStatus: friend.userStatus?.status,
+        }
+      })
+
+      setFriends(friendsWithStatus)
     }
 
     fetchFriends()
