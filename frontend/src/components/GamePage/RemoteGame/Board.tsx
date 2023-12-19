@@ -90,8 +90,8 @@ function Board(props: BoardProps) {
 
 		const renderGameState = (gameState: GameState) => {
 			// context.fillStyle = player1Background
-			context.fillStyle = fieldColors[0];
-			context.fillRect(0, 0, boardWidth / 2, boardHeight);
+			context.fillStyle = fieldColors[3];
+			context.fillRect(0, 0, boardWidth / 2 + 1, boardHeight);
 
 			// context.fillStyle = player2Background
 			context.fillStyle = fieldColors[1];
@@ -120,7 +120,7 @@ function Board(props: BoardProps) {
 				gameState.player2.height
 			);
 
-			context.fillStyle = "black";
+			context.fillStyle = "white";
 			context.fillRect(
 				gameState.ball.x,
 				gameState.ball.y,
@@ -128,9 +128,9 @@ function Board(props: BoardProps) {
 				gameState.ball.height
 			);
 
-			context.fillStyle = "black";
+			context.fillStyle = "white";
 			for (let i = 10; i < boardHeight; i += 25) {
-				context.fillRect((boardWidth - 2) / 2, i, 4, 4);
+				context.fillRect(boardWidth / 2 - 2, i, 5, 5);
 			}
 		};
 
