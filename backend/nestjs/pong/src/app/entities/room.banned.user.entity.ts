@@ -12,6 +12,6 @@ export class RoomBannedUser {
     room: Room;
 
     @ManyToOne(() => User, user => user.id)
-    @JoinColumn({ name: 'blocked_user_id' })
+    @JoinColumn({ name: 'banned_user_id' })
     banned_user: User;
 }
