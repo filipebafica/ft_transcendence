@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import { getMatchResult } from "api/matchResult";
 import styles from "./style.module.css";
 
 import GamePage from ".";
@@ -10,7 +11,25 @@ interface WinnerProps {
 }
 
 function WinnerPage(props: WinnerProps) {
+	const [winnerResults, setWinnerResults] = useState({
+		result: "",
+		winnerId: 0,
+	});
 	const [returnGamePage, setReturnGamePage] = useState(false);
+
+	useEffect(() => {
+		const fetchWinnerResults = async () => {
+			let matchResult;
+			try {
+				matchResult = await getMatchResult(props.gameId);
+			} catch (err) {
+				console.log(err);
+			}
+			setWinnerResults(matchResult);
+		};
+
+		fetchWinnerResults();
+	}, [props.gameId]);
 
 	const handleGamePage = () => {
 		setReturnGamePage(true);
@@ -20,15 +39,10 @@ function WinnerPage(props: WinnerProps) {
 		return <GamePage />;
 	}
 
-	const gameId = props.gameId;
-	const playerId = Number(props.playerId);
 	let result: string;
-
-	// TODO: get result from backend
-	const winnerId = 1;
-	if (!winnerId) {
+	if (winnerResults.result === "draw") {
 		result = "Empate!";
-	} else if (playerId === winnerId) {
+	} else if (Number(props.playerId) === winnerResults.winnerId) {
 		result = "You won! Congratulations!";
 	} else {
 		result = "You lose! :(";
@@ -36,7 +50,6 @@ function WinnerPage(props: WinnerProps) {
 
 	return (
 		<div className={styles.winner}>
-			<div>gameId: {gameId}</div>
 			<div className={styles.result}>{result}</div>
 			<Button variant="outlined" size="large" onClick={handleGamePage}>
 				New Game

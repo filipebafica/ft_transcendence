@@ -1,5 +1,4 @@
 import RoomParticipantsGateway from "../../shared/gateways/room.participants.gateways";
-import RoomPartitipantsDTO from "../dtos/room.participants.dto";
 
 export default class JoinRule {
     constructor(
@@ -12,8 +11,8 @@ export default class JoinRule {
         roomId: number,
         isOwner: boolean,
         isAdamin: boolean
-    ): Promise<RoomPartitipantsDTO> {
-        return await this.roomParticipantsGateway.join(
+    ): Promise<void> {
+        await this.roomParticipantsGateway.join(
             userId,
             roomId,
             isOwner,

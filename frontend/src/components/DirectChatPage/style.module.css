@@ -1,0 +1,58 @@
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: left;
+	margin: 20px;
+}
+
+.container button {
+	margin-left: 5px;
+	width: 100px;
+	padding: 3px;
+}
+
+.inputContainer > div{
+	width: 310px;
+}
+
+.inputContainer > button{
+	height: 79px;
+}
+
+.messagesBox {
+	width: 415px;
+	height: 500px;
+	overflow-y: auto;
+	border: 1px solid #ccc;
+	padding: 10px;
+	box-sizing: border-box;
+	margin-bottom: 2px;
+}
+
+.messageContainer {
+	display: flex;
+	align-items: center;
+	margin: 10px 5px 10px;
+}
+
+.messageContainer .from {
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+.messageContainer .message {
+	margin-left: 15px;
+}
+
+.messageContainer .timeStamp {
+	font-size: 13px;
+	width: 60px;
+}
+
+.chatSection {
+	margin: 0px;
+}
+
+.friendCard > div {
+	margin-top: 0px;
+}

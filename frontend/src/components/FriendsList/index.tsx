@@ -1,7 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // API
-import { addFriend, listFriends } from 'api/friend'
+import { listFriends } from 'api/friend'
 
 // Style
 import styles from './style.module.css'
@@ -9,51 +10,41 @@ import styles from './style.module.css'
 // Context
 import { AuthContext } from 'auth'
 
-// Constants
-// import { testUsers } from 'constants/fake'
-
 // Socket
-
 import { friendsStatusSocket } from 'socket'
 
 // Components
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import Divider from '@mui/material/Divider'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Typography from '@mui/material/Typography'
 
-import Friend from './Friend'
+import FriendItem from './FriendItem'
+
+interface FriendInterface {
+  id: string
+  nickName: string
+  userStatus: string
+}
 
 function FriendsList() {
   const { user } = useContext(AuthContext)
-  const [friends, setFriends] = useState<any>([])
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+  const [friends, setFriends] = useState<FriendInterface[]>([])
+
+  const navigate = useNavigate()
 
   const userId = user?.id
 
-  const handleFriendClick = (e: any) => {
-    setAnchorElUser(e.currentTarget)
+  const handleClickProfile = (friendId: string) => {
+    console.log('profile', friendId)
   }
 
-  const handleCloseFriendMenu = () => {
-    setAnchorElUser(null)
+  const handleClickChat = (friendId: string) => {
+    console.log('chat', friendId)
+    navigate(`/friends/chat/${friendId}`)
   }
 
-  const handleClickProfile = () => {
-    console.log('profile')
-  }
-
-  const handleClickChat = () => {
-    console.log('chat')
-  }
-
-  const handleClickBlock = () => {
-    console.log('block')
+  const handleClickBlock = (friendId: string) => {
+    console.log('block', friendId)
   }
 
   useEffect(() => {
@@ -63,23 +54,39 @@ function FriendsList() {
       let friends
       try {
         friends = await listFriends(userId)
-      }
-      catch (err) {
+      } catch (err) {
         console.log(err)
       }
+      console.log('Friends',friends)
       setFriends(friends)
     }
 
     fetchFriends()
   }, [userId])
 
+  // Check user statuses
   useEffect(() => {
     if (!userId) return
 
     friendsStatusSocket.on(`${userId}-friend-status-change`, (data: any) => {
-      console.log('friend-status-change', data);
+      console.log('Friend status change', data)
+      setFriends((prevFriends) => {
+        const newFriends = prevFriends.map((friend) => {
+          if (friend.id.toString() === data.userId) {
+            return {
+              ...friend,
+              userStatus: data.status,
+            }
+          }
+          return friend
+        })
+        console.log('New friends', newFriends)
+        return newFriends
+      })
     })
   }, [userId])
+
+  console.log('Friends before render', friends)
 
   return (
     <div className={styles.friendsListContainer}>
@@ -89,38 +96,15 @@ function FriendsList() {
       </div>
       <div className={styles.friendsList}>
         <List>
-          {friends.map((friend: any) => {
-            return (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={(e) => handleFriendClick(e)}>
-                    <Friend key={friend.userId} friend={friend} />
-                  </ListItemButton>
-                </ListItem>
-                <Divider component="li" />
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseFriendMenu}
-                  anchorOrigin={{
-                    vertical: 'center',
-                    horizontal: 'center',
-                  }}
-                >
-                  <MenuItem key={'profile'} onClick={handleClickProfile}>
-                    <Typography textAlign="center">{'Profile'}</Typography>
-                  </MenuItem>
-                  <MenuItem key={'chat'} onClick={handleClickChat}>
-                    <Typography textAlign="center">{'Chat'}</Typography>
-                  </MenuItem>
-                  <MenuItem key={'block'} onClick={handleClickBlock}>
-                    <Typography textAlign="center">{'Block'}</Typography>
-                  </MenuItem>
-                </Menu>
-              </>
-            )
-          })}
+          {friends.map((friend) => (
+            <FriendItem
+              key={friend.id}
+              friend={friend}
+              onProfileClick={handleClickProfile}
+              onChatClick={handleClickChat}
+              onBlockClick={handleClickBlock}
+            />
+          ))}
         </List>
       </div>
     </div>

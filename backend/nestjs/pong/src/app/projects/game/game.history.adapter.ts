@@ -1,5 +1,6 @@
 import { GameHistory } from "src/app/entities/game.history.entity";
 import { GameHistoryDTO } from "src/core/projects/game/shared/dtos/game.history.dto";
+import { GameStatus } from "src/core/projects/game/shared/enums/game.status";
 import { GameHistoryRepository as GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
 import { EntityManager, Repository } from "typeorm";
 
@@ -40,8 +41,8 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  const endIndex = startIndex + recordsPerPage;
 		  const games = await this.gameHistoryRepository.find({
 			where: [
-			  { player_one_id: userId },
-			  { player_two_id: userId },
+			  { player_one_id: userId, status: GameStatus.Finished },
+			  { player_two_id: userId, status: GameStatus.Finished },
 			],
 			order: { id: 'ASC' }, // Assuming id is the primary key and represents the order
 			skip: Math.max(startIndex, 0), // Ensure skip is not negative
@@ -215,6 +216,104 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 			}
 
 			return result.winner_id;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async createPrivateGame(
+		status: number,
+		player1Score: number,
+		player2Score: number,
+		player1Id: number,
+		player2Id: number,
+	): Promise<number> {
+		try {
+			let entity = await this.gameHistoryRepository.create({
+				status: status,
+				player_one_id: player1Id,
+				player_two_id: player2Id,
+				player_one_score: player1Score,
+				player_two_score: player2Score,
+			})
+
+			entity = await this.gameHistoryRepository.save(entity);
+			return entity.id;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async getRunningGameByPlayerId(
+		playerId: number,
+	): Promise<number | null> {
+		try {
+			const result = await this.gameHistoryRepository.findOne({
+				where: [
+					{ player_one_id: playerId },
+					{ player_two_id: playerId },
+					{ status: GameStatus.Running},
+				],
+			});
+
+			if (result == undefined) {
+				return null;
+			}
+
+			return result.id;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public async listAndCountMatchesByUserId(userId: number, index: number): Promise<{games: GameHistoryDTO[], pages: number}> {
+		try {
+		  const recordsPerPage = 10;
+	  
+		  const adjustedIndex = Math.max(index, 1);
+	  
+		  const startIndex = (adjustedIndex - 1) * recordsPerPage;
+		  const endIndex = startIndex + recordsPerPage;
+		  const [games, gamesCount] = await this.gameHistoryRepository.findAndCount({
+			where: [
+			  { player_one_id: userId, status: GameStatus.Finished },
+			  { player_two_id: userId, status: GameStatus.Finished },
+			],
+			order: { id: 'ASC' }, // Assuming id is the primary key and represents the order
+			skip: Math.max(startIndex, 0), // Ensure skip is not negative
+			take: endIndex - Math.max(startIndex, 0), // Limit the number of records retrieved
+		  });
+
+		  const gameHistoryDTOs = games.map((game) => this.convertToDTO(game));
+
+		  const pages: number = Math.ceil(gamesCount / recordsPerPage);
+
+		  return {games: gameHistoryDTOs, pages: pages};
+		} catch (error) {
+		  console.error(error.message);
+		  throw error;
+		}
+	}
+
+	public async updateWaitingGameStatus(gameId: number, gameStatus: GameStatus): Promise<void> {
+		try {
+			const gameHistory = await this.gameHistoryRepository.findOne({
+				where: {
+					id: gameId,
+					status: GameStatus.Waiting,
+				},
+				lock: {
+					mode: "pessimistic_write",
+				}
+			});
+
+			if (gameHistory == null) {
+				throw Error("There is no game to update with max score");
+			}
+
+			gameHistory.status = gameStatus;
+
+			await this.gameHistoryRepository.save(gameHistory);
 		} catch (error) {
 			throw error;
 		}

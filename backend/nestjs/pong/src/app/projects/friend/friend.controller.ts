@@ -195,7 +195,7 @@ export class FriendController {
         }
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         description: 'Successful response',
         schema: {
             type: 'Object',

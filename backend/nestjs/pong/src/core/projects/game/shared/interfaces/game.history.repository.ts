@@ -1,4 +1,5 @@
 import { GameHistoryDTO } from "../dtos/game.history.dto";
+import { GameStatus } from "../enums/game.status";
 
 export interface GameHistoryRepository {
 	getByGameId(
@@ -48,6 +49,29 @@ export interface GameHistoryRepository {
 	getWinnerByGameId(
 		gameId: number
 	): Promise<number | null>;
+
+	createPrivateGame(
+		status: number,
+		player1Score: number,
+		player2Score: number,
+		player1Id: number,
+		player2Id: number,
+	): Promise<number>;
+
+	getRunningGameByPlayerId(
+		playerId: number,
+	): Promise<number | null>;
+
+	listAndCountMatchesByUserId(
+		userId: number,
+		index: number,
+	): Promise<{games: GameHistoryDTO[], pages: number}>;
+
+	updateWaitingGameStatus(
+		gameId: number, 
+		gameStatus: GameStatus,
+	): Promise<void>;
+
 }
 
 //result can be draw, normal, disconnect

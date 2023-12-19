@@ -2,14 +2,10 @@ import Ball from "src/core/projects/game/shared/entities/ball";
 import Canvas from "src/core/projects/game/shared/entities/canvas";
 import GameState from "src/core/projects/game/shared/entities/game.state";
 import Player from "src/core/projects/game/shared/entities/player";
+import { PlayerCustomization } from "src/core/projects/game/shared/entities/player.customization";
+import { GameStatus } from "src/core/projects/game/shared/enums/game.status";
 import { GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
 import { GameStateInterface } from "src/core/projects/game/shared/interfaces/game.state.interface";
-
-enum Status {
-	Waiting,
-	Running,
-	Finished,
-}
 
 export default class GameStateAdapter implements GameStateInterface {
 	public openedGames: Map<number, GameState> = new Map<number, GameState>();
@@ -31,15 +27,15 @@ export default class GameStateAdapter implements GameStateInterface {
 		private gameHistoryRepository: GameHistoryRepository,
 	){}
 
-	public async createGame(playerId: number, playerName: string): Promise<GameState> {
+	public async createGame(playerId: number, customization: PlayerCustomization, playerName: string): Promise<GameState> {
 		const gameId: number = await this.gameHistoryRepository.createGame(
-			Status.Waiting,
+			GameStatus.Waiting,
 			0,
 			0,
 			playerId,
 		);
 
-		let player: Player = this.createPlayer(playerId, 1, playerName);
+		let player: Player = this.createPlayer(playerId, 1, playerName, customization);
 		let ball: Ball = this.createBall();
 		let board: Canvas = this.createBoard();
 		let gameState: GameState = {
@@ -49,7 +45,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			player1Score: 0,
 			player2Score: 0,
 			board: board,
-			status: Status.Waiting,
+			status: GameStatus.Waiting,
 		};
 
 		this.openedGames.set(gameState.id, gameState);
@@ -63,7 +59,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		}
 		this.openedGames.delete(gameId);
 
-		gameState.status = Status.Finished;
+		gameState.status = GameStatus.Finished;
 
 		//there is only one player on the game and they've disconnected
 		if (gameState.player1 == null || gameState.player2 == null) {
@@ -84,11 +80,11 @@ export default class GameStateAdapter implements GameStateInterface {
 		return gameState;
 	}
 
-	public async createSecondPlayer(playerId: number, gameId: number, playerName: string): Promise<GameState> {
-		let player: Player = this.createPlayer(playerId, 2, playerName);
+	public async createSecondPlayer(playerId: number, customization: PlayerCustomization, gameId: number, playerName: string): Promise<GameState> {
+		let player: Player = this.createPlayer(playerId, 2, playerName, customization);
 		let gameState: GameState = this.openedGames.get(gameId);
 		gameState.player2 = player;
-		gameState.status = Status.Running;
+		gameState.status = GameStatus.Running;
 
 		await this.gameHistoryRepository.updateGameHistoryWithSecondPlayer(
 			gameState.id,
@@ -102,7 +98,7 @@ export default class GameStateAdapter implements GameStateInterface {
 	}
 
 	public async updateGame(gameId: number, currentGameState: GameState): Promise<void> {
-		if (currentGameState.status != Status.Running) {
+		if (currentGameState.status != GameStatus.Running) {
 			return ;
 		}
 
@@ -114,7 +110,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		 * When the game is finished it stops updating.
 		 */
 		if (this.isMaxScore(gameState.player1Score, gameState.player2Score)) {
-			gameState.status = Status.Finished;
+			gameState.status = GameStatus.Finished;
 			this.openedGames.delete(gameId);
 
 			const winnerId: number = this.calculateWinner(gameState);
@@ -244,7 +240,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		return new Promise(resolve => setTimeout(resolve, this.interval));
 	}
 
-	private createPlayer(id: number, playerNumber: number, playerName: string): Player {
+	private createPlayer(id: number, playerNumber: number, playerName: string, customization?: PlayerCustomization): Player {
 		return {
 			id: id,
 			name: playerName,
@@ -253,6 +249,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			width: this.playerWidth,
 			height: this.playerHeight,
 			speed: this.initialPlayerSpeed,
+			customization:  customization,
 		};
 	}
 
@@ -281,7 +278,7 @@ export default class GameStateAdapter implements GameStateInterface {
 	public updatePlayerSpeed(gameId: number, playerId: number, action: string): void {
 		const gameState = this.openedGames.get(gameId);
 		
-		if (gameState.status != Status.Running) {
+		if (gameState.status != GameStatus.Running) {
 			return ;
 		}
 
@@ -371,5 +368,63 @@ export default class GameStateAdapter implements GameStateInterface {
 		} else if (player2Score > player1Score) {
 			return player2Id;
 		}
+	}
+
+	public async createPrivateGame(
+		playerOneId: number,
+		playerOneName: string,
+		playerTwoId: number,
+		playerTwoName: string,
+	): Promise<GameState> {
+		const gameId: number = await this.gameHistoryRepository.createPrivateGame(
+			GameStatus.Running,
+			0,
+			0,
+			playerOneId,
+			playerTwoId,
+		);
+
+		let playerOne: Player = this.createPlayer(playerOneId, 1, playerOneName);
+		let playerTwo: Player = this.createPlayer(playerTwoId, 2, playerTwoName);
+		let ball: Ball = this.createBall();
+		let board: Canvas = this.createBoard();
+		let gameState: GameState = {
+			id: gameId,
+			status: GameStatus.Running,
+			ball: ball,
+			board: board,
+			player1Score: 0,
+			player2Score: 0,
+			player1: playerOne,
+			player2: playerTwo,
+		}
+
+		this.openedGames.set(gameId, gameState);
+		return gameState;
+	}
+	
+	public async updateGameWithCustomization(
+		playerId: number,
+		gameId: number,
+		customization: PlayerCustomization
+	): Promise<GameState> {
+		await this.gameHistoryRepository.updateWaitingGameStatus(
+			gameId,
+			GameStatus.Running,
+		);
+
+		const gameState: GameState = this.openedGames.get(gameId);
+		if (gameState.player1.id == playerId) {
+			gameState.player1.customization = customization;
+		} else if (gameState.player2.id == playerId) {
+			gameState.player2.customization = customization;
+		} else {
+			throw Error("PlayerId for customization doesn't exist on the game");
+		}
+
+		gameState.status = GameStatus.Running;
+		this.openedGames.set(gameId, gameState);
+
+		return gameState;		
 	}
 }

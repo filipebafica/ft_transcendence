@@ -2,6 +2,11 @@ export default class PlayerConfig {
 	constructor(
 		public uuid: number,
 		public clientId: string,
+		public customization: {
+			paddleColor: number,
+			fans: number,
+			fieldColor: number,
+		}
 	) {
 	}
 

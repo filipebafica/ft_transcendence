@@ -14,5 +14,13 @@
 }
 
 .offline > span{
+	background-color: rgb(95, 95, 95);
+}
+
+.inGame > span {
 	background-color: #a81c17;
+}
+
+.newMessages {
+	margin-left: 69px;
 }

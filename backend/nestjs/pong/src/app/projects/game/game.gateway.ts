@@ -1,10 +1,9 @@
 import { Logger } from "@nestjs/common";
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "http";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Server } from "socket.io";
 import { JoinGameService } from "src/core/projects/game/joinGame/join.game.service";
 import { Response as JoinGameResponse } from "src/core/projects/game/joinGame/dtos/response.dto";
 import { Request as JoinGameRequest } from "src/core/projects/game/joinGame/dtos/request.dto";
-import PlayerConfig from "src/core/projects/game/shared/entities/player.config";
 import { HandleGameService } from "src/core/projects/game/handleGame/handle.game.service";
 import { PlayerActionService } from "src/core/projects/game/playerAction/player.action.service";
 import { Request as PlayerActionRequest } from "src/core/projects/game/playerAction/dtos/request.dto";
@@ -20,6 +19,15 @@ import { ClientManagerAdapter } from "./client.manager.adapter";
 import { WaitingQueueAdapter } from "./waiting.queue.adapter";
 import { Socket } from "socket.io";
 import GameStateAdapter from "./game.state.adapter";
+import { MessageEmitterAdapter } from "./message.emitter.adapter";
+import { InviteService } from "src/core/projects/game/inviteRouter/invite/invite.service";
+import { InviteMessageDTO as InviteMessageDTO } from "./invite.message.dto";
+import { Request as InviteRequest } from "src/core/projects/game/inviteRouter/invite/dtos/request.dto";
+import { InvitationRegisterAdapter } from "./invitation.register.adapter";
+import { JoinMessageDTO } from "./join.message.dto";
+import { CustomizeGameService } from "src/core/projects/game/inviteRouter/customize/customize.game.service";
+import { CustomizeMessageDTO } from "./customize.message.dto";
+import { Request as CustomizeGameServiceRequest} from "src/core/projects/game/inviteRouter/customize/dtos/request.dto";
 
 @WebSocketGateway({
 	path: '/websocket/game',
@@ -27,11 +35,13 @@ import GameStateAdapter from "./game.state.adapter";
 		origin: '*',
 	},
 })
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
 	private waitingQueue: WaitingQueueAdapter;
 	private gameStateManager: GameStateAdapter;
 	private gameHistoryAdapter: GameHistoryAdapter;
 	private clientManagerAdapter: ClientManagerAdapter;
+	private messageEmitterAdapter: MessageEmitterAdapter;
+	private invitationRegisterAdapter: InvitationRegisterAdapter;
 
 	@WebSocketServer()
 	server: Server;
@@ -44,7 +54,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.clientManagerAdapter = new ClientManagerAdapter(entityManager);
 		this.waitingQueue = new WaitingQueueAdapter(entityManager);
 		this.gameStateManager = new GameStateAdapter(this.gameHistoryAdapter);
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
+		this.invitationRegisterAdapter = new InvitationRegisterAdapter(entityManager);
+	}
 
+	afterInit() {
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
 		this.handleGame();
 		this.handleFinishedGame();
 	}
@@ -52,25 +67,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	//Handles Join Game Socket
 	@SubscribeMessage('joinGame')
 	public async joinGame(
-		@MessageBody() uuid: number,
+		@MessageBody() message: string,
 		@ConnectedSocket() client: Socket,
 	): Promise<void> {
 		try {
 			const joinGameService: JoinGameService = new JoinGameService(
-				new Logger(),
+				new Logger(JoinGameService.name),
 				this.clientManagerAdapter,
 				this.waitingQueue,
 				this.gameStateManager,
 			);
 
-			const request: JoinGameRequest = new JoinGameRequest(
-				new PlayerConfig(uuid, client.id),
-			);
-			const response: JoinGameResponse = await joinGameService.execute(request);
+			const joinMessageDTO: JoinMessageDTO  = JSON.parse(message);
 
-			console.log(`GAMESTATE_ID: ${response.gameState.id}`);
-			console.log(`TYPEOF: ${typeof(response.gameState.id)}`)
-			this.server.emit(uuid.toString(), response.gameState.id);
+			const response: JoinGameResponse = await joinGameService.execute(
+				new  JoinGameRequest(
+					client.id,
+					joinMessageDTO,
+				)
+			);
+
+			this.server.emit(joinMessageDTO.uuid.toString(), response.gameState.id);
 		}
 		catch (error) {
 			console.log(`COULDN'T JOIN THE GAME: ${[error.message]}`);
@@ -146,6 +163,56 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	@SubscribeMessage('inviteRouter')
+	public async inviteRouter(
+		@MessageBody() message: string,
+		@ConnectedSocket() client: Socket,
+		) {
+			try {
+				const parsedMessage = JSON.parse(message);
+				const messageType = this.getInviteRouterMessageType(parsedMessage);
+
+				if (messageType == "invite") {
+					const inviteService: InviteService = new InviteService(
+						new Logger(InviteService.name),
+						this.messageEmitterAdapter,
+						this.gameStateManager,
+						this.invitationRegisterAdapter,
+						this.gameHistoryAdapter,
+						this.waitingQueue,
+						this.clientManagerAdapter,
+					);
+	
+					const inviteMessageDTO: InviteMessageDTO = parsedMessage;
+					await inviteService.execute(
+						new InviteRequest(
+							client.id,
+							inviteMessageDTO,
+						)
+					);
+				}
+
+				if (messageType == "customize") {
+					const customizeGameService: CustomizeGameService = new CustomizeGameService(
+						new Logger(CustomizeGameService.name),
+						this.gameStateManager,
+						this.messageEmitterAdapter,
+					);
+
+					const customizeMessageDTO: CustomizeMessageDTO = parsedMessage;
+					await customizeGameService.execute(
+						new CustomizeGameServiceRequest(
+							client.id,
+							customizeMessageDTO,
+						)
+					);
+				}
+
+			} catch (error) {
+				console.log(`ERROR INVITING ROUTER: ${[error.message]}`)
+			}
+		}
+
 	public handleConnection(client: Socket, ...args: any[]) {
 		console.log(`Client connected from game: ${client.id}`);
 	}
@@ -169,6 +236,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		} catch (error) {
 			console.log(`ERROR DISCONNECTING GAME: ${[error.message]}`);
 		}
+	}
+
+	private getInviteRouterMessageType(parsedMessage: any): string {
+		const messageType = parsedMessage?.meta;
+		if (messageType == undefined || messageType == null) {
+			throw Error("Invalid message type for InviteRouter");
+		}
+
+		if (messageType != "invite" && messageType != "customize") {
+			throw Error("Invalid message type for InviteRouter");
+		}
+
+		return messageType;
 	}
 
 }

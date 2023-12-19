@@ -4,7 +4,15 @@ import './index.css';
 
 import { RouterProvider } from "react-router-dom";
 
+// Auth
+
 import { AuthProvider } from './auth';
+
+// Custom providers
+
+import { DirectChatProvider } from './providers/directChat';
+
+// Routes
 
 import router from './routes/routes';
 
@@ -36,8 +44,10 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <AuthProvider>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <DirectChatProvider>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </DirectChatProvider>
   </AuthProvider>
 );

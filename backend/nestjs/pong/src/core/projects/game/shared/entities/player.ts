@@ -1,3 +1,5 @@
+import { PlayerCustomization } from "./player.customization";
+
 export default class Player {
 	constructor(
 		public id: number,
@@ -7,6 +9,7 @@ export default class Player {
 		public width: number,
 		public height: number,
 		public speed: number,
+		public customization?: PlayerCustomization,
 	) {
 	}
 }

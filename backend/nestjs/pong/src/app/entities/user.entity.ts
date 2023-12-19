@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typ
 import { RoomParticipants } from "./room.participants.entity";
 import { UserChat } from "./user.chat.entity";
 import { UserStatus } from "./user.status.entity";
+import { RoomBannedUser } from "./room.banned.user.entity";
 
 @Entity()
 export class User {
@@ -21,7 +22,10 @@ export class User {
     user_chat: UserChat[];
 
     @OneToMany(() => UserChat, userChat => userChat.blocked_user)
-    blockeed_user_chat: UserChat[];
+    blocked_user_chat: UserChat[];
+
+    @OneToMany(() => RoomBannedUser, roomBannedUser => roomBannedUser.banned_user)
+    banned_user_room: RoomBannedUser[];
 
     @OneToOne(() => UserStatus, userStatus => userStatus.user)
     user_status: UserStatus;

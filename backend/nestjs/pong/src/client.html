@@ -18,8 +18,16 @@
 	<button id="joinGameButton">Join Game</button>
 	<div id="gameId"></div>
 
+	<!-- <label for="receiverUserIdInput">User ID:</label> -->
+	<!-- <input type="text" id="receiverUserIdInput" placeholder="Enter User ID"> -->
+
+	<!-- Button for joining the game -->
+	<!-- <button id="inviteGameButton">Invite</button> -->
+
+	<!-- <div id="receiverUserIdTxt"></div> -->
+
 	<script>
-		const gameSocket = io('/websocket/game');
+		const gameSocket = io('http://localhost:8080', { path: '/websocket/game'});
 
 		gameSocket.on('connect', () => {
 			document.getElementById('gameStatus').innerText = 'Connected to Game';
@@ -45,8 +53,34 @@
 			}
 		}
 
+		// const senderUserId = parseInt(prompt("Please enter you ID:"));
+
+		// gameSocket.on(senderUserId.toString() + "-invite", (message) => {
+		// 	console.log(message);
+		// });
+
+		// const handleInviteGame = () => {
+		// 	const receiverUserIdInput = document.getElementById('receiverUserIdInput');
+		// 	receiverUserId = receiverUserIdInput.value.toString();
+		// 	document.getElementById('receiverUserIdTxt').innerText = receiverUserId;
+
+		// 	if (receiverUserIdInput) {
+		// 		const message = {
+		// 		"meta": "invite",
+		// 		"data": {
+		// 			"to": parseInt(receiverUserId),
+		// 			"from": senderUserId,
+		// 			"content": "opened",
+		// 			},
+		// 		}
+		// 		gameSocket.emit('inviteRouter', JSON.stringify(message));
+		// 	}
+		// }
+
+
 		// Attach the handleJoinGame function to the button click event
 		document.getElementById('joinGameButton').addEventListener('click', handleJoinGame);
+		// document.getElementById('inviteGameButton').addEventListener('click', handleInviteGame);
 
 		gameSocket.on('disconnect', () => {
 			document.getElementById('gameStatus').innerText = 'Disconnected from Game';
