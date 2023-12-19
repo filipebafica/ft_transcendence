@@ -1,7 +1,7 @@
 import axiosInstance from '../config.api'
 
-export const addFriend = async (userId: string, friendUserId: string) => {
-  const response = await axiosInstance.post('/friend', { userId, friendUserId })
+export const addFriend = async (userId: string, friendNickName: string) => {
+  const response = await axiosInstance.post('/friend', { userId, friendNickName: friendNickName })
   return response.data
 }
 

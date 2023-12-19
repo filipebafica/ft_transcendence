@@ -1,4 +1,4 @@
-// URL: /friends/chat/:friendId
+// URL: /chatRoom/chat/:roomId
 import React, { useEffect, useState, useRef, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -8,13 +8,10 @@ import styles from './style.module.css'
 import { AuthContext } from 'auth'
 import { DirectChatContext } from 'providers/directChat'
 
-// Socket
-import { chatSocket } from 'socket'
-
 // Component
-import FriendCard from './FriendCard'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import RoomUserCard from './RoomUserCard'
 
 interface UserMessage {
   name: string
@@ -37,11 +34,11 @@ interface MessageBoxProps {
   listenTo: string
 }
 
-const DirectChatPage = (props: MessageBoxProps) => {
+const Chat = (props: MessageBoxProps) => {
   const { user } = useContext(AuthContext)
   const { messagesData, setMessagesData } = useContext(DirectChatContext)
 
-  const { friendId } = useParams()
+  const { roomId } = useParams()
   const userId = user?.id
 
   const [newMessage, setNewMessage] = useState('')
@@ -49,18 +46,18 @@ const DirectChatPage = (props: MessageBoxProps) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const sendMessage = () => {
-    if (newMessage.trim() !== '') {
-      console.log('sending message to event', `messageRouter`)
-      chatSocket.emit(
-        `messageRouter`,
-        JSON.stringify({
-          from: userId,
-          to: friendId,
-          message: newMessage,
-          timeStamp: Date.now(),
-        }),
-      )
-    }
+    // if (newMessage.trim() !== '') {
+    //   console.log('sending message to event', `messageRouter`)
+    //   chatSocket.emit(
+    //     `messageRouter`,
+    //     JSON.stringify({
+    //       from: userId,
+    //       to: friendId,
+    //       message: newMessage,
+    //       timeStamp: Date.now(),
+    //     }),
+    //   )
+    // }
     setNewMessage('')
   }
 
@@ -71,25 +68,23 @@ const DirectChatPage = (props: MessageBoxProps) => {
   }, [messagesData.messages])
 
   useEffect(() => {
-    if (!userId || !friendId) return
-
-    // Remove pending messages
-    const pendingMessages = messagesData.pendingMessages
-    if (pendingMessages[friendId] && pendingMessages[friendId] > 0) {
-      pendingMessages[friendId] = 0
-      setMessagesData({
-        messages: messagesData.messages,
-        pendingMessages: pendingMessages,
-      })
-    }
-  }, [userId, friendId, messagesData, setMessagesData])
+    // if (!userId || !friendId) return
+    // // Remove pending messages
+    // const pendingMessages = messagesData.pendingMessages
+    // if (pendingMessages[friendId] && pendingMessages[friendId] > 0) {
+    //   pendingMessages[friendId] = 0
+    //   setMessagesData({
+    //     messages: messagesData.messages,
+    //     pendingMessages: pendingMessages,
+    //   })
+    // }
+  }, [userId, roomId, messagesData, setMessagesData])
 
   return (
     <div className={styles.container}>
       <div className={styles.chatSection}>
         <div className={styles.messagesBox} id="message-list">
-
-          {friendId && messagesData.messages[friendId]?.map((msg: Message, index) => (
+          {/* {messagesData.messages.map((msg: Message, index) => (
             <div key={index} className={styles.messageContainer}>
               <div className={styles.from}>{msg.from}</div>
               <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
@@ -98,7 +93,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
               )}]:`}</div>
               <div className={styles.message}>{msg.message}</div>
             </div>
-          ))}
+          ))} */}
 
           <div ref={messagesEndRef} />
         </div>
@@ -116,18 +111,12 @@ const DirectChatPage = (props: MessageBoxProps) => {
           </Button>
         </div>
       </div>
-      <div className={styles.friendCard}>
-        <FriendCard
-          friend={{
-            id: '243',
-            nickName: 'Friend No data',
-            userStatus: 'no data',
-            avatar: 'https://i.imgur.com/sd64OhO.png',
-          }}
-        />
+      <div className={styles.usersSection}>
+        <RoomUserCard />
+        <RoomUserCard />
       </div>
     </div>
   )
 }
 
-export default DirectChatPage
+export default Chat

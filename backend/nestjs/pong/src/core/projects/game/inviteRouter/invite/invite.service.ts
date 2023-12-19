@@ -38,6 +38,7 @@ export class InviteService {
 			this.messageEmitter,
 			this.gameManager,
 			this.clientManager,
+			this.waitingQueue,
 		);
 
 		this.rejectedInviteRule = new RejectedInviteRule(
