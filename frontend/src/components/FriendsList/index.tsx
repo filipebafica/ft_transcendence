@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // API
-import { listFriends } from 'api/friend'
+import { listFriends, addFriend } from 'api/friend'
 
 // Style
 import styles from './style.module.css'
@@ -29,10 +29,24 @@ interface FriendInterface {
 function FriendsList() {
   const { user } = useContext(AuthContext)
   const [friends, setFriends] = useState<FriendInterface[]>([])
+  const [friendNickName, setFriendNickName] = useState<string>('')
 
   const navigate = useNavigate()
 
   const userId = user?.id
+
+  const handleAddFriend = async () => {
+    if (!userId) return
+    if (friendNickName === '') return
+
+    try {
+      const res = await addFriend(userId, friendNickName)
+      console.log('Add friend response', res)
+      navigate('/friends')
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const handleClickProfile = (friendId: string) => {
     console.log('profile', friendId)
@@ -57,22 +71,14 @@ function FriendsList() {
       } catch (err) {
         console.log(err)
       }
-      console.log('Friends',friends)
-
-      const friendsWithStatus = friends.map((friend: any) => {
-        return {
-          ...friend,
-          userStatus: friend.userStatus?.status,
-        }
-      })
-
-      setFriends(friendsWithStatus)
+      console.log('Friends', friends)
+      setFriends(friends)
     }
 
     fetchFriends()
   }, [userId])
 
-  // Check user statuses
+  // Socket for user statuses
   useEffect(() => {
     if (!userId) return
 
@@ -99,8 +105,18 @@ function FriendsList() {
   return (
     <div className={styles.friendsListContainer}>
       <div className={styles.addFriendSection}>
-        <TextField id="outlined-basic" label="Friend Nickname" variant="outlined" size="small" />
-        <Button variant="outlined">Add Friend</Button>
+        <TextField
+          id="outlined-basic"
+          label="Friend Nickname"
+          variant="outlined"
+          size="small"
+          onChange={(e) => {
+            setFriendNickName(e.target.value)
+          }}
+        />
+        <Button variant="outlined" onClick={handleAddFriend}>
+          Add Friend
+        </Button>
       </div>
       <div className={styles.friendsList}>
         <List>
