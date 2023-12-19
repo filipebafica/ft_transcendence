@@ -64,4 +64,8 @@ export interface GameStateInterface {
 		gameId: number,
 		customization: PlayerCustomization,
 	): Promise<GameState>
+
+	updateGameToRunning(
+		gameId: number,
+	): Promise<GameState>
 }

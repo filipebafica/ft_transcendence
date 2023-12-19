@@ -197,6 +197,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 						new Logger(CustomizeGameService.name),
 						this.gameStateManager,
 						this.messageEmitterAdapter,
+						this.waitingQueue,
 					);
 
 					const customizeMessageDTO: CustomizeMessageDTO = parsedMessage;

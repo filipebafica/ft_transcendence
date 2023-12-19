@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { WaitingQueue } from "src/app/entities/waiting.queue.entity";
 import { WaitingPlayerDTO } from "src/core/projects/game/shared/dtos/waiting.player.dto";
 import { GameType } from "src/core/projects/game/shared/enums/game.type";
+import { PlayerStatus } from "src/core/projects/game/shared/enums/player.status";
 import { QueueInterface } from "src/core/projects/game/shared/interfaces/queue.interface";
 import { EntityManager, Repository } from "typeorm";
 
@@ -45,6 +46,7 @@ export class WaitingQueueAdapter implements QueueInterface {
 				player_id: playerId,
 				game_id: gameId,
 				game_type: gameType,
+				player_status: PlayerStatus.Waiting,
 			});
 	
 			entity = await this.waitingQueueRepository.save(entity);
@@ -88,5 +90,53 @@ export class WaitingQueueAdapter implements QueueInterface {
 
 	private mapToWaitingPlayerDTO(entity: WaitingQueue): WaitingPlayerDTO {
 		return new WaitingPlayerDTO(entity.player_id, entity.game_id);
-	  }
+	}
+
+	public async updateToReady(
+		playerId: number,
+	): Promise<void> {
+		try {
+			const waitingQueueEntity = await this.waitingQueueRepository.findOne({
+				where: {
+					player_id: playerId,
+					player_status: PlayerStatus.Waiting
+				}
+			});
+
+			if (waitingQueueEntity == undefined) {
+				throw Error("There is no such player waiting for game");
+			}
+
+			waitingQueueEntity.player_status = PlayerStatus.Ready;
+			await this.waitingQueueRepository.save(waitingQueueEntity);
+		} catch (error) {
+			console.log("ERROR UPDATING WAITING STATUS");
+			throw error;
+		}
+	}
+
+	public async getPlayerStatus(
+		gameId: number,
+		playerId: number,
+	): Promise<string> {
+		try {
+			const waitingQueueEntity = await this.waitingQueueRepository.findOne({
+				select: ["player_status"],
+				where: {
+					player_id: playerId,
+					game_id: gameId,
+				}
+			});
+
+			if (waitingQueueEntity == undefined) {
+				throw Error("There is no such player on the waiting queue");
+			}
+
+			const playerStatus: string = waitingQueueEntity.player_status;
+			return playerStatus;
+		} catch (error) {
+			console.log("ERROR WHEN TRYING TO FIND PLAYER STATUS BY ID");
+			throw error;
+		}
+	}
 }
