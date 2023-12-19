@@ -27,3 +27,14 @@
 .field input {
 	width: 130px;
 }
+
+.chat {
+	display: flex;
+	flex-direction: row;
+}
+
+.userCards {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
