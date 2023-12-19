@@ -1,11 +1,11 @@
 import { MessageEmitterAdapter } from "src/app/projects/game/message.emitter.adapter";
-import { InviteStatus } from "../../shared/enums/invite.status";
-import { InvitationRepository } from "../../shared/interfaces/invitation.repository";
-import { Request } from "../dtos/request.dto";
-import { GameStateInterface } from "../../shared/interfaces/game.state.interface";
-import GameState from "../../shared/entities/game.state";
-import { ClientManagerInterface } from "../../shared/interfaces/client.manager.interface";
-import { InviteDTO } from "../dtos/invite.dto";
+import { InviteStatus } from "../../../shared/enums/invite.status";
+import { InvitationRepository } from "../../../shared/interfaces/invitation.repository";
+import { Request } from "../../invite/dtos/request.dto";
+import { GameStateInterface } from "../../../shared/interfaces/game.state.interface";
+import GameState from "../../../shared/entities/game.state";
+import { ClientManagerInterface } from "../../../shared/interfaces/client.manager.interface";
+import { InviteDTO } from "../../invite/dtos/invite.dto";
 
 export class AcceptedInviteRule {
 	constructor(

@@ -1,8 +1,7 @@
-import { ClientManagerInterface } from "../../shared/interfaces/client.manager.interface";
-import { GameHistoryRepository } from "../../shared/interfaces/game.history.repository";
-import { InvitationRepository } from "../../shared/interfaces/invitation.repository";
-import { QueueInterface } from "../../shared/interfaces/queue.interface";
-import { Request } from "../dtos/request.dto";
+import { GameHistoryRepository } from "../../../shared/interfaces/game.history.repository";
+import { InvitationRepository } from "../../../shared/interfaces/invitation.repository";
+import { QueueInterface } from "../../../shared/interfaces/queue.interface";
+import { Request } from "../../invite/dtos/request.dto";
 
 export class CanPlayersPlayRule {
 	constructor(

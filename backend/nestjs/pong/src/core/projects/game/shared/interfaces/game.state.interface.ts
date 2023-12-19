@@ -1,4 +1,5 @@
 import GameState from "../entities/game.state";
+import { PlayerCustomization } from "../entities/player.customization";
 
 export interface GameStateInterface {
 	getGame(
@@ -7,6 +8,7 @@ export interface GameStateInterface {
 
 	createGame(
 		playerId: number,
+		customization: PlayerCustomization,
 		playerName: string,
 	): Promise<GameState>
 
@@ -22,6 +24,7 @@ export interface GameStateInterface {
 
 	createSecondPlayer(
 		playerId: number,
+		customization: PlayerCustomization,
 		gameId: number,
 		playerName: string,
 	): Promise<GameState>
@@ -54,5 +57,11 @@ export interface GameStateInterface {
 		playerOneName: string,
 		playerTwoId: number,
 		playerTwoName: string,
+	): Promise<GameState>
+
+	updateGameWithCustomization(
+		playerId: number,
+		gameId: number,
+		customization: PlayerCustomization,
 	): Promise<GameState>
 }

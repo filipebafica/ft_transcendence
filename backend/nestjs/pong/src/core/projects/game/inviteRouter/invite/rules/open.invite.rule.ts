@@ -1,7 +1,7 @@
 import { MessageEmitterAdapter } from "src/app/projects/game/message.emitter.adapter";
-import { InviteStatus } from "../../shared/enums/invite.status";
-import { InvitationRepository } from "../../shared/interfaces/invitation.repository";
-import { Request } from "../dtos/request.dto";
+import { InviteStatus } from "../../../shared/enums/invite.status";
+import { InvitationRepository } from "../../../shared/interfaces/invitation.repository";
+import { Request } from "../../invite/dtos/request.dto";
 
 export class OpenInviteRule {
 	constructor(

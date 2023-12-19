@@ -1,4 +1,5 @@
 import { GameHistoryDTO } from "../dtos/game.history.dto";
+import { GameStatus } from "../enums/game.status";
 
 export interface GameHistoryRepository {
 	getByGameId(
@@ -63,8 +64,14 @@ export interface GameHistoryRepository {
 
 	listAndCountMatchesByUserId(
 		userId: number,
-		index: number
+		index: number,
 	): Promise<{games: GameHistoryDTO[], pages: number}>;
+
+	updateWaitingGameStatus(
+		gameId: number, 
+		gameStatus: GameStatus,
+	): Promise<void>;
+
 }
 
 //result can be draw, normal, disconnect
