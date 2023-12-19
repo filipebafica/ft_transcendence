@@ -58,7 +58,15 @@ function FriendsList() {
         console.log(err)
       }
       console.log('Friends',friends)
-      setFriends(friends)
+
+      const friendsWithStatus = friends.map((friend: any) => {
+        return {
+          ...friend,
+          userStatus: friend.userStatus?.status,
+        }
+      })
+
+      setFriends(friendsWithStatus)
     }
 
     fetchFriends()

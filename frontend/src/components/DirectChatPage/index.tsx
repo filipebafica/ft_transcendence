@@ -88,7 +88,8 @@ const DirectChatPage = (props: MessageBoxProps) => {
     <div className={styles.container}>
       <div className={styles.chatSection}>
         <div className={styles.messagesBox} id="message-list">
-          {messagesData.messages.map((msg: Message, index) => (
+
+          {friendId && messagesData.messages[friendId]?.map((msg: Message, index) => (
             <div key={index} className={styles.messageContainer}>
               <div className={styles.from}>{msg.from}</div>
               <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(

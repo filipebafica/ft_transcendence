@@ -84,7 +84,7 @@ const Chat = (props: MessageBoxProps) => {
     <div className={styles.container}>
       <div className={styles.chatSection}>
         <div className={styles.messagesBox} id="message-list">
-          {messagesData.messages.map((msg: Message, index) => (
+          {/* {messagesData.messages.map((msg: Message, index) => (
             <div key={index} className={styles.messageContainer}>
               <div className={styles.from}>{msg.from}</div>
               <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
@@ -93,7 +93,7 @@ const Chat = (props: MessageBoxProps) => {
               )}]:`}</div>
               <div className={styles.message}>{msg.message}</div>
             </div>
-          ))}
+          ))} */}
 
           <div ref={messagesEndRef} />
         </div>
