@@ -58,4 +58,10 @@ export interface GameStateInterface {
 		playerTwoId: number,
 		playerTwoName: string,
 	): Promise<GameState>
+
+	updateGameWithCustomization(
+		playerId: number,
+		gameId: number,
+		customization: PlayerCustomization,
+	): Promise<GameState>
 }

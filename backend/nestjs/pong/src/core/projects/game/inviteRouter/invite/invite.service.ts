@@ -1,18 +1,18 @@
 import { MessageEmitterAdapter } from "src/app/projects/game/message.emitter.adapter";
-import { Request } from "./dtos/request.dto";
+import { Request } from "./../invite/dtos/request.dto";
 import { Logger } from "@nestjs/common";
-import { GameStateInterface } from "../shared/interfaces/game.state.interface";
-import { InvitationRepository } from "../shared/interfaces/invitation.repository";
-import { InviteStatus } from "../shared/enums/invite.status";
+import { GameStateInterface } from "../../shared/interfaces/game.state.interface";
+import { InvitationRepository } from "../../shared/interfaces/invitation.repository";
+import { InviteStatus } from "../../shared/enums/invite.status";
 import { OpenInviteRule } from "./rules/open.invite.rule";
 import { AcceptedInviteRule } from "./rules/accepted.invite.rule";
 import { RejectedInviteRule } from "./rules/rejected.invite.rule";
-import { GameHistoryRepository } from "../shared/interfaces/game.history.repository";
+import { GameHistoryRepository } from "../../shared/interfaces/game.history.repository";
 import { CanPlayersPlayRule } from "./rules/can.players.play.rule";
-import { QueueInterface } from "../shared/interfaces/queue.interface";
-import { ClientManagerInterface } from "../shared/interfaces/client.manager.interface";
+import { QueueInterface } from "../../shared/interfaces/queue.interface";
+import { ClientManagerInterface } from "../../shared/interfaces/client.manager.interface";
 
-export class InviteRouterService {
+export class InviteService {
 	private openInviteRule: OpenInviteRule;
 	private acceptedInviteRule: AcceptedInviteRule;
 	private rejectedInviteRule: RejectedInviteRule;
@@ -51,11 +51,11 @@ export class InviteRouterService {
 		);
 	}
 
-	public async execute(request: Request) {
+	public async execute(request: Request): Promise<void> {
 		try {
 			this.logger.log(JSON.stringify(
 				{
-					"InviteRouterService has started": {
+					"InviteService has started": {
 						"request": request,
 					}
 				}
@@ -89,11 +89,11 @@ export class InviteRouterService {
 				)
 			}
 
-			this.logger.log("InviteRouterService has finished");
+			this.logger.log("InviteService has finished");
 		} catch (error) {
 			this.logger.error(JSON.stringify(
 				{
-					"InviteRouterService has finished with error": {
+					"InviteService has finished with error": {
 						"error": [error.message],
 					}
 				}

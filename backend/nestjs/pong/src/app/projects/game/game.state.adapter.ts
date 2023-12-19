@@ -402,4 +402,29 @@ export default class GameStateAdapter implements GameStateInterface {
 		this.openedGames.set(gameId, gameState);
 		return gameState;
 	}
+	
+	public async updateGameWithCustomization(
+		playerId: number,
+		gameId: number,
+		customization: PlayerCustomization
+	): Promise<GameState> {
+		await this.gameHistoryRepository.updateWaitingGameStatus(
+			gameId,
+			GameStatus.Running,
+		);
+
+		const gameState: GameState = this.openedGames.get(gameId);
+		if (gameState.player1.id == playerId) {
+			gameState.player1.customization = customization;
+		} else if (gameState.player2.id == playerId) {
+			gameState.player2.customization = customization;
+		} else {
+			throw Error("PlayerId for customization doesn't exist on the game");
+		}
+
+		gameState.status = GameStatus.Running;
+		this.openedGames.set(gameId, gameState);
+
+		return gameState;		
+	}
 }

@@ -1,4 +1,4 @@
-import { InviteDTO } from "../../inviteRouter/dtos/invite.dto"
+import { InviteDTO } from "../../inviteRouter/invite/dtos/invite.dto"
 
 export interface InvitationRepository {
 	createInvite(

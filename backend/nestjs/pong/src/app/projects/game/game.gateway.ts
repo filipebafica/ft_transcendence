@@ -4,7 +4,6 @@ import { Server } from "socket.io";
 import { JoinGameService } from "src/core/projects/game/joinGame/join.game.service";
 import { Response as JoinGameResponse } from "src/core/projects/game/joinGame/dtos/response.dto";
 import { Request as JoinGameRequest } from "src/core/projects/game/joinGame/dtos/request.dto";
-import PlayerConfig from "src/core/projects/game/shared/entities/player.config";
 import { HandleGameService } from "src/core/projects/game/handleGame/handle.game.service";
 import { PlayerActionService } from "src/core/projects/game/playerAction/player.action.service";
 import { Request as PlayerActionRequest } from "src/core/projects/game/playerAction/dtos/request.dto";
@@ -21,11 +20,14 @@ import { WaitingQueueAdapter } from "./waiting.queue.adapter";
 import { Socket } from "socket.io";
 import GameStateAdapter from "./game.state.adapter";
 import { MessageEmitterAdapter } from "./message.emitter.adapter";
-import { InviteRouterService } from "src/core/projects/game/inviteRouter/invite.router.service";
+import { InviteService } from "src/core/projects/game/inviteRouter/invite/invite.service";
 import { InviteMessageDTO as InviteMessageDTO } from "./invite.message.dto";
-import { Request as InviteRequest } from "src/core/projects/game/inviteRouter/dtos/request.dto";
+import { Request as InviteRequest } from "src/core/projects/game/inviteRouter/invite/dtos/request.dto";
 import { InvitationRegisterAdapter } from "./invitation.register.adapter";
 import { JoinMessageDTO } from "./join.message.dto";
+import { CustomizeGameService } from "src/core/projects/game/inviteRouter/customize/customize.game.service";
+import { CustomizeMessageDTO } from "./customize.message.dto";
+import { Request as CustomizeGameServiceRequest} from "src/core/projects/game/inviteRouter/customize/dtos/request.dto";
 
 @WebSocketGateway({
 	path: '/websocket/game',
@@ -167,23 +169,45 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		@ConnectedSocket() client: Socket,
 		) {
 			try {
-				const inviteRouterService: InviteRouterService = new InviteRouterService(
-					new Logger(InviteRouterService.name),
-					this.messageEmitterAdapter,
-					this.gameStateManager,
-					this.invitationRegisterAdapter,
-					this.gameHistoryAdapter,
-					this.waitingQueue,
-					this.clientManagerAdapter,
-				);
+				const parsedMessage = JSON.parse(message);
+				const messageType = this.getInviteRouterMessageType(parsedMessage);
 
-				const inviteMessageDTO: InviteMessageDTO = JSON.parse(message);
-				await inviteRouterService.execute(
-					new InviteRequest(
-						client.id,
-						inviteMessageDTO,
-					)
-				);
+				if (messageType == "invite") {
+					const inviteService: InviteService = new InviteService(
+						new Logger(InviteService.name),
+						this.messageEmitterAdapter,
+						this.gameStateManager,
+						this.invitationRegisterAdapter,
+						this.gameHistoryAdapter,
+						this.waitingQueue,
+						this.clientManagerAdapter,
+					);
+	
+					const inviteMessageDTO: InviteMessageDTO = parsedMessage;
+					await inviteService.execute(
+						new InviteRequest(
+							client.id,
+							inviteMessageDTO,
+						)
+					);
+				}
+
+				if (messageType == "customize") {
+					const customizeGameService: CustomizeGameService = new CustomizeGameService(
+						new Logger(CustomizeGameService.name),
+						this.gameStateManager,
+						this.messageEmitterAdapter,
+					);
+
+					const customizeMessageDTO: CustomizeMessageDTO = parsedMessage;
+					await customizeGameService.execute(
+						new CustomizeGameServiceRequest(
+							client.id,
+							customizeMessageDTO,
+						)
+					);
+				}
+
 			} catch (error) {
 				console.log(`ERROR INVITING ROUTER: ${[error.message]}`)
 			}
@@ -212,6 +236,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 		} catch (error) {
 			console.log(`ERROR DISCONNECTING GAME: ${[error.message]}`);
 		}
+	}
+
+	private getInviteRouterMessageType(parsedMessage: any): string {
+		const messageType = parsedMessage?.meta;
+		if (messageType == undefined || messageType == null) {
+			throw Error("Invalid message type for InviteRouter");
+		}
+
+		if (messageType != "invite" && messageType != "customize") {
+			throw Error("Invalid message type for InviteRouter");
+		}
+
+		return messageType;
 	}
 
 }
