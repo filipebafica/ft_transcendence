@@ -1,6 +1,7 @@
 // URL: /chatRoom/joinRoom
 
 import React, { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 // API
 import { listAvailableRooms, joinRoom } from 'api/chat'
@@ -12,10 +13,13 @@ import { AuthContext } from 'auth'
 
 // Components
 import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 
 const JoinRoom = () => {
   const [rooms, setRooms] = useState([])
   const { user } = useContext(AuthContext)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -30,14 +34,17 @@ const JoinRoom = () => {
     fetchRooms()
   }, [])
 
-  const handleJoinRoom = (roomId: string) => {
+  const handleJoinRoom = async (roomId: string) => {
     console.log('Joining room:', roomId)
-    joinRoom({
+    await joinRoom({
       roomId: roomId,
       userId: user?.id || '',
       isOwner: false,
       isAdmin: false,
     })
+
+    // Redirect to chat room
+    navigate(`/chatRoom/chat/${roomId}`)
   }
 
   return (
@@ -46,9 +53,16 @@ const JoinRoom = () => {
       {
         rooms.length === 0 && <i>No rooms available to join.</i>
       }
-      {rooms.map((room: any) => (
-        <Button variant={"contained"} onClick={() => handleJoinRoom(room.id)}>{room.name}</Button>
-      ))}
+      {
+        rooms.map((room: any) => (
+          <div className={style.roomBox}>
+            <Typography variant="body1">{room.name}</Typography>
+            <Button variant="outlined" onClick={() => handleJoinRoom(room.id)}>
+              Join Room
+            </Button>
+          </div>
+        ))
+      }
     </div>
   )
 }

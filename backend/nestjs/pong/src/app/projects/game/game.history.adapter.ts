@@ -294,4 +294,28 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 		  throw error;
 		}
 	}
+
+	public async updateWaitingGameStatus(gameId: number, gameStatus: GameStatus): Promise<void> {
+		try {
+			const gameHistory = await this.gameHistoryRepository.findOne({
+				where: {
+					id: gameId,
+					status: GameStatus.Waiting,
+				},
+				lock: {
+					mode: "pessimistic_write",
+				}
+			});
+
+			if (gameHistory == null) {
+				throw Error("There is no game to update with max score");
+			}
+
+			gameHistory.status = gameStatus;
+
+			await this.gameHistoryRepository.save(gameHistory);
+		} catch (error) {
+			throw error;
+		}
+	}
 }

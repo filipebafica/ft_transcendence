@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { Invitation } from "src/app/entities/invitation.entity";
-import { InviteDTO } from "src/core/projects/game/inviteRouter/dtos/invite.dto";
+import { InviteDTO } from "src/core/projects/game/inviteRouter/invite/dtos/invite.dto";
 import { InviteStatus } from "src/core/projects/game/shared/enums/invite.status";
 import { InvitationRepository } from "src/core/projects/game/shared/interfaces/invitation.repository";
 import { EntityManager, Repository } from "typeorm";

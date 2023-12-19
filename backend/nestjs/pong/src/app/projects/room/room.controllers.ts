@@ -20,8 +20,15 @@ import RoomByParticipantDTO from 'src/core/projects/room/listByUserId/dtos/room.
 import RoomParticipantDTO from 'src/core/projects/room/shared/dtos/room.participant.dto';
 import UserDTO from 'src/core/projects/room/shared/dtos/user.dto';
 import { RemoveUserService } from 'src/core/projects/room/removeUser/remove.user.service';
-import {RequestDTO as RemoveUserRequestDTO } from 'src/core/projects/room/removeUser/dtos/request.dto';
+import { RequestDTO as RemoveUserRequestDTO } from 'src/core/projects/room/removeUser/dtos/request.dto';
 import { RemoveUserDTO } from './remove.user.dto';
+import { BanUserService } from 'src/core/projects/room/banUser/ban.user.service';
+import { RequestDTO as BanUserRequestDTO } from 'src/core/projects/room/banUser/dtos/request.dto';
+import { BanUserDTO } from './ban.user.dto ';
+import RoomBannedUserAdapter from './room.banned.user.adapter';
+import { UnbanUserDTO } from './unban.user.dto';
+import { UnbanUserService } from 'src/core/projects/room/unbanUser/unban.user.service';
+import { RequestDTO as UnbanUserRequestDTO } from 'src/core/projects/room/unbanUser/dtos/request.dto';
 
 
 @Controller('/room')
@@ -30,6 +37,8 @@ export class RoomController {
     private createService: CreateService;
     private joinService: JoinService;
     private removeUserService: RemoveUserService;
+    private banUserService: BanUserService;
+    private unbanUserService: UnbanUserService;
     private listAllService: ListAllService;
     private listByUserIdService: ListByUserIdService;
 
@@ -61,6 +70,20 @@ export class RoomController {
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager)
         );
+
+        this.banUserService = new BanUserService(
+            new Logger(BanUserService.name),
+            new RoomAdapter(entityManager),
+            new RoomBannedUserAdapter(entityManager),
+            new RoomParticipantsAdapter(entityManager)
+        );
+
+        this.unbanUserService = new UnbanUserService(
+            new Logger(UnbanUserService.name),
+            new RoomAdapter(entityManager),
+            new RoomBannedUserAdapter(entityManager)
+        );
+
     }
 
     @Post('/create')
@@ -229,7 +252,7 @@ export class RoomController {
             type: 'Object',
             properties: {
                 removerUserId: {type: 'number'},
-                removeUserId: {type: 'number'},
+                removedUserId: {type: 'number'},
                 roomId: {type: 'number'}
             }
         },
@@ -237,7 +260,7 @@ export class RoomController {
             example1: {
                 value: {
                     removerUserId: 1,
-                    removeUserId: 2,
+                    removedUserId: 2,
                     roomId: 1
                 },
                 summary: 'Example of a valid request'
@@ -289,6 +312,160 @@ export class RoomController {
             return {
                 "status": "success",
                 "message": `user ${removeUserDTO.removedUserId} has been removed from room ${removeUserDTO.roomId}`
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Post('/user/ban')
+    @ApiBody({
+        description: 'Data to ban a user from a room',
+        schema: {
+            type: 'Object',
+            properties: {
+                bannerUserId: {type: 'number'},
+                bannedUserId: {type: 'number'},
+                roomId: {type: 'number'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    bannerUserId: 1,
+                    bannedUserId: 2,
+                    roomId: 1
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has been banned from room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async banUser(
+        @Body() banUserDTO: BanUserDTO
+    ) {
+        try {
+            await this.banUserService.execute(
+                new BanUserRequestDTO(
+                    banUserDTO.bannerUserId,
+                    banUserDTO.bannedUserId,
+                    banUserDTO.roomId,
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${banUserDTO.bannedUserId} has been banned from room ${banUserDTO.roomId}`
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Delete('/user/unban')
+    @ApiBody({
+        description: 'Data to unban a user from a room',
+        schema: {
+            type: 'Object',
+            properties: {
+                unbannerUserId: {type: 'number'},
+                unbannedUserId: {type: 'number'},
+                roomId: {type: 'number'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    unbannerUserId: 1,
+                    unbannedUserId: 2,
+                    roomId: 1
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has been unbanned from room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async unbanUser(
+        @Body() unbanUserDTO: UnbanUserDTO
+    ) {
+        try {
+            await this.unbanUserService.execute(
+                new UnbanUserRequestDTO(
+                    unbanUserDTO.unbannerUserId,
+                    unbanUserDTO.unbannedUserId,
+                    unbanUserDTO.roomId,
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${unbanUserDTO.unbannedUserId} has been unbanned from room ${unbanUserDTO.roomId}`
             };
 
         } catch (error) {

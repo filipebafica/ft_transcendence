@@ -12,6 +12,7 @@ import DirectChatPage from "components/DirectChatPage";
 import ChatRoomPage from "components/ChatRoomPage";
 import JoinRoom from "components/ChatRoomPage/JoinRoom";
 import CreateRoom from "components/ChatRoomPage/CreateRoom";
+import Chat from "components/ChatRoomPage/Chat";
 
 import LayoutWrapper from "./layoutWrapper";
 
@@ -41,6 +42,12 @@ const router = createBrowserRouter([
     path: '/chatRoom/createRoom',
     Component: LayoutWrapper(CreateRoom),
   },
+  {
+    path: '/chatRoom/chat/:roomId',
+    Component: LayoutWrapper(Chat),
+  },
+
+  // Landing
   {
     path: '/home',
     Component: LayoutWrapper(LandingPage),

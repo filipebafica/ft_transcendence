@@ -2,6 +2,7 @@ import Ball from "src/core/projects/game/shared/entities/ball";
 import Canvas from "src/core/projects/game/shared/entities/canvas";
 import GameState from "src/core/projects/game/shared/entities/game.state";
 import Player from "src/core/projects/game/shared/entities/player";
+import { PlayerCustomization } from "src/core/projects/game/shared/entities/player.customization";
 import { GameStatus } from "src/core/projects/game/shared/enums/game.status";
 import { GameHistoryRepository } from "src/core/projects/game/shared/interfaces/game.history.repository";
 import { GameStateInterface } from "src/core/projects/game/shared/interfaces/game.state.interface";
@@ -26,7 +27,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		private gameHistoryRepository: GameHistoryRepository,
 	){}
 
-	public async createGame(playerId: number, playerName: string): Promise<GameState> {
+	public async createGame(playerId: number, customization: PlayerCustomization, playerName: string): Promise<GameState> {
 		const gameId: number = await this.gameHistoryRepository.createGame(
 			GameStatus.Waiting,
 			0,
@@ -34,7 +35,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			playerId,
 		);
 
-		let player: Player = this.createPlayer(playerId, 1, playerName);
+		let player: Player = this.createPlayer(playerId, 1, playerName, customization);
 		let ball: Ball = this.createBall();
 		let board: Canvas = this.createBoard();
 		let gameState: GameState = {
@@ -79,8 +80,8 @@ export default class GameStateAdapter implements GameStateInterface {
 		return gameState;
 	}
 
-	public async createSecondPlayer(playerId: number, gameId: number, playerName: string): Promise<GameState> {
-		let player: Player = this.createPlayer(playerId, 2, playerName);
+	public async createSecondPlayer(playerId: number, customization: PlayerCustomization, gameId: number, playerName: string): Promise<GameState> {
+		let player: Player = this.createPlayer(playerId, 2, playerName, customization);
 		let gameState: GameState = this.openedGames.get(gameId);
 		gameState.player2 = player;
 		gameState.status = GameStatus.Running;
@@ -239,7 +240,7 @@ export default class GameStateAdapter implements GameStateInterface {
 		return new Promise(resolve => setTimeout(resolve, this.interval));
 	}
 
-	private createPlayer(id: number, playerNumber: number, playerName: string): Player {
+	private createPlayer(id: number, playerNumber: number, playerName: string, customization?: PlayerCustomization): Player {
 		return {
 			id: id,
 			name: playerName,
@@ -248,6 +249,7 @@ export default class GameStateAdapter implements GameStateInterface {
 			width: this.playerWidth,
 			height: this.playerHeight,
 			speed: this.initialPlayerSpeed,
+			customization:  customization,
 		};
 	}
 
@@ -399,5 +401,30 @@ export default class GameStateAdapter implements GameStateInterface {
 
 		this.openedGames.set(gameId, gameState);
 		return gameState;
+	}
+	
+	public async updateGameWithCustomization(
+		playerId: number,
+		gameId: number,
+		customization: PlayerCustomization
+	): Promise<GameState> {
+		await this.gameHistoryRepository.updateWaitingGameStatus(
+			gameId,
+			GameStatus.Running,
+		);
+
+		const gameState: GameState = this.openedGames.get(gameId);
+		if (gameState.player1.id == playerId) {
+			gameState.player1.customization = customization;
+		} else if (gameState.player2.id == playerId) {
+			gameState.player2.customization = customization;
+		} else {
+			throw Error("PlayerId for customization doesn't exist on the game");
+		}
+
+		gameState.status = GameStatus.Running;
+		this.openedGames.set(gameId, gameState);
+
+		return gameState;		
 	}
 }

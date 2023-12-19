@@ -1,8 +1,9 @@
-import PlayerConfig from "../../shared/entities/player.config";
+import { JoinMessageDTO } from "src/app/projects/game/join.message.dto";
 
 export class Request {
 	constructor(
-		public playerConfig: PlayerConfig,
+		public socketId: string,
+		public joinMessage: JoinMessageDTO,
 	) {
 	}
 }
