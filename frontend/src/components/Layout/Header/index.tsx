@@ -94,7 +94,7 @@ const Header = () => {
           </Button>
           <Button
             onClick={() => {
-              navigate('/chat')
+              navigate('/chatRoom')
             }}
           >
             Chat Rooms

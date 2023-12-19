@@ -16,11 +16,6 @@ const CreateRoom = () => {
 
   const handleSubmit = async () => {
     // Logic to handle room creation
-    console.log('Creating room:', { roomName, roomType, password })
-    await createRoom({ name: roomName, type: roomType, password }).then((res) => {
-      console.log('Room created:', res);
-    })
-    setIsConfigComplete(true)
   }
 
   if (isConfigComplete) {

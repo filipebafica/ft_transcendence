@@ -4,8 +4,6 @@ import MessageBox from '../../Shared/MessageBox'
 
 import { roomSocket } from 'socket'
 
-import { listPublicRooms } from 'api/chat'
-
 import style from './style.module.css'
 
 const JoinRoom = () => {
@@ -13,17 +11,7 @@ const JoinRoom = () => {
   const [selectedRoom, setSelectedRoom] = useState('')
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await listPublicRooms()
-        console.log('Rooms:', response.data)
-        setRooms(response.data)
-      } catch (error) {
-        console.error('Error fetching rooms:', error)
-      }
-    }
 
-    fetchRooms()
   }, [])
 
   const handleJoinRoom = (roomId: string) => {
