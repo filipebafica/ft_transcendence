@@ -12,6 +12,9 @@ export class WaitingQueue {
 	@Column()
 	game_type: string;
 
+	@Column()
+	player_status: string;
+
 	@CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	created_at: Date;
 }
