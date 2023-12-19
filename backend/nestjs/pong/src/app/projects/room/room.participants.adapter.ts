@@ -34,13 +34,11 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         userId: number,
         roomId: number
     ): Promise<void> {
-        let entity = await this.roomParticipantsRepository.findOne({
-            where: {
-                 user: { id: userId } as User,
-                 room: { id: roomId } as Room
-            },
-        });
-
-        await this.roomParticipantsRepository.remove(entity);
+        await this.roomParticipantsRepository
+        .createQueryBuilder()
+        .delete()
+        .where('room_id = :roomId', { roomId: roomId })
+        .where('user_id = :userId', { userId: userId })
+        .execute();
     }
 }

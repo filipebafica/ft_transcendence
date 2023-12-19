@@ -31,13 +31,11 @@ export default class RoomBannedUserAdapter implements RoomBannedUserGateway {
         userId: number,
         roomId: number
     ): Promise<void> {
-        let entity = await this.roomBannedUserRepository.findOne({
-            where: {
-                banned_user: { id: userId } as User,
-                room: { id: roomId } as Room
-            },
-        });
-
-        await this.roomBannedUserRepository.delete(entity);
+        await this.roomBannedUserRepository
+            .createQueryBuilder()
+            .delete()
+            .where('room_id = :roomId', { roomId: roomId })
+            .where('banned_user_id = :userId', { userId: userId })
+            .execute();
     }
 }
