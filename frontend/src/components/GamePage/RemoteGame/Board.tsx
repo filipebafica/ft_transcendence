@@ -5,7 +5,14 @@ import { paddleColors, fieldColors } from "constants/colors";
 
 import { gameSocket } from "../../../socket/index";
 
+interface Customization {
+	fans: number;
+	fieldColor: number;
+	paddleColor: number;
+}
+
 interface Player {
+	customization: Customization;
 	x: number;
 	y: number;
 	width: number;
@@ -89,12 +96,12 @@ function Board(props: BoardProps) {
 		if (!context) return;
 
 		const renderGameState = (gameState: GameState) => {
-			// context.fillStyle = player1Background
-			context.fillStyle = fieldColors[3];
+			context.fillStyle =
+				fieldColors[gameState.player1.customization.fieldColor];
 			context.fillRect(0, 0, boardWidth / 2 + 1, boardHeight);
 
-			// context.fillStyle = player2Background
-			context.fillStyle = fieldColors[1];
+			context.fillStyle =
+				fieldColors[gameState.player2.customization.fieldColor];
 			context.fillRect(
 				boardWidth / 2 + 1,
 				0,
@@ -102,8 +109,8 @@ function Board(props: BoardProps) {
 				boardHeight
 			);
 
-			// context.fillStyle = paddle1Color;
-			context.fillStyle = paddleColors[2];
+			context.fillStyle =
+				paddleColors[gameState.player1.customization.paddleColor];
 			context.fillRect(
 				gameState.player1.x,
 				gameState.player1.y,
@@ -111,8 +118,8 @@ function Board(props: BoardProps) {
 				gameState.player1.height
 			);
 
-			// context.fillStyle = paddle2Color;
-			context.fillStyle = paddleColors[3];
+			context.fillStyle =
+				paddleColors[gameState.player2.customization.paddleColor];
 			context.fillRect(
 				gameState.player2.x,
 				gameState.player2.y,

@@ -3,12 +3,13 @@ import styles from "./style.module.css";
 import Score from "./Score";
 import Board from "./Board";
 
+import fans0 from "../../../assets/fan_0.png";
 import fans1 from "../../../assets/fan_1.png";
-import fans2 from "../../../assets/fan_3.png";
+import fans2 from "../../../assets/fan_2.png";
+import fans3 from "../../../assets/fan_3.png";
+const fansArr = [fans0, fans1, fans2, fans3];
 
 interface PlayersProps {
-	player1UserName?: string;
-	player2UserName?: string;
 	gameState: any;
 	playerId: string;
 }
@@ -19,28 +20,68 @@ function PongGame(props: PlayersProps) {
 	return (
 		<div className={styles.screen}>
 			<Score
-				player={props.player1UserName}
+				player={gameState.player1.name}
 				score={gameState.player1Score}
 			/>
 			<div className={styles.board}>
 				<div className={styles.fans}>
 					<div className={styles.playerFans}>
-						<img src={fans1} alt="" width={100} height={100} />
-						<img src={fans1} alt="" width={100} height={100} />
-						<img src={fans1} alt="" width={100} height={100} />
-						<img src={fans1} alt="" width={100} height={100} />
+						<img
+							src={fansArr[gameState.player1.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player1.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player1.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player1.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
 					</div>
 					<div className={styles.playerFans}>
-						<img src={fans2} alt="" width={100} height={100} />
-						<img src={fans2} alt="" width={100} height={100} />
-						<img src={fans2} alt="" width={100} height={100} />
-						<img src={fans2} alt="" width={100} height={100} />
+						<img
+							src={fansArr[gameState.player2.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player2.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player2.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
+						<img
+							src={fansArr[gameState.player2.customization.fans]}
+							alt=""
+							width={100}
+							height={100}
+						/>
 					</div>
 				</div>
 				<Board gameState={gameState} playerId={props.playerId} />
 			</div>
 			<Score
-				player={props.player2UserName}
+				player={gameState.player2.name}
 				score={gameState.player2Score}
 			/>
 		</div>

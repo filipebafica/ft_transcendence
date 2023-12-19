@@ -48,12 +48,17 @@
 .avatar input {
 	width: 200px;
 	height: 20px;
+	display: none;
 }
 
 .avatar button {
 	width: 180px;
 	height: 180px;
-	border: 0.2px solid black;
+	/* border: 0.2px solid black; */
+}
+
+.avatar button:hover:opacity-90 {
+	background-color: #333;
 }
 
 .twoFactor button {

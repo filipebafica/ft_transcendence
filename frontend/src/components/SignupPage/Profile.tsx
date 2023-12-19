@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Avatar, Button, IconButton, TextField } from "@mui/material";
-import default_avatar from "../../assets/default_avatar.png";
+// import default_avatar from "../../assets/default_avatar.png";
 import styles from "./style.module.css";
 
 function Profile() {
+	const inputFile = useRef<HTMLInputElement>(null);
+
 	const handleAvatarUpload = () => {
 		// TODO: upload avatar
-		console.log("Avatar Button");
+		if (inputFile.current) inputFile.current.click();
 	};
 
 	const handleTwoFactor = () => {
@@ -22,17 +24,15 @@ function Profile() {
 					<input
 						accept="image/*"
 						id="contained-button-file"
-						multiple
+						ref={inputFile}
 						type="file"
 					/>
-					<label htmlFor="contained-button-file">
-						<IconButton onClick={handleAvatarUpload}>
-							<Avatar
-								src={default_avatar}
-								sx={{ width: 175, height: 175 }}
-							></Avatar>
-						</IconButton>
-					</label>
+					<IconButton onClick={handleAvatarUpload}>
+						<Avatar
+							src=""
+							sx={{ width: 160, height: 160 }}
+						></Avatar>
+					</IconButton>
 				</div>
 			</div>
 			<div className={styles.twoFactor}>
