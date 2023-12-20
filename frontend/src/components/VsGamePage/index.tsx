@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./style.module.css";
 
@@ -43,18 +43,11 @@ function VsGamePage(props: GamePageProps) {
 					meta: "customize",
 					data: {
 						playerId: user.id,
-						// gameId:
-						// customization: ,
+						gameId: gameId,
+						customization: config,
 					},
 				})
 			);
-
-			// meta: string; //customize
-			// data: {
-			// 	playerId: number;
-			// 	gameId: number;
-			// 	customization: Enviar mesma estruturade customização do jogo comum;
-			// }
 			setIsConfigComplete(true);
 		} else {
 			alert("Please enter your username");

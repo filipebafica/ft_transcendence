@@ -54,7 +54,7 @@ const VsGameConfig = (props: GameConfigProps) => {
 					onJoinGame(paddleColorIndex, fanIndex, fieldColorIndex)
 				}
 			>
-				Join a Game
+				Play Game
 			</Button>
 		</div>
 	);

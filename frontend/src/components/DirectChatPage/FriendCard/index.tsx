@@ -9,14 +9,14 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Box } from "@mui/material";
+// import Backdrop from "@mui/material/Backdrop";
 import { AuthContext } from "auth";
-import { gameSocket, socket } from "socket";
+import { gameSocket } from "socket";
 
 import styles from "./style.module.css";
-import VsGamePage from "components/VsGamePage";
 
 interface Friend {
-	id: string;
+	id: string | undefined;
 	nickName: string;
 	userStatus: string;
 	avatar?: string;
@@ -39,15 +39,16 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 				// content: "accepted", "rejected", "customize"
 			})
 		);
-		// backdrop
-		socket.on(`${user?.id}-invite`, (message) => {
+		// <Backdrop open={open}></Backdrop>;
+		gameSocket.on(`${user?.id}-invite`, (message) => {
 			// message = {
 			//   meta: 'game',
 			//   data: 'gameState.id'
 			// }
-			// if (meta === "game") {
-			// 	navigate(`/challenge/${gameId}`)
-			// }
+			console.log(message);
+			if (message.meta === "game") {
+				navigate(`/challenge/${message.data}`);
+			}
 		});
 	};
 
