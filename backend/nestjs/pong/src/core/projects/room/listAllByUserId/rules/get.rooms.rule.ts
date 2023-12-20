@@ -1,4 +1,4 @@
-import RoomByParticipantDTO from "../dtos/room.by.participant.dto";
+import RoomByUserIdDTO from "../../shared/dtos/room.by.user.id.dto";
 import RoomDTO from "../../shared/dtos/room.dto";
 import RoomGateway from "../../shared/gateways/room.gateway";
 
@@ -8,8 +8,8 @@ export default class GetRoomsRule {
     ) {
     }
 
-    async apply(userId: number): Promise<RoomByParticipantDTO[]> {
-        return await this.roomGateway.getByUserId(userId);
+    async apply(userId: number): Promise<RoomByUserIdDTO[]> {
+        return await this.roomGateway.getAllByUserId(userId);
     }
 
 }

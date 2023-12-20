@@ -18,15 +18,33 @@ export default class RoomMutedUserAdapter implements RoomMutedUserGateway {
     async mute(
         userId: number,
         roomId: number,
-        muteTime: number
+        muteTimeoutAt: Date
     ): Promise<void> {
-        let entity = this.roomMutedUserRepository.create({
+        let entity = await this.roomMutedUserRepository.findOne({
+            where: {
+                 muted_user: { id: userId } as User,
+                 room: { id: roomId } as Room,
+            }
+        })
+
+        if (entity) {
+            await this.roomMutedUserRepository
+            .createQueryBuilder()
+            .update()
+            .set({ mute_timeout_at: muteTimeoutAt })
+            .where('muted_user_id = :userId AND room_id = :roomId', { userId: userId, roomId: roomId })
+            .execute();
+
+            return ;
+        }
+
+        let newEntity = this.roomMutedUserRepository.create({
                 muted_user: { id: userId } as User,
                 room: { id: roomId } as Room,
-                mute_time: muteTime
+                mute_timeout_at: muteTimeoutAt
         });
 
-        await this.roomMutedUserRepository.save(entity);
+        await this.roomMutedUserRepository.save(newEntity);
     }
 
     async unmute(

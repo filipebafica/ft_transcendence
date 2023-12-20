@@ -1,8 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { Room } from "src/app/entities/room.entity";
+import { RoomMutedUser } from "src/app/entities/room.muted.user.entity.";
 import CreateGateway from "src/core/projects/room/create/gateways/create.gateway";
-import RoomByParticipantDTO from "src/core/projects/room/listByUserId/dtos/room.by.participant.dto";
+import RoomByOneUserIdDTO from "src/core/projects/room/listOneByUserId/dtos/room.by.one.user.id.dto";
+import RoomParticipantByOneUserIdDTO from "src/core/projects/room/listOneByUserId/dtos/room.participant.by.one.user.iddto";
+import RoomByUserIdDTO from "src/core/projects/room/shared/dtos/room.by.user.id.dto";
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
 import RoomParticipantDTO from "src/core/projects/room/shared/dtos/room.participant.dto";
 import UserDTO from "src/core/projects/room/shared/dtos/user.dto";
@@ -90,7 +93,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         )
     }
 
-    async getByUserId(userId: number): Promise<RoomByParticipantDTO[]> {
+    async getAllByUserId(userId: number): Promise<RoomByUserIdDTO[]> {
         const entity = await this.roomRepository
         .createQueryBuilder('room')
         .innerJoinAndSelect('room.participants', 'participants')
@@ -103,11 +106,51 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         ])
         .getRawMany();
 
-        return entity.map((row) => new RoomByParticipantDTO(
+        return entity.map((row) => new RoomByUserIdDTO(
             row.id,
             row.name,
             row.is_owner,
             row.is_admin,
         ))
+    }
+
+    async getOneByUserId(roomId: number, userId: number): Promise<RoomByOneUserIdDTO> {
+        const entity = await this.roomRepository
+        .createQueryBuilder('room')
+        .innerJoinAndSelect('room.participants', 'participants')
+        .leftJoinAndSelect('participants.user', 'user')
+        .leftJoinAndSelect('user.friend', 'friendRelation')
+        .leftJoinAndSelect('friendRelation.friendship', 'friends')
+        .leftJoinAndSelect('user.muted_user_room', 'mutedRelation')
+        .leftJoinAndSelect('mutedRelation.room', 'muted_rooms')
+        .leftJoinAndSelect('user.user_status', 'status')
+        .where('room.id = :roomId', { roomId })
+        .getOne();
+
+        return new RoomByOneUserIdDTO(
+            entity.id,
+            entity.name,
+            entity.isPublic,
+            entity.participants.map((participant) => new RoomParticipantByOneUserIdDTO(
+                participant.is_owner,
+                participant.is_admin,
+                participant.user.friend.find((friend) => friend.friendship.id === userId)? true : false,
+                this.isMuted(participant.user.muted_user_room.find((mutedRoom) => mutedRoom.room.id === roomId)),
+                participant.user.user_status.status,
+                new UserDTO(
+                    participant.user.id,
+                    participant.user.name,
+                    participant.user.nick_name
+                )
+            ))
+        )
+    }
+
+    private isMuted(roomMutedUser?: RoomMutedUser): boolean {
+        if (!roomMutedUser) {
+            return false;
+        }
+
+        return roomMutedUser.mute_timeout_at > new Date();
     }
 }

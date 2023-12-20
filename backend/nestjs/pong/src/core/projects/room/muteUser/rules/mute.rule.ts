@@ -14,7 +14,7 @@ export default class MuteRule {
         await this.roomMutedUserGateway.mute(
             userId,
             roomId,
-            muteTime
+            new Date(new Date().getTime() + muteTime * 60000)
         );
     }
 }

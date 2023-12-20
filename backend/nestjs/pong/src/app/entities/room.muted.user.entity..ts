@@ -7,11 +7,8 @@ export class RoomMutedUser {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-    last_mute: Date;
-
     @Column()
-    mute_time: number;
+    mute_timeout_at: Date;
 
     @ManyToOne(() => Room, room => room.id)
     @JoinColumn({ name: 'room_id' })

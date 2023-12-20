@@ -8,15 +8,15 @@ import { ResponseDTO as CreateResponseDTO} from 'src/core/projects/room/create/d
 import { ListAllService } from 'src/core/projects/room/listAll/list.all.service';
 import { ResponseDTO as ListAllResponseDTO } from 'src/core/projects/room/listAll/dtos/response.dto';
 import RoomDTO from "src/core/projects/room/shared/dtos/room.dto";
-import { ListByUserIdService } from 'src/core/projects/room/listByUserId/list.by.user.id.service';
-import { RequestDTO as ListByUserIdRequestDTO } from 'src/core/projects/room/listByUserId/dtos/request.dto';
-import { ResponseDTO as ListByUserIdResponseDTO} from 'src/core/projects/room/listByUserId/dtos/response.dto';
+import { ListAllByUserIdService as ListAllByUserIdService } from 'src/core/projects/room/listAllByUserId/list.all.by.user.id.service';
+import { RequestDTO as ListAllByUserIdRequestDTO } from 'src/core/projects/room/listAllByUserId/dtos/request.dto';
+import { ResponseDTO as ListAllByUserIdResponseDTO} from 'src/core/projects/room/listAllByUserId/dtos/response.dto';
 import { JoinService } from 'src/core/projects/room/join/join.service';
 import { JoinDTO } from './join.dto';
 import { RequestDTO as JoinRequestDTO } from 'src/core/projects/room/join/dtos/request.dto';
 import { EntityManager } from 'typeorm';
 import RoomParticipantsAdapter from './room.participants.adapter';
-import RoomByParticipantDTO from 'src/core/projects/room/listByUserId/dtos/room.by.participant.dto';
+import RoomByUserIdDTO from 'src/core/projects/room/shared/dtos/room.by.user.id.dto';
 import RoomParticipantDTO from 'src/core/projects/room/shared/dtos/room.participant.dto';
 import UserDTO from 'src/core/projects/room/shared/dtos/user.dto';
 import { RemoveUserService } from 'src/core/projects/room/removeUser/remove.user.service';
@@ -36,6 +36,11 @@ import { RequestDTO as MuteUserRequestDTO } from 'src/core/projects/room/muteUse
 import { UnmuteUserDTO } from './unmute.user.dto';
 import { UnmuteUserService } from 'src/core/projects/room/unmuteUser/unmute.user.service';
 import { RequestDTO as UnmuteUserRequestDTO } from 'src/core/projects/room/unmuteUser/dtos/request.dto';
+import { ListOneByUserIdService } from 'src/core/projects/room/listOneByUserId/list.one.by.user.id.service';
+import { RequestDTO as ListOneByUserIdRequestDTO } from 'src/core/projects/room/listOneByUserId/dtos/request.dto';
+import { ResponseDTO as ListOneByUserIdResponseDTO } from 'src/core/projects/room/listOneByUserId/dtos/response.dto';
+import RoomByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.by.one.user.id.dto';
+import RoomParticipantByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.participant.by.one.user.iddto';
 
 
 @Controller('/room')
@@ -49,7 +54,8 @@ export class RoomController {
     private muteUserService: MuteUserService;
     private unmuteUserService: UnmuteUserService;
     private listAllService: ListAllService;
-    private listByUserIdService: ListByUserIdService;
+    private listByUserIdService: ListAllByUserIdService;
+    private listOneByUserService: ListOneByUserIdService;
 
     constructor(
         private readonly entityManager: EntityManager
@@ -69,8 +75,8 @@ export class RoomController {
             new RoomAdapter(entityManager)
         );
 
-        this.listByUserIdService = new ListByUserIdService(
-            new Logger(ListByUserIdService.name),
+        this.listByUserIdService = new ListAllByUserIdService(
+            new Logger(ListAllByUserIdService.name),
             new RoomAdapter(entityManager)
         );
 
@@ -105,6 +111,10 @@ export class RoomController {
             new RoomMutedUserAdapter(entityManager)
         );
 
+        this.listOneByUserService = new ListOneByUserIdService(
+            new Logger(ListOneByUserIdService.name),
+            new RoomAdapter(entityManager),
+        );
     }
 
     @Post('/create')
@@ -712,7 +722,7 @@ export class RoomController {
         }
     }
 
-    @Get('/list/:userId')
+    @Get('/list/user/:userId')
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Successful response',
@@ -724,9 +734,9 @@ export class RoomController {
             },
             example: {
                 status: 'success',
-                data: new ListByUserIdResponseDTO([
-                        new RoomByParticipantDTO(1, "room1", true, true),
-                        new RoomByParticipantDTO(2, "room2", false, true)
+                data: new ListAllByUserIdResponseDTO([
+                        new RoomByUserIdDTO(1, "room1", true, true),
+                        new RoomByUserIdDTO(2, "room2", false, true)
                 ])
             }
         }
@@ -749,7 +759,7 @@ export class RoomController {
     async listByUserId(@Param('userId') userId: string) {
         try {
             const responseDTO = await this.listByUserIdService.execute(
-                new ListByUserIdRequestDTO(
+                new ListAllByUserIdRequestDTO(
                     parseInt(userId)
                 )
             );
@@ -757,6 +767,94 @@ export class RoomController {
             return {
                 "status": "success",
                 "data": responseDTO.rooms
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Get('/:roomId/list/user/:userId')
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                data: {type: 'Object'}
+            },
+            example: {
+                status: 'success',
+                data: new ListOneByUserIdResponseDTO(
+                    new RoomByOneUserIdDTO(
+                        1,
+                        "room1",
+                        true,
+                        [
+                            new RoomParticipantByOneUserIdDTO(
+                                true,
+                                true,
+                                false,
+                                false,
+                                "on-line",
+                                new UserDTO(
+                                    1,
+                                    "userName",
+                                    "nickname"
+                                )
+                            ),
+                            new RoomParticipantByOneUserIdDTO(
+                                false,
+                                true,
+                                true,
+                                true,
+                                "on-line",
+                                new UserDTO(
+                                    2,
+                                    "userName",
+                                    "nickname"
+                                )
+                            )
+                        ]
+                    )
+                )
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async listByOneUserId(
+        @Param('roomId') roomId: string,
+        @Param('userId') userId: string
+    ) {
+        try {
+            const responseDTO = await this.listOneByUserService.execute(
+                new ListOneByUserIdRequestDTO(
+                    parseInt(roomId),
+                    parseInt(userId)
+                )
+            );
+
+            return {
+                "status": "success",
+                "data": responseDTO.room
             };
 
         } catch (error) {
