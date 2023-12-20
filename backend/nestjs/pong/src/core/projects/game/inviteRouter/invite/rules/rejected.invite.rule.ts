@@ -1,3 +1,4 @@
+import { MessageEmitterAdapter } from "src/app/projects/game/message.emitter.adapter";
 import { InviteStatus } from "../../../shared/enums/invite.status";
 import { InvitationRepository } from "../../../shared/interfaces/invitation.repository";
 import { Request } from "../../invite/dtos/request.dto";
@@ -5,6 +6,7 @@ import { Request } from "../../invite/dtos/request.dto";
 export class RejectedInviteRule {
 	constructor(
 		private invitationRegister: InvitationRepository,
+		private messageEmitter: MessageEmitterAdapter,
 	){}
 
 	public async apply(request: Request, inviteStatus: InviteStatus) {
@@ -13,6 +15,11 @@ export class RejectedInviteRule {
 			request.message.data.from,
 			request.socketId,
 			inviteStatus,
+		)
+
+		this.messageEmitter.emit(
+			`${request.message.data.to.toString()}-invite`,
+			request.message,
 		)
 	}
 }
