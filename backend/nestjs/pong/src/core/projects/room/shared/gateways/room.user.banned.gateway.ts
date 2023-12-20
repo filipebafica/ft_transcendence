@@ -8,4 +8,9 @@ export default interface RoomBannedUserGateway {
         userId: number,
         roomId: number
     ): Promise<void>;
+
+    isUserBanned(
+        userId: number,
+        roomId: number
+    ): Promise<boolean>;
 }

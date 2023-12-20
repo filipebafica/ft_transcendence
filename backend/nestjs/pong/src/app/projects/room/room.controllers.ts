@@ -42,6 +42,10 @@ import { ResponseDTO as ListOneByUserIdResponseDTO } from 'src/core/projects/roo
 import RoomByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.by.one.user.id.dto';
 import RoomParticipantByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.participant.by.one.user.iddto';
 
+import { ToggleAdminPrivilegeService } from 'src/core/projects/room/toggleAdminPrivilege/toggle.admin.privilege.service';
+import { RequestDTO as ToggleAdminPrivilegeRequestDTO} from 'src/core/projects/room/toggleAdminPrivilege/dtos/request.dto';
+import {ToggleAdminPrivilegeDTO} from 'src/app/projects/room/toggle.admin.privilege.dto'
+import { UserIdBannedException } from 'src/core/projects/room/join/exceptions/user.is.banned.exception';
 
 @Controller('/room')
 @ApiTags('room')
@@ -56,6 +60,7 @@ export class RoomController {
     private listAllService: ListAllService;
     private listByUserIdService: ListAllByUserIdService;
     private listOneByUserService: ListOneByUserIdService;
+    private toggleAdminPrivilegeService: ToggleAdminPrivilegeService;
 
     constructor(
         private readonly entityManager: EntityManager
@@ -67,7 +72,8 @@ export class RoomController {
 
         this.joinService = new JoinService(
             new Logger(CreateService.name),
-            new RoomParticipantsAdapter(entityManager)
+            new RoomParticipantsAdapter(entityManager),
+            new RoomBannedUserAdapter(entityManager)
         );
 
         this.listAllService = new ListAllService(
@@ -115,6 +121,12 @@ export class RoomController {
             new Logger(ListOneByUserIdService.name),
             new RoomAdapter(entityManager),
         );
+        this.toggleAdminPrivilegeService = new ToggleAdminPrivilegeService(
+            new Logger(ToggleAdminPrivilegeService.name),
+            new RoomAdapter(entityManager),
+            new RoomParticipantsAdapter(entityManager),
+        );
+
     }
 
     @Post('/create')
@@ -240,6 +252,21 @@ export class RoomController {
         }
     })
     @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: 'Unallowed user',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 403,
+                message: 'User is banned from the room: User ID: {userId}, Room ID: {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         description: 'Unsuccessful response',
         schema: {
@@ -273,10 +300,17 @@ export class RoomController {
             };
 
         } catch (error) {
+            if (error instanceof UserIdBannedException) {
+                throw new HttpException(
+                    error.message,
+                    HttpStatus.FORBIDDEN
+                )
+            } else {
             throw new HttpException(
                 error.message,
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
+            }
         }
     }
 
@@ -861,6 +895,85 @@ export class RoomController {
                 "data": responseDTO.room
             };
 
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Put('/admin/toggle')
+    @ApiBody({
+        description: 'Data to toggle admin privileges from a room participant',
+        schema: {
+            type: 'Object',
+            properties: {
+                requesterId: {type: 'number'},
+                targetId: {type: 'number'},
+                roomId: {type: 'number'},
+                toggle: {type: 'boolean'},
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    requesterId: 1,
+                    targetId: 2,
+                    roomId: 1,
+                    toogle: true
+                },
+                summary: 'Example of a valid request to settle admin to a room participan'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has its privileges toggled in room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async toggleAdminPrivilege(
+        @Body() toggleAdminPrivilegeDTO: ToggleAdminPrivilegeDTO
+    ) {
+        try {
+            await this.toggleAdminPrivilegeService.execute(
+                new ToggleAdminPrivilegeRequestDTO(
+                    toggleAdminPrivilegeDTO.requesterId,
+                    toggleAdminPrivilegeDTO.targetId,
+                    toggleAdminPrivilegeDTO.roomId,
+                    toggleAdminPrivilegeDTO.toogle,
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${toggleAdminPrivilegeDTO.targetId} has been its privileges toogled in room ${toggleAdminPrivilegeDTO.roomId}`
+            };
         } catch (error) {
             throw new HttpException(
                 error.message,

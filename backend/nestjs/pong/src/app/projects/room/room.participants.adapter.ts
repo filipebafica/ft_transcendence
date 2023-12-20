@@ -41,4 +41,17 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         .where('user_id = :userId', { userId: userId })
         .execute();
     }
+
+    async changeAdminPrivilege(
+        userId: number,
+        roomId: number,
+        toggle: boolean,
+    ): Promise<void> {
+        await this.roomParticipantsRepository
+        .createQueryBuilder()
+        .update()
+        .set({ is_admin: toggle })
+        .where('user_id = :userId AND room_id = :roomId', { userId: userId, roomId: roomId })
+        .execute();
+    }
 }
