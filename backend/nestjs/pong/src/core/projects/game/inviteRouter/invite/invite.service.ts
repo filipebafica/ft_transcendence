@@ -43,6 +43,7 @@ export class InviteService {
 
 		this.rejectedInviteRule = new RejectedInviteRule(
 			this.invitationRegister,
+			this.messageEmitter,
 		);
 
 		this.canPlayersPlayRule = new CanPlayersPlayRule(
