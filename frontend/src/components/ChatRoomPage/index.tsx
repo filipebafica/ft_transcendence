@@ -64,12 +64,14 @@ const ChatRoomPage = () => {
           </>
         )}
         {myRooms.map((room) => (
-          <div className={styles.roomBox}>
-            <Typography variant="body1">{room.name}</Typography>
+          <><div className={styles.roomBox}>
+            <Typography className={styles.roomName} variant="body1">{room.name}</Typography>
             <Button variant="outlined" onClick={() => handleChatRoomClick(room.id)}>
               Enter Room
             </Button>
           </div>
+          <Divider  flexItem/>
+          </>
         ))}
       </div>
       <Divider orientation="vertical" flexItem />
@@ -78,7 +80,7 @@ const ChatRoomPage = () => {
           Create a Room
         </Button>
         <Button variant="contained" onClick={handleJoinRoom}>
-          Join a new Room
+          Join a Room
         </Button>
       </div>
     </div>

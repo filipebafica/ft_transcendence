@@ -14,6 +14,7 @@ import { AuthContext } from 'auth'
 // Components
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { Divider } from '@mui/material'
 
 const JoinRoom = () => {
   const [rooms, setRooms] = useState([])
@@ -55,12 +56,15 @@ const JoinRoom = () => {
       }
       {
         rooms.map((room: any) => (
-          <div className={style.roomBox}>
-            <Typography variant="body1">{room.name}</Typography>
-            <Button variant="outlined" onClick={() => handleJoinRoom(room.id)}>
-              Join Room
-            </Button>
-          </div>
+          <>
+            <div className={style.roomBox}>
+              <Typography variant="body1">{room.name}</Typography>
+              <Button variant="outlined" onClick={() => handleJoinRoom(room.id)}>
+                Join Room
+              </Button>
+            </div>
+            <Divider flexItem/>
+          </>
         ))
       }
     </div>

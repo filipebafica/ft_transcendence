@@ -33,3 +33,17 @@ export const listMyRooms = async (userId: string) => {
   const response = await axiosInstance.get(`/room/list/${userId}`)
   return response.data
 }
+
+export const listRoomMembers = async (roomId: string) => {
+  const response = await axiosInstance.get(`/room/list`)
+  const rooms = response.data.data
+  const room = rooms.find((room: any) => room.id?.toString() === roomId?.toString())
+  return room.participants
+}
+
+export const getRoomName = async (roomId: string) => {
+  const response = await axiosInstance.get(`/room/list`)
+  const rooms = response.data.data
+  const room = rooms.find((room: any) => room.id?.toString() === roomId?.toString())
+  return room.name
+}
