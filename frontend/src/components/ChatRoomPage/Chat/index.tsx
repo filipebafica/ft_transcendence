@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom'
 
 import styles from './style.module.css'
 
+// API
+import { listRoomMembers, getRoomName } from 'api/chat'
+
 // Context
 import { AuthContext } from 'auth'
 import { DirectChatContext } from 'providers/directChat'
@@ -12,6 +15,16 @@ import { DirectChatContext } from 'providers/directChat'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import RoomUserCard from './RoomUserCard'
+
+interface Member {
+  isOwner: boolean
+  isAdmin: boolean
+  user: {
+    id: string
+    name: string
+    nickName: string
+  }
+}
 
 interface UserMessage {
   name: string
@@ -37,6 +50,10 @@ interface MessageBoxProps {
 const Chat = (props: MessageBoxProps) => {
   const { user } = useContext(AuthContext)
   const { messagesData, setMessagesData } = useContext(DirectChatContext)
+
+  const [members, setMembers] = useState([])
+  const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
+  const [roomName, setRoomName] = useState('')
 
   const { roomId } = useParams()
   const userId = user?.id
@@ -67,6 +84,27 @@ const Chat = (props: MessageBoxProps) => {
     }
   }, [messagesData.messages])
 
+  // Fetch members of the room
+  useEffect(() => {
+    async function fetchMembers() {
+      if (!roomId) return
+      const members = await listRoomMembers(roomId)
+
+      // Check if user is admin or owner
+      const member = members.find((member: Member) => member.user.id.toString() === userId?.toString())
+      if (member) {
+        if (member.isOwner) setUserRole('owner')
+        else if (member.isAdmin) setUserRole('admin')
+      }
+
+      // Room Name
+      const roomName = await getRoomName(roomId)
+      setRoomName(roomName)
+      setMembers(members)
+    }
+    fetchMembers()
+  }, [roomId, userId])
+
   useEffect(() => {
     // if (!userId || !friendId) return
     // // Remove pending messages
@@ -83,6 +121,7 @@ const Chat = (props: MessageBoxProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.chatSection}>
+        <h2>Room: {roomName}</h2>
         <div className={styles.messagesBox} id="message-list">
           {/* {messagesData.messages.map((msg: Message, index) => (
             <div key={index} className={styles.messageContainer}>
@@ -112,8 +151,10 @@ const Chat = (props: MessageBoxProps) => {
         </div>
       </div>
       <div className={styles.usersSection}>
-        <RoomUserCard />
-        <RoomUserCard />
+        <h2> Members: {members.length}</h2>
+        {members.map((member: Member) => {
+          return <RoomUserCard member={member} userRole={userRole}/>
+        })}
       </div>
     </div>
   )
