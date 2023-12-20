@@ -11,4 +11,10 @@ export default interface RoomParticipantsGateway {
         userId: number,
         roomId: number
     ): Promise<void>;
+
+    changeAdminPrivilege(
+        userId: number,
+        roomId: number,
+        toggle: boolean,
+    ): Promise<void>;
 }
