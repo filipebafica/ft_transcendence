@@ -3,6 +3,7 @@ import { RoomParticipants } from "./room.participants.entity";
 import { UserChat } from "./user.chat.entity";
 import { UserStatus } from "./user.status.entity";
 import { RoomBannedUser } from "./room.banned.user.entity";
+import { RoomMutedUser } from "./room.muted.user.entity.";
 
 @Entity()
 export class User {
@@ -26,6 +27,9 @@ export class User {
 
     @OneToMany(() => RoomBannedUser, roomBannedUser => roomBannedUser.banned_user)
     banned_user_room: RoomBannedUser[];
+
+    @OneToMany(() => RoomMutedUser, roomMutedUser => roomMutedUser.muted_user)
+    muted_user_room: RoomMutedUser[];
 
     @OneToOne(() => UserStatus, userStatus => userStatus.user)
     user_status: UserStatus;

@@ -1,0 +1,13 @@
+.userCard {
+	max-width: 345px;
+	max-height: 100px;
+}
+
+.infos {
+	display: flex;
+	flex-direction: column;
+}
+
+.userName {
+	margin: 0;
+}
