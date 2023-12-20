@@ -1,4 +1,4 @@
-export default class RoomByParticipantDTO {
+export default class RoomByUserIdDTO {
     constructor(
         public readonly id: number,
         public readonly name: string,

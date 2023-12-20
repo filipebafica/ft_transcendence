@@ -1,4 +1,4 @@
-import RoomByParticipantDTO from "../../listByUserId/dtos/room.by.participant.dto";
+import RoomByUserIdDTO from "../../shared/dtos/room.by.user.id.dto";
 import RoomDTO from "../../shared/dtos/room.dto";
 
 export  class ResponseDTO {

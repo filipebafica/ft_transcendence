@@ -2,7 +2,7 @@ export default interface RoomMutedUserGateway {
     mute(
         userId: number,
         roomId: number,
-        muteTime: number
+        muteTimeoutAt: Date
     ): Promise<void>;
 
     unmute(

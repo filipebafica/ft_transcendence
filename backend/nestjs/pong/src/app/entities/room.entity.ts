@@ -18,8 +18,8 @@ export class Room {
     participants: RoomParticipants[];
 
     @OneToMany(() => RoomBannedUser, bannedUserRoom => bannedUserRoom.room)
-    room_with_banned_user: RoomBannedUser[];
+    banned_users: RoomBannedUser[];
 
     @OneToMany(() => RoomMutedUser, mutedUserRoom => mutedUserRoom.room)
-    room_with_muted_user: RoomMutedUser[];
+    muted_users: RoomMutedUser[];
 }

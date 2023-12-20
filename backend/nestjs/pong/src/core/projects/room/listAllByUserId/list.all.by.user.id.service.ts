@@ -4,7 +4,7 @@ import GetRoomsRule from './rules/get.rooms.rule';
 import { RequestDTO } from './dtos/request.dto';
 import RoomGateway from '../shared/gateways/room.gateway';
 
-export class ListByUserIdService {
+export class ListAllByUserIdService {
     private getRoomsRule: GetRoomsRule;
 
     constructor(
