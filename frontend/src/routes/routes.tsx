@@ -7,6 +7,7 @@ import FriendsList from '../components/FriendsList'
 import StatsPage from '../components/StatsPage'
 import Profile from '../components/SignupPage/Profile';
 import DirectChatPage from "components/DirectChatPage";
+import TwoFactorAuthPage from "components/TwoFactorAuthPage";
 
 // Chat Room page
 import ChatRoomPage from "components/ChatRoomPage";
@@ -19,55 +20,59 @@ import LayoutWrapper from "./layoutWrapper";
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: LayoutWrapper(LandingPage),
+    element: <LayoutWrapper Component={LandingPage} isPublic={true}/>,
   },
   {
     path: '/login',
-    Component: LayoutWrapper(LoginPage, false),
+    element: <LayoutWrapper Component={LoginPage} />,
   },
   {
     path: '/game',
-    Component: LayoutWrapper(GamePage),
+    element: <LayoutWrapper Component={GamePage} />,
   },
   // Chat room routes
   {
     path: '/chatRoom',
-    Component: LayoutWrapper(ChatRoomPage),
+    element: <LayoutWrapper Component={ChatRoomPage} />,
   },
   {
     path: '/chatRoom/joinRoom',
-    Component: LayoutWrapper(JoinRoom),
+    element: <LayoutWrapper Component={JoinRoom} />,
   },
   {
     path: '/chatRoom/createRoom',
-    Component: LayoutWrapper(CreateRoom),
+    element: <LayoutWrapper Component={CreateRoom} />,  
   },
   {
     path: '/chatRoom/chat/:roomId',
-    Component: LayoutWrapper(Chat),
+    element: <LayoutWrapper Component={Chat} />,
   },
 
   // Landing
   {
     path: '/home',
-    Component: LayoutWrapper(LandingPage),
+    element: <LayoutWrapper Component={LandingPage} />,
   },
   {
     path: '/friends',
-    Component: LayoutWrapper(FriendsList),
+    element: <LayoutWrapper Component={FriendsList} />,
   },
   {
     path: '/stats/:userId',
-    Component: LayoutWrapper(StatsPage),
+    element: <LayoutWrapper Component={StatsPage} />,
   },
   {
 		path: '/settings',
-		Component: LayoutWrapper(Profile),
+    element: <LayoutWrapper Component={Profile} />,
 	},
   {
     path: '/friends/chat/:friendId',
-    Component: LayoutWrapper(DirectChatPage),
-  }
+    element: <LayoutWrapper Component={DirectChatPage} />,
+  },
+  {
+    path: '/2fa',
+    element: <LayoutWrapper Component={TwoFactorAuthPage} />,
+  },
 ])
 
 export default router;

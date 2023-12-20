@@ -4,6 +4,9 @@ import './index.css';
 
 import { RouterProvider } from "react-router-dom";
 
+// Api
+import { initializeAxiosAuthToken } from 'api/config.api';
+
 // Auth
 
 import { AuthProvider } from './auth';
@@ -41,6 +44,8 @@ const theme = createTheme(themeOptions);
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+initializeAxiosAuthToken();
 
 root.render(
   <AuthProvider>
