@@ -29,6 +29,13 @@ import RoomBannedUserAdapter from './room.banned.user.adapter';
 import { UnbanUserDTO } from './unban.user.dto';
 import { UnbanUserService } from 'src/core/projects/room/unbanUser/unban.user.service';
 import { RequestDTO as UnbanUserRequestDTO } from 'src/core/projects/room/unbanUser/dtos/request.dto';
+import RoomMutedUserAdapter from './room.muted.user.adapter';
+import { MuteUserDTO } from './mute.user.dto';
+import { MuteUserService } from 'src/core/projects/room/muteUser/mute.user.service';
+import { RequestDTO as MuteUserRequestDTO } from 'src/core/projects/room/muteUser/dtos/request.dto';
+import { UnmuteUserDTO } from './unmute.user.dto';
+import { UnmuteUserService } from 'src/core/projects/room/unmuteUser/unmute.user.service';
+import { RequestDTO as UnmuteUserRequestDTO } from 'src/core/projects/room/unmuteUser/dtos/request.dto';
 
 
 @Controller('/room')
@@ -39,6 +46,8 @@ export class RoomController {
     private removeUserService: RemoveUserService;
     private banUserService: BanUserService;
     private unbanUserService: UnbanUserService;
+    private muteUserService: MuteUserService;
+    private unmuteUserService: UnmuteUserService;
     private listAllService: ListAllService;
     private listByUserIdService: ListByUserIdService;
 
@@ -82,6 +91,18 @@ export class RoomController {
             new Logger(UnbanUserService.name),
             new RoomAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager)
+        );
+
+        this.muteUserService = new MuteUserService(
+            new Logger(MuteUserService.name),
+            new RoomAdapter(entityManager),
+            new RoomMutedUserAdapter(entityManager)
+        );
+
+        this.unmuteUserService = new UnmuteUserService(
+            new Logger(UnmuteUserService.name),
+            new RoomAdapter(entityManager),
+            new RoomMutedUserAdapter(entityManager)
         );
 
     }
@@ -345,7 +366,7 @@ export class RoomController {
         }
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: 'Successful response',
         schema: {
             type: 'Object',
@@ -466,6 +487,163 @@ export class RoomController {
             return {
                 "status": "success",
                 "message": `user ${unbanUserDTO.unbannedUserId} has been unbanned from room ${unbanUserDTO.roomId}`
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Post('/user/mute')
+    @ApiBody({
+        description: 'Data to mute a user in a room',
+        schema: {
+            type: 'Object',
+            properties: {
+                muterUserId: {type: 'number'},
+                mutedUserId: {type: 'number'},
+                roomId: {type: 'number'},
+                muteTime: {type: 'number'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    muterUserId: 1,
+                    mutedUserId: 2,
+                    roomId: 1,
+                    muteTime: 10
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has been muted in room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async muteUser(
+        @Body() muteUserDTO: MuteUserDTO
+    ) {
+        try {
+            await this.muteUserService.execute(
+                new MuteUserRequestDTO(
+                    muteUserDTO.muterUserId,
+                    muteUserDTO.mutedUserId,
+                    muteUserDTO.roomId,
+                    muteUserDTO.muteTime
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${muteUserDTO.mutedUserId} has been muted in room ${muteUserDTO.roomId}`
+            };
+
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Delete('/user/unmute')
+    @ApiBody({
+        description: 'Data to unmute a user in a room',
+        schema: {
+            type: 'Object',
+            properties: {
+                unmuterUserId: {type: 'number'},
+                unmutedUserId: {type: 'number'},
+                roomId: {type: 'number'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    unmuterUserId: 1,
+                    unmutedUserId: 2,
+                    roomId: 1
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has been unmuted in room {roomId}'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async unmuteUser(
+        @Body() unmuteUserDTO: UnmuteUserDTO
+    ) {
+        try {
+            await this.unmuteUserService.execute(
+                new UnmuteUserRequestDTO(
+                    unmuteUserDTO.unmuterUserId,
+                    unmuteUserDTO.unmutedUserId,
+                    unmuteUserDTO.roomId
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${unmuteUserDTO.unmutedUserId} has been unmuted in room ${unmuteUserDTO.roomId}`
             };
 
         } catch (error) {
