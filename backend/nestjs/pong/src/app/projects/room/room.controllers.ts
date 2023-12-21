@@ -125,15 +125,18 @@ export class RoomController {
             properties: {
                 userId: {type: 'number'},
                 roomName: {type: 'string'},
-                isPublic: {type: 'boolean'}
-            }
+                isPublic: {type: 'boolean'},
+                passWord: {type: 'string'}
+            },
+            required: ['userId', 'roomName', 'isPublic']
         },
         examples: {
             example1: {
                 value: {
                     userId: 123,
                     roomName: 'myRoom',
-                    isPublic: true
+                    isPublic: true,
+                    password: '123password'
                 },
                 summary: 'Example of a valid request'
             }
@@ -179,7 +182,8 @@ export class RoomController {
                 new CreateRequestDTO(
                     createDTO.userId,
                     createDTO.roomName,
-                    createDTO.isPublic
+                    createDTO.isPublic,
+                    createDTO.password
                 )
             );
 

@@ -12,7 +12,6 @@ import UserDTO from "src/core/projects/room/shared/dtos/user.dto";
 import RoomGateway from "src/core/projects/room/shared/gateways/room.gateway";
 import { EntityManager, QueryFailedError, Repository } from "typeorm";
 
-
 // Room tabele has id, name, ownerId, adminId, type, participants,
 @Injectable()
 export default class RoomAdapter implements CreateGateway, RoomGateway {
@@ -26,16 +25,24 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
 
     async create(
         roomName: string,
-        isPublic: boolean
+        isPublic: boolean,
+        password?: string
     ): Promise<RoomDTO> {
         try {
+
             let entity = this.roomRepository.create({
                 name: roomName,
-                isPublic: isPublic
+                isPublic: isPublic,
+                password: password
             });
 
             entity = await this.roomRepository.save(entity);
-            return plainToInstance(RoomDTO, entity);
+            return new RoomDTO(
+                entity.id,
+                entity.name,
+                entity.isPublic
+            );
+
         } catch (error) {
             if (error instanceof QueryFailedError) {
                 // Check the database error code or message to determine the cause

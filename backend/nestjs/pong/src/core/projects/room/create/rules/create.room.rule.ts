@@ -1,5 +1,6 @@
 import CreateGateway from "../gateways/create.gateway";
 import RoomDTO from "../../shared/dtos/room.dto";
+import * as bcrypt from 'bcrypt';
 
 export default class CreateRule {
     constructor(
@@ -9,11 +10,13 @@ export default class CreateRule {
 
     async apply(
         roomName: string,
-        isPublic: boolean
+        isPublic: boolean,
+        password?: string
     ): Promise<RoomDTO> {
         return await this.createGateway.create(
             roomName,
-            isPublic
+            isPublic,
+            password
         );
     }
 }
