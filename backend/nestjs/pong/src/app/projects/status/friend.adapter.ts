@@ -37,7 +37,7 @@ export default class FriendAdapter implements FriendGateway {
             (row) => friendDTOs.push(new FriendDTO(
                 row.friendship.id,
                 row.friendship.nick_name,
-                row.friendship.user_status,
+                row.friendship.user_status.status,
             ))
         );
 

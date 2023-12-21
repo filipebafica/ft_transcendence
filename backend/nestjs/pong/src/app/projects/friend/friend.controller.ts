@@ -131,9 +131,9 @@ export class FriendController {
             example: {
                 status: 'success',
                 data: new ListByUserIdResponseDTO([
-                    new FriendDTO(1, 'monica', new FriendStatusDTO(1, 'on-line')),
-                    new FriendDTO(2, 'ross', new FriendStatusDTO(1, 'in-game')),
-                    new FriendDTO(3, 'rachel', new FriendStatusDTO(1, 'off-line')),
+                    new FriendDTO(1, 'monica', 'on-line', true),
+                    new FriendDTO(2, 'ross', 'in-game', false),
+                    new FriendDTO(3, 'rachel', 'off-line', false),
                 ])
             }
         }
