@@ -72,6 +72,7 @@ export class RoomController {
 
         this.joinService = new JoinService(
             new Logger(CreateService.name),
+            new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager)
         );
@@ -221,8 +222,10 @@ export class RoomController {
                 userId: {type: 'number'},
                 roomId: {type: 'number'},
                 isOwner: {type: 'boolean'},
-                isAdmin: {type: 'boolean'}
-            }
+                isAdmin: {type: 'boolean'},
+                password: {type: 'string'}
+            },
+            required: ['userId', 'roomId', 'isOwner', 'isAdmin']
         },
         examples: {
             example1: {
@@ -230,7 +233,8 @@ export class RoomController {
                     userId: 123,
                     roomId: 321,
                     isOwner: true,
-                    isAdmin: true
+                    isAdmin: true,
+                    password: '123password'
                 },
                 summary: 'Example of a valid request'
             }
@@ -290,7 +294,8 @@ export class RoomController {
                     joinDTO.userId,
                     joinDTO.roomId,
                     joinDTO.isOwner,
-                    joinDTO.isAdmin
+                    joinDTO.isAdmin,
+                    joinDTO.password
                 )
             );
 

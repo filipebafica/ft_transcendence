@@ -3,7 +3,8 @@ export class RequestDTO {
         public readonly userId: number,
         public readonly roomId: number,
         public readonly isOwner: boolean,
-        public readonly isAdamin: boolean
+        public readonly isAdamin: boolean,
+        public readonly password?: string
     ) {
     }
 }

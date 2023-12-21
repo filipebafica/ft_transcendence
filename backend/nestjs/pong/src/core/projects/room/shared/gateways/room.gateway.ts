@@ -7,4 +7,5 @@ export default interface RoomGateway {
     getByRomId(roomId: number): Promise<RoomDTO>;
     getAllByUserId(userId: number): Promise<RoomByUserIdDTO[]>;
     getOneByUserId(roomId: number, userId: number): Promise<RoomByOneUserIdDTO>;
+    getHashedPassword(roomId: number): Promise<string>;
 }

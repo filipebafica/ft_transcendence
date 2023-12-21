@@ -2,21 +2,27 @@ import { Logger } from '@nestjs/common';
 import JoinRule from './rules/join.rule';
 import RoomParticipantsGateway from '../shared/gateways/room.participants.gateways';
 import { RequestDTO } from './dtos/request.dto';
-import { ResponseDTO } from './dtos/response.dto';
+import AuthenticateRule from './rules/authenticate.rule';
+import GetHashedPasswordRule from './rules/get.hashed.password.rule';
+import RoomGateway from '../shared/gateways/room.gateway';
 import IsUserBannedRule from './rules/isUserBanned.rule';
 import RoomBannedUserGateway from '../shared/gateways/room.user.banned.gateway';
-import { UserIdBannedException } from './exceptions/user.is.banned.exception';
 
 export class JoinService {
+    private getHashedPassword: GetHashedPasswordRule;
+    private authenticateRule: AuthenticateRule;
     private joinRule: JoinRule;
     private isUserBannedRule: IsUserBannedRule;
 
     constructor(
         private readonly logger: Logger,
+        roomGateway: RoomGateway,
         roomPartipantsGatway: RoomParticipantsGateway,
         roomBannedUserGateway: RoomBannedUserGateway,
 
     ) {
+        this.getHashedPassword = new GetHashedPasswordRule(roomGateway);
+        this.authenticateRule = new AuthenticateRule();
         this.joinRule = new JoinRule(roomPartipantsGatway);
         this.isUserBannedRule = new IsUserBannedRule(roomBannedUserGateway);
     }
@@ -25,15 +31,14 @@ export class JoinService {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            if (await this.isUserBannedRule.apply(
+            await this.isUserBannedRule.apply(
                 requestDTO.userId,
                 requestDTO.roomId,
-            )) {
-                throw new UserIdBannedException(
-                    requestDTO.userId,
-                    requestDTO.roomId,
-                );
-            }
+            )
+
+            let hashedPassword = await this.getHashedPassword.apply(requestDTO.roomId);
+
+            this.authenticateRule.apply(hashedPassword, requestDTO.password);
 
             await this.joinRule.apply(
                 requestDTO.userId,
