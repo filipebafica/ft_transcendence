@@ -20,14 +20,25 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         isOwner: boolean,
         isAdmin: boolean
     ): Promise<void> {
-        let entity = this.roomParticipantsRepository.create({
+        let entity = await this.roomParticipantsRepository.findOne({
+            where: {
+                user: { id: userId } as User,
+                room: { id: roomId } as Room
+            }
+        });
+
+        if (entity) {
+            throw new Error(`User ${userId} has already joined the room ${roomId}`);
+        }
+        
+        let newEntity = this.roomParticipantsRepository.create({
             is_owner: isOwner,
             is_admin: isAdmin,
             room: { id: roomId } as Room,
             user: { id: userId } as User
         });
 
-        await this.roomParticipantsRepository.save(entity);
+        await this.roomParticipantsRepository.save(newEntity);
     }
 
     async remove(

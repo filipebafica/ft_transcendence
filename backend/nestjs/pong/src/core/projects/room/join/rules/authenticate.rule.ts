@@ -2,7 +2,7 @@ import * as bcrypt from 'bcrypt';
 
 export default class AuthenticateRule {
     apply(encryptedPassword: string, plainPassword?: string): void {
-        if (!plainPassword) {
+        if (!plainPassword || !encryptedPassword) {
             return ;
         }
 
