@@ -36,4 +36,13 @@ export default class UserChatAdapter implements UserChatGateway {
 
         return entity.map((row) => row.blocked_user.id);
     }
+
+    async delete(unBlockerUserId: number, targetUserId: number): Promise<void>{
+        await this.userChatRepository
+        .createQueryBuilder()
+        .delete()
+        .where('user_id = :unBlockerUserId AND blocked_user_id = :targetUserId', { unBlockerUserId, targetUserId})
+        .execute();
+    }
+
 }
