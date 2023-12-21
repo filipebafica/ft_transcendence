@@ -53,9 +53,9 @@ export class AuthenticationController {
     );
     const loginRes: LoginResponseDTO = await this.loginService.execute(userDTO);
 
-    // res.header('authorization', loginRes.token);
-    // res.redirect('http://localhost:3000/home');
-    res.json(loginRes);
+    
+    res.redirect(`http://localhost:3001/home?token=${loginRes.token}`);
+    // res.json(loginRes);
   }
 
   @Post('twoFactor/generate')

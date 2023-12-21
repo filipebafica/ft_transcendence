@@ -4,6 +4,9 @@ FROM node:18
 # Create app directory
 WORKDIR /usr/src/app
 
+# Install NestJS CLI globally
+RUN npm install -g @nestjs/cli
+
 COPY pong .
 
 # Install app dependencies

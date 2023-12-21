@@ -1,15 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
 
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 // Provider
 import { AuthContext } from 'auth'
 
 const LayoutWrapper = ({ Component, disableFooter = false, isPublic = false, ...props }: any) => {
-  const { user } = useContext(AuthContext);
-  // const isAuth = user?.token != null;
-  const isAuth = user?.id != null;
+  const { user, setToken } = useContext(AuthContext);
+  const isAuth = user?.token != null;
+  console.log('isAuth', isAuth)
+  
+  const location = useLocation();
+
+  // This useEffect is basically used as the callback function for the login API call
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+
+    if (currentPath === '/home' && token) {
+      setToken(token); 
+    }
+  }, [location, setToken]); 
 
   if (!isAuth && !isPublic) {
     return <Navigate to="/" />;

@@ -17,7 +17,7 @@ import { Badge } from '@mui/material'
 import { friendsStatusSocket } from 'socket'
 
 const Header = () => {
-  const { user, signIn, signOut } = useContext(AuthContext)
+  const { user, signOut } = useContext(AuthContext)
   const { messagesData } = useContext(DirectChatContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
@@ -25,18 +25,14 @@ const Header = () => {
   // Todo
   const [id, setId] = useState('1')
 
-  const handleSignIn = () => {
-    // const randomNumber = Math.floor(Math.random() * 10000) + 1
-    const randomNumber = id
-    signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
+  const handleSignIn = async () => {
+    try {
+      window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483469ddaf869384d86033635e6ed1046'
 
-    friendsStatusSocket.emit(
-      'statusRouter',
-      JSON.stringify({
-        userId: id,
-        status: 'online',
-      }),
-    )
+    }
+    catch (err) {
+      console.log(err)
+    }
   }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -72,7 +68,7 @@ const Header = () => {
   }
 
   const totalPendingMessages = Object.keys(messagesData.pendingMessages).reduce((acc, key) => {
-    if (key === user?.id) return acc
+    if (key === user?.id.toString()) return acc
     return acc + messagesData.pendingMessages[key]
   }, 0)
 

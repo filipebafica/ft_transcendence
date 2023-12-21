@@ -1,7 +1,7 @@
 import axiosInstance from '../config.api'
 
 interface Room {
-  userId: string
+  userId: number
 	roomName: string
 	isPublic: boolean
 	password?: string
@@ -9,7 +9,7 @@ interface Room {
 
 interface JoinConfig {
   roomId: string
-  userId: string
+  userId: number
   isOwner: boolean,
   isAdmin: boolean
 }
@@ -29,7 +29,7 @@ export const listAvailableRooms = async () => {
   return response.data
 }
 
-export const listMyRooms = async (userId: string) => {
+export const listMyRooms = async (userId: number) => {
   const response = await axiosInstance.get(`/room/list/${userId}`)
   return response.data
 }

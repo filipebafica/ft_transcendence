@@ -5,6 +5,7 @@ import styles from './style.module.css'
 
 // API
 import { getStats, getMatches } from 'api/stats'
+import { getUser } from 'api/user'
 
 // Auth
 import { AuthContext } from 'auth'
@@ -88,7 +89,6 @@ const parseGamesHistory = (games: any[], userId: string) => {
   return historicData
 }
 
-
 function StatsPage() {
   const [wins, setWins] = useState(null)
   const [losses, setLosses] = useState(null)
@@ -97,12 +97,14 @@ function StatsPage() {
   const [numPages, setNumPages] = useState(0)
   const [games, setGames] = useState([] as any[])
   const [currentPage, setCurrentPage] = useState(1)
+  const [userName, setUserName] = useState('' as string)
+  const [userAvatar, setUserAvatar] = useState('' as string)
 
   const { userId } = useParams()
 
-  let userName = null
-
   const { user } = useContext(AuthContext)
+
+  const isCurrentUser = userId === user?.id.toString()
 
   const handlePageChange = async (page: number) => {
     if (!userId) return
@@ -115,13 +117,23 @@ function StatsPage() {
     setGames(historicData)
   }
 
-  if (userId === user?.id) {
-    userName = user?.name
-  }
-
   useEffect(() => {
     if (!userId) return
 
+    const fetchUser = async () => {
+      if (isCurrentUser && user) {
+        const { nickname, avatar } = user
+        setUserName(nickname)
+        setUserAvatar(avatar || "")
+      } 
+      else {
+        const data = await getUser(userId)
+        const { nickname, avatar } = data
+
+        setUserName(nickname)
+        setUserAvatar(avatar)
+      }
+    }
     const fetchStats = async () => {
       const data = await getStats(userId)
       console.log('data from getStats', data)
@@ -133,8 +145,9 @@ function StatsPage() {
       setLosses(loses)
       setWinRate(winRate)
     }
+    fetchUser()
     fetchStats()
-  }, [userId])
+  }, [userId, isCurrentUser, user])
 
   useEffect(() => {
     if (!userId) return
@@ -155,7 +168,7 @@ function StatsPage() {
   return (
     <div className={styles.statsContainer}>
       <div className={styles.summaryContainer}>
-        <Avatar alt={user?.name} sx={{ width: 100, height: 100 }} className={styles.userAvatar} />
+        <Avatar alt={user?.nickname} sx={{ width: 100, height: 100 }} className={styles.userAvatar} src={userAvatar} />
         <Typography variant="h6" component="div" className={styles.userName}>
           {userName}
         </Typography>
