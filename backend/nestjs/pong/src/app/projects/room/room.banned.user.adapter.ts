@@ -38,4 +38,22 @@ export default class RoomBannedUserAdapter implements RoomBannedUserGateway {
             .where('banned_user_id = :userId', { userId: userId })
             .execute();
     }
+
+    async isUserBanned(
+        userId: number,
+        roomId: number
+    ): Promise<boolean> {
+        const bannedUser = await this.roomBannedUserRepository.findOne({
+            where: {
+                room: {id: roomId},
+                banned_user: {id: userId}
+            }
+        })
+
+        if (bannedUser == undefined) {
+            return false;
+        }
+
+        return true;
+    }
 }
