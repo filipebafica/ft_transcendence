@@ -9,9 +9,11 @@ import { GameHistoryAdapter } from "./game.history.adapter";
 import { EntityManager } from "typeorm";
 import { ListStatsByUserIdService } from "src/core/projects/game/stats/listByUserId/list.stats.by.user.id.service";
 import { RequestDTO as ListStatsByUserIdServiceRquestDTO } from 'src/core/projects/game/stats/listByUserId/dtos/request.dto';
+import { ApiTags } from "@nestjs/swagger";
 
 
 @Controller('/game')
+@ApiTags('game')
 export class GameController {
 	private gameHistoryAdapter: GameHistoryAdapter;
 	private logger: Logger;

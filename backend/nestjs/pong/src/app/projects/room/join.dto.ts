@@ -3,4 +3,5 @@ export class JoinDTO {
     roomId: number;
     isOwner: boolean;
     isAdmin: boolean;
+    password?: string;
 }

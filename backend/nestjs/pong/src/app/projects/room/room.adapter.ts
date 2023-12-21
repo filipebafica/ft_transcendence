@@ -153,6 +153,14 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         )
     }
 
+    async getHashedPassword(roomId: number): Promise<string> {
+        let entity = await this.roomRepository.findOne({
+            where: { id: roomId }
+        })
+
+        return entity.password;
+    }
+
     private isMuted(roomMutedUser?: RoomMutedUser): boolean {
         if (!roomMutedUser) {
             return false;
