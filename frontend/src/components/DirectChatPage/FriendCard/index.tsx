@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -28,8 +28,8 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 	const navigate = useNavigate();
 	const [waiting, setWaiting] = useState(false);
 
-	// ! CREATE INVITE FOR GAME
 	const handleInvite = () => {
+		// ! SEND GAME INVITE
 		gameSocket.emit(
 			"inviteRouter",
 			JSON.stringify({
@@ -42,21 +42,17 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 			})
 		);
 		setWaiting(true);
-	};
-
-	// ! GET RESPONSE FROM INVITED PLAYER AND IF ACCEPTED, REDIRECT TO MATCH CUSTOMIZATION
-	useEffect(() => {
-		if (!user) return;
-		gameSocket.on(`${user.id}-invite`, (msg: any) => {
+		// ! GET RESPONSE FROM INVITED PLAYER AND IF ACCEPTED, REDIRECT TO MATCH CUSTOMIZATION
+		gameSocket.on(`${user?.id}-invite`, (msg: any) => {
 			setWaiting(false);
-			console.log("1: ", msg);
+			console.log("index:", msg);
 			// if (msg.meta === "game") {
 			// 	navigate(`/challenge/${msg.data}`);
 			// }
 		});
-	}, [user]);
+	};
 
-	// ! BLOCK SCREEN UNTIL REPONSE FROM PLAYER
+	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER
 	if (waiting) {
 		return (
 			<Backdrop open={waiting}>
@@ -65,6 +61,7 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 		);
 	}
 
+	// ! FRIEND CARD
 	return (
 		<Card sx={{ maxWidth: 345, m: 2 }} className={styles.friendCard}>
 			<CardContent>

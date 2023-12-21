@@ -53,15 +53,14 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				},
 			})
 		);
-		// TODO: redirect for match customization
 		console.log("INVITE ACCEPTED");
 		// ! GET GAMEID AND REDIRECT TO MATCH CUSTOMIZATION
-		gameSocket.on(`${user?.id}-invite`, (msg: any) => {
-			console.log("2: ", msg);
-			// if (message.meta === "game") {
-			// 	navigate(`/challenge/${message.data}`);
-			// }
-		});
+		// gameSocket.on(`${user?.id}-invite`, (msg: any) => {
+		// 	console.log(user?.id, msg);
+		// 	if (message.meta === "game") {
+		// 		navigate(`/challenge/${message.data}`);
+		// 	}
+		// });
 	};
 
 	// ! REJECT GAME
@@ -79,6 +78,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				},
 			})
 		);
+		console.log("INVITE REJECTED");
 	};
 
 	// We connect to the socket and listen for invite
@@ -99,6 +99,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 	}, [user]);
 
 	return (
+		// ! INVITE ALERT
 		<InviteMatchContext.Provider value={{}}>
 			<Dialog
 				open={inviteArrived}
