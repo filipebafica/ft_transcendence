@@ -1,4 +1,6 @@
 import React, { createContext, useEffect, useState, useContext } from "react";
+// import { useNavigate } from "react-router-dom";
+
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -12,41 +14,69 @@ import { gameSocket } from "socket";
 // Provider
 import { AuthContext } from "auth";
 
-interface Invite {
-	from: string;
-	to: string;
+interface Message {
+	meta: string;
+	data: {
+		content: string;
+		from: string;
+		to: string;
+	};
 }
 
 export const InviteMatchContext = createContext({
-	invite: { from: "", to: "" },
-	setInvite: (invite: Invite) => {},
+	// invite: { from: "", to: "" },
+	// setInvite: (invite: Invite) => {},
 });
 
 export const InviteMatchProvider = (props: { children: any }) => {
 	const { children } = props;
 	const { user } = useContext(AuthContext);
+	// const navigate = useNavigate();
 	const [inviteArrived, setInviteArrived] = useState(false);
+	const [message, setMessage] = useState<Message>({
+		meta: "",
+		data: { to: "", from: "", content: "" },
+	});
 
+	// ! ACCEPT GAME
 	const handleAccept = () => {
 		setInviteArrived(false);
+		// ! SEND ACCEPT TO BACKEND
 		gameSocket.emit(
 			"inviteRouter",
 			JSON.stringify({
 				meta: "invite",
-				// data: { to: friend.id, from: user.id },
-				content: "accepted",
+				data: {
+					to: message.data.to,
+					from: message.data.from,
+					content: "accepted",
+				},
 			})
 		);
+		// TODO: redirect for match customization
+		console.log("INVITE ACCEPTED");
+		// ! GET GAMEID AND REDIRECT TO MATCH CUSTOMIZATION
+		gameSocket.on(`${user?.id}-invite`, (msg: any) => {
+			console.log("2: ", msg);
+			// if (message.meta === "game") {
+			// 	navigate(`/challenge/${message.data}`);
+			// }
+		});
 	};
 
+	// ! REJECT GAME
 	const handleRefuse = () => {
 		setInviteArrived(false);
+		// ! SEND REJECT TO BACKEND
 		gameSocket.emit(
 			"inviteRouter",
 			JSON.stringify({
 				meta: "invite",
-				// data: { to: friend.id, from: user.id },
-				content: "rejected",
+				data: {
+					to: message.data.to,
+					from: message.data.from,
+					content: "rejected",
+				},
 			})
 		);
 	};
@@ -56,9 +86,11 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		if (!user) return;
 		console.log("connecting to socket", `${user.id}-invite`);
 
-		gameSocket.on(`${user.id}-invite`, (message: any) => {
-			console.log("invite received", message);
+		// ! RECEIVE INVITE FOR GAME
+		gameSocket.on(`${user.id}-invite`, (msg: any) => {
+			console.log(user.id, msg);
 			setInviteArrived(true);
+			setMessage(msg);
 		});
 
 		return () => {
@@ -67,8 +99,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 	}, [user]);
 
 	return (
-		<InviteMatchContext.Provider value={{ invite, setInvite }}>
-			{/* <Dialog onClose={handleClose} open={inviteArrived} /> */}
+		<InviteMatchContext.Provider value={{}}>
 			<Dialog
 				open={inviteArrived}
 				aria-labelledby="alert-dialog-title"
@@ -79,7 +110,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
-						Do you want to play a match against XXX?
+						Do you want to play a match?
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>

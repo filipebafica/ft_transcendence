@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -9,7 +9,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Box } from "@mui/material";
-// import Backdrop from "@mui/material/Backdrop";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import { AuthContext } from "auth";
 import { gameSocket } from "socket";
 
@@ -25,7 +26,9 @@ interface Friend {
 const FriendCard = ({ friend }: { friend: Friend }) => {
 	const { user } = useContext(AuthContext);
 	const navigate = useNavigate();
+	const [waiting, setWaiting] = useState(false);
 
+	// ! CREATE INVITE FOR GAME
 	const handleInvite = () => {
 		gameSocket.emit(
 			"inviteRouter",
@@ -34,23 +37,33 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 				data: {
 					to: friend.id,
 					from: user?.id,
+					content: "opened",
 				},
-				content: "opened",
-				// content: "accepted", "rejected", "customize"
 			})
 		);
-		// <Backdrop open={open}></Backdrop>;
-		gameSocket.on(`${user?.id}-invite`, (message) => {
-			// message = {
-			//   meta: 'game',
-			//   data: 'gameState.id'
-			// }
-			console.log(message);
-			if (message.meta === "game") {
-				navigate(`/challenge/${message.data}`);
-			}
-		});
+		setWaiting(true);
 	};
+
+	// ! GET RESPONSE FROM INVITED PLAYER AND IF ACCEPTED, REDIRECT TO MATCH CUSTOMIZATION
+	useEffect(() => {
+		if (!user) return;
+		gameSocket.on(`${user.id}-invite`, (msg: any) => {
+			setWaiting(false);
+			console.log("1: ", msg);
+			// if (msg.meta === "game") {
+			// 	navigate(`/challenge/${msg.data}`);
+			// }
+		});
+	}, [user]);
+
+	// ! BLOCK SCREEN UNTIL REPONSE FROM PLAYER
+	if (waiting) {
+		return (
+			<Backdrop open={waiting}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+		);
+	}
 
 	return (
 		<Card sx={{ maxWidth: 345, m: 2 }} className={styles.friendCard}>
