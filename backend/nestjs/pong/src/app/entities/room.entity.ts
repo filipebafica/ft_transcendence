@@ -14,6 +14,9 @@ export class Room {
     @Column({ nullable: true })
     isPublic: boolean;
 
+    @Column({ nullable: true })
+    password: string;
+
     @OneToMany(() => RoomParticipants, participants => participants.room)
     participants: RoomParticipants[];
 
