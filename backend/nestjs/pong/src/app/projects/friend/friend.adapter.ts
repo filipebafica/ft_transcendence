@@ -65,8 +65,10 @@ export default class FriendAdapter implements FriendGateway {
         const entity: Friend[] = await this.friendRepository
         .createQueryBuilder('friend')
         .innerJoinAndSelect('friend.user', 'user')
-        .innerJoinAndSelect('friend.friendship', 'friendship')
-        .leftJoinAndSelect('friendship.user_status', 'user_status')
+        .innerJoinAndSelect('friend.friendship', 'friendRelation')
+        .leftJoinAndSelect('friendRelation.user_status', 'user_status')
+        .leftJoinAndSelect('friendRelation.blocked_user_chat', 'blockedUserRelation')
+        .leftJoinAndSelect('blockedUserRelation.user', 'blocked_User')
         .where('user.id = :userId', {userId})
         .getMany();
 
@@ -76,7 +78,8 @@ export default class FriendAdapter implements FriendGateway {
             (row) => friendDTOs.push(new FriendDTO(
                 row.friendship.id,
                 row.friendship.nick_name,
-                row.friendship.user_status,
+                row.friendship.user_status.status,
+                row.friendship.blocked_user_chat.find((blockedUser) => blockedUser.user.id === userId)? true : false,
             ))
         );
 
