@@ -102,10 +102,6 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				}
 			}
 		});
-
-		// return () => {
-		// 	gameSocket.disconnect();
-		// };
 	}, [user]);
 
 	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER

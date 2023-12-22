@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -42,14 +42,6 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 		);
 		setWaiting(true);
 	};
-
-	// useEffect(() => {
-	// 	if (challengeAccepted !== "") {
-	// 		const gameId = challengeAccepted;
-	// 		setChallengeAccepted("");
-	// 		navigate(`/challenge/:${gameId}`);
-	// 	}
-	// }, [challengeAccepted, setChallengeAccepted, navigate]);
 
 	// ! FRIEND CARD
 	return (

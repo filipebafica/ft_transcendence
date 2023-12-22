@@ -25,7 +25,7 @@ const Layout = (props: LayoutProps) => {
 		if (challengeAccepted !== "") {
 			const gameId = challengeAccepted;
 			setChallengeAccepted("");
-			navigate(`/challenge/:${gameId}`);
+			navigate(`/challenge/${gameId}`);
 		}
 	}, [challengeAccepted, setChallengeAccepted, navigate]);
 

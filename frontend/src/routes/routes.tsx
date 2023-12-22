@@ -71,7 +71,6 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/challenge/:gameId",
-		// path: "/challenge/customize",
 		Component: LayoutWrapper(VsGamePage),
 	},
 ]);

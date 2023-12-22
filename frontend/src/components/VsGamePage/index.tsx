@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styles from "./style.module.css";
 
 // Socket
@@ -20,9 +20,8 @@ interface GamePageProps {
 function VsGamePage(props: GamePageProps) {
 	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
-	// const [gameId, setGameId] = useState("0");
-
 	const { gameId } = useParams();
+	const navigate = useNavigate();
 
 	const handleMatching = (config: {
 		paddleColor: number;
@@ -44,6 +43,7 @@ function VsGamePage(props: GamePageProps) {
 					meta: "customize",
 					data: {
 						playerId: user.id,
+						gameId: Number(gameId),
 						customization: config,
 					},
 				})
@@ -54,14 +54,17 @@ function VsGamePage(props: GamePageProps) {
 		}
 	};
 
+	// TODO: If refresh, redirect to home
 	// useEffect(() => {
-	// 	if (!user) return;
-	// 	gameSocket.on(`${user.id}-invite`, (msg: any) => {
-	// 		if (msg.meta === "game") {
-	// 			setGameId(gameId);
-	// 		}
-	// 	});
-	// }, [user, gameId]);
+	// 	const redirectHome = (e: any) => {
+	// 		e.preventDefault();
+	// 		navigate("/home");
+	// 	};
+	// 	window.addEventListener("beforeunload", redirectHome);
+	// 	return () => {
+	// 		window.removeEventListener("beforeunload", redirectHome);
+	// 	};
+	// }, [navigate]);
 
 	if (isConfigComplete && gameId && user) {
 		return (
