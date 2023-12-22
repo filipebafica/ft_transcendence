@@ -110,8 +110,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         .select([
             'room.id AS id',
             'room.name AS name',
-            'row.is_public AS is_public',
-            'row.password AS password',
+            'room.is_public AS is_public',
+            'room.password AS password',
             'participants.is_owner AS is_owner',
             'participants.is_admin AS is_admin'
         ])
@@ -130,7 +130,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
     async getOneByUserId(roomId: number, userId: number): Promise<RoomByOneUserIdDTO> {
         const entity = await this.roomRepository
         .createQueryBuilder('room')
-        .innerJoinAndSelect('room.participants', 'participants')
+        .leftJoinAndSelect('room.participants', 'participants')
         .leftJoinAndSelect('participants.user', 'user')
         .leftJoinAndSelect('user.friend', 'friendRelation')
         .leftJoinAndSelect('friendRelation.friendship', 'friends')
