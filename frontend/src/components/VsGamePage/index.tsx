@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 import styles from "./style.module.css";
 
 // Socket
@@ -21,7 +21,7 @@ function VsGamePage(props: GamePageProps) {
 	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
 	const { gameId } = useParams();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
 	const handleMatching = (config: {
 		paddleColor: number;
