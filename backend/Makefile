@@ -13,6 +13,11 @@ up:
 down:
 	docker-compose down
 
+purge: down
+	sudo rm -rf nestjs/pong/storage
+	sudo rm -rf nestjs/pong/dist
+	docker volume rm backend_shared-volumes-postgres
+
 clean:
 	docker-compose down
 

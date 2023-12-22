@@ -1,40 +1,40 @@
 // URL: /friends/chat/:friendId
-import React, { useEffect, useState, useRef, useContext } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { useParams } from "react-router-dom";
 
-import styles from './style.module.css'
+import styles from "./style.module.css";
 
 // Context
-import { AuthContext } from 'auth'
-import { DirectChatContext } from 'providers/directChat'
+import { AuthContext } from "auth";
+import { DirectChatContext } from "providers/directChat";
 
 // Socket
-import { chatSocket } from 'socket'
+import { chatSocket } from "socket";
 
 // Component
-import FriendCard from './FriendCard'
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
+import FriendCard from "./FriendCard";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 interface UserMessage {
-  name: string
-  id: string
+	name: string;
+	id: string;
 }
 
 interface Message {
-  from: string
-  to: string
-  message: string
-  timeStamp: number
+	from: string;
+	to: string;
+	message: string;
+	timeStamp: number;
 }
 
 interface MessageBoxProps {
-  userFrom: UserMessage
-  userTo: UserMessage
-  onSendMessage: (message: Message) => void
-  onReceiveMessage: (message: Message) => void
-  socket: any
-  listenTo: string
+	userFrom: UserMessage;
+	userTo: UserMessage;
+	onSendMessage: (message: Message) => void;
+	onReceiveMessage: (message: Message) => void;
+	socket: any;
+	listenTo: string;
 }
 
 const DirectChatPage = (props: MessageBoxProps) => {
@@ -119,7 +119,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
       <div className={styles.friendCard}>
         <FriendCard
           friend={{
-            id: '243',
+            id: friendId,
             nickName: 'Friend No data',
             userStatus: 'no data',
             avatar: 'https://i.imgur.com/sd64OhO.png',
