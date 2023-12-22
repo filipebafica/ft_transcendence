@@ -787,8 +787,8 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListAllByUserIdResponseDTO([
-                        new RoomByUserIdDTO(1, "room1", true, true),
-                        new RoomByUserIdDTO(2, "room2", false, true)
+                        new RoomByUserIdDTO(1, "room1", true, false, true, true),
+                        new RoomByUserIdDTO(2, "room2", false, true, false, true)
                 ])
             }
         }
@@ -846,6 +846,7 @@ export class RoomController {
                         1,
                         "room1",
                         true,
+                        false,
                         [
                             new RoomParticipantByOneUserIdDTO(
                                 true,
