@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
@@ -9,12 +9,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import { Box } from "@mui/material";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import { AuthContext } from "auth";
 import { gameSocket } from "socket";
 
 import styles from "./style.module.css";
+import { InviteMatchContext } from "providers/inviteMatch";
 
 interface Friend {
 	id: string | undefined;
@@ -25,8 +24,8 @@ interface Friend {
 
 const FriendCard = ({ friend }: { friend: Friend }) => {
 	const { user } = useContext(AuthContext);
+	const { setWaiting } = useContext(InviteMatchContext);
 	const navigate = useNavigate();
-	const [waiting, setWaiting] = useState(false);
 
 	const handleInvite = () => {
 		// ! SEND GAME INVITE
@@ -42,24 +41,15 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 			})
 		);
 		setWaiting(true);
-		// ! GET RESPONSE FROM INVITED PLAYER AND IF ACCEPTED, REDIRECT TO MATCH CUSTOMIZATION
-		gameSocket.on(`${user?.id}-invite`, (msg: any) => {
-			setWaiting(false);
-			console.log("index:", msg);
-			// if (msg.meta === "game") {
-			// 	navigate(`/challenge/${msg.data}`);
-			// }
-		});
 	};
 
-	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER
-	if (waiting) {
-		return (
-			<Backdrop open={waiting}>
-				<CircularProgress color="inherit" />
-			</Backdrop>
-		);
-	}
+	// useEffect(() => {
+	// 	if (challengeAccepted !== "") {
+	// 		const gameId = challengeAccepted;
+	// 		setChallengeAccepted("");
+	// 		navigate(`/challenge/:${gameId}`);
+	// 	}
+	// }, [challengeAccepted, setChallengeAccepted, navigate]);
 
 	// ! FRIEND CARD
 	return (

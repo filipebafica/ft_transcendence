@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./style.module.css";
 
@@ -20,6 +20,7 @@ interface GamePageProps {
 function VsGamePage(props: GamePageProps) {
 	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
+	// const [gameId, setGameId] = useState("0");
 
 	const { gameId } = useParams();
 
@@ -43,7 +44,6 @@ function VsGamePage(props: GamePageProps) {
 					meta: "customize",
 					data: {
 						playerId: user.id,
-						gameId: gameId,
 						customization: config,
 					},
 				})
@@ -53,6 +53,15 @@ function VsGamePage(props: GamePageProps) {
 			alert("Please enter your username");
 		}
 	};
+
+	// useEffect(() => {
+	// 	if (!user) return;
+	// 	gameSocket.on(`${user.id}-invite`, (msg: any) => {
+	// 		if (msg.meta === "game") {
+	// 			setGameId(gameId);
+	// 		}
+	// 	});
+	// }, [user, gameId]);
 
 	if (isConfigComplete && gameId && user) {
 		return (

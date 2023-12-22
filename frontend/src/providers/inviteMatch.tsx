@@ -7,6 +7,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Socket
 import { gameSocket } from "socket";
@@ -24,15 +26,17 @@ interface Message {
 }
 
 export const InviteMatchContext = createContext({
-	// invite: { from: "", to: "" },
-	// setInvite: (invite: Invite) => {},
+	challengeAccepted: "",
+	setChallengeAccepted: (challengeAccepted: string) => {},
+	setWaiting: (waiting: boolean) => {},
 });
 
 export const InviteMatchProvider = (props: { children: any }) => {
 	const { children } = props;
 	const { user } = useContext(AuthContext);
-	// const navigate = useNavigate();
 	const [inviteArrived, setInviteArrived] = useState(false);
+	const [challengeAccepted, setChallengeAccepted] = useState("");
+	const [waiting, setWaiting] = useState(false);
 	const [message, setMessage] = useState<Message>({
 		meta: "",
 		data: { to: "", from: "", content: "" },
@@ -47,20 +51,12 @@ export const InviteMatchProvider = (props: { children: any }) => {
 			JSON.stringify({
 				meta: "invite",
 				data: {
-					to: message.data.to,
-					from: message.data.from,
+					to: message.data.from,
+					from: message.data.to,
 					content: "accepted",
 				},
 			})
 		);
-		console.log("INVITE ACCEPTED");
-		// ! GET GAMEID AND REDIRECT TO MATCH CUSTOMIZATION
-		// gameSocket.on(`${user?.id}-invite`, (msg: any) => {
-		// 	console.log(user?.id, msg);
-		// 	if (message.meta === "game") {
-		// 		navigate(`/challenge/${message.data}`);
-		// 	}
-		// });
 	};
 
 	// ! REJECT GAME
@@ -72,13 +68,12 @@ export const InviteMatchProvider = (props: { children: any }) => {
 			JSON.stringify({
 				meta: "invite",
 				data: {
-					to: message.data.to,
-					from: message.data.from,
+					to: message.data.from,
+					from: message.data.to,
 					content: "rejected",
 				},
 			})
 		);
-		console.log("INVITE REJECTED");
 	};
 
 	// We connect to the socket and listen for invite
@@ -89,18 +84,44 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		// ! RECEIVE INVITE FOR GAME
 		gameSocket.on(`${user.id}-invite`, (msg: any) => {
 			console.log(user.id, msg);
-			setInviteArrived(true);
-			setMessage(msg);
+			if (msg.meta === "invite" && msg.data.content === "opened") {
+				setInviteArrived(true);
+				setMessage(msg);
+			} else if (
+				msg.meta === "invite" &&
+				msg.data.content === "rejected"
+			) {
+				setWaiting(false);
+			} else if (msg.meta === "game") {
+				setWaiting(false);
+				if (
+					typeof msg.data === "string" ||
+					typeof msg.data === "number"
+				) {
+					setChallengeAccepted(msg.data);
+				}
+			}
 		});
 
-		return () => {
-			gameSocket.disconnect();
-		};
+		// return () => {
+		// 	gameSocket.disconnect();
+		// };
 	}, [user]);
+
+	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER
+	if (waiting) {
+		return (
+			<Backdrop open={waiting}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+		);
+	}
 
 	return (
 		// ! INVITE ALERT
-		<InviteMatchContext.Provider value={{}}>
+		<InviteMatchContext.Provider
+			value={{ challengeAccepted, setChallengeAccepted, setWaiting }}
+		>
 			<Dialog
 				open={inviteArrived}
 				aria-labelledby="alert-dialog-title"
