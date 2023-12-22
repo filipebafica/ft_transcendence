@@ -249,11 +249,11 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 	): Promise<number | null> {
 		try {
 			const result = await this.gameHistoryRepository.findOne({
-				where: [
-					{ player_one_id: playerId },
-					{ player_two_id: playerId },
-					{ status: GameStatus.Running},
-				],
+				where: { 
+					player_one_id: playerId,
+					player_two_id: playerId,
+					status: GameStatus.Running
+				},
 			});
 
 			if (result == undefined) {
@@ -302,9 +302,6 @@ export class GameHistoryAdapter implements GameHistoryRepository {
 					id: gameId,
 					status: GameStatus.Waiting,
 				},
-				lock: {
-					mode: "pessimistic_write",
-				}
 			});
 
 			if (gameHistory == null) {

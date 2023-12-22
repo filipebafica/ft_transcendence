@@ -68,9 +68,6 @@ export class InvitationRegisterAdapter implements InvitationRepository {
           sender_id: senderId,
           receiver_id: receiverId,
         },
-        // lock: {
-        // 	mode: "pessimistic_write",
-        // }
       });
 
       if (invitation == undefined) {

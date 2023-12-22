@@ -39,7 +39,6 @@ export class CustomizeGameService {
         }),
       );
 
-      console.log('customizePlayerRule');
       let gameState: GameState = await this.customizePlayerRule.apply(
         request.message.data.playerId,
         request.message.data.gameId,
