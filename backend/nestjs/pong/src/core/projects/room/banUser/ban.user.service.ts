@@ -30,7 +30,7 @@ export class BanUserService {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            let room = await this.getRoom.apply(requestDTO.roomId);
+            const room = await this.getRoom.apply(requestDTO.roomId);
 
             this.banValidationRule.appy(
                 requestDTO.bannerUserId,

@@ -25,7 +25,7 @@ export class ToggleAdminPrivilegeService {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            let room = await this.getRoom.apply(requestDTO.roomId);
+            const room = await this.getRoom.apply(requestDTO.roomId);
 
             await this.toggleAdminPrivilegeValidationRule.apply(
                 requestDTO.requesterId,
@@ -36,7 +36,7 @@ export class ToggleAdminPrivilegeService {
             
             await this.toggleAdminPrivilegeRule.apply(
                 requestDTO.targetId,
-				room.id,
+                requestDTO.roomId,
                 requestDTO.toggle,
             );
 
