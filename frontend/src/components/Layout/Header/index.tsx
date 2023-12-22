@@ -5,6 +5,9 @@ import logo from '../../../assets/logo_clean.png'
 
 import styles from './style.module.css'
 
+// API
+import { login } from 'api/user'
+
 // Provider
 import { AuthContext } from '../../../auth'
 import { DirectChatContext } from '../../../providers/directChat'
@@ -27,8 +30,8 @@ const Header = () => {
 
   const handleSignIn = async () => {
     try {
+      // await login()
       window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483469ddaf869384d86033635e6ed1046'
-
     }
     catch (err) {
       console.log(err)

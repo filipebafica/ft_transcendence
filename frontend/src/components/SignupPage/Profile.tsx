@@ -6,6 +6,7 @@ import styles from './style.module.css'
 // API
 import { updateUserNickname } from 'api/user'
 import { updateUserAvatar } from 'api/user'
+import { enable2FA } from 'api/user'
 
 import { AuthContext } from '../../auth'
 
@@ -20,9 +21,11 @@ function Profile() {
     if (inputFile.current) inputFile.current.click()
   }
 
-  const handleTwoFactor = () => {
-    // TODO: enable/disable two factor authentication
+  const handleTwoFactor = async () => {
+    if (!user?.id) return
     console.log('Two Factor Button')
+    const res = await enable2FA(user?.id)
+    console.log(res)
   }
 
   const handleUpdate = () => {

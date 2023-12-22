@@ -1,8 +1,8 @@
 import axiosInstance from '../config.api'
 
 const getUserAdapter = (user: any) => {
-  const imageSrc = user.avatar ? `data:image/jpeg;base64,${user.avatar}` : "";
-  return { ...user, avatar: imageSrc}
+  const imageSrc = user.avatar ? `data:image/jpeg;base64,${user.avatar}` : ''
+  return { ...user, avatar: imageSrc }
 }
 
 export const getMyUser = async () => {
@@ -31,8 +31,8 @@ export const login = async () => {
   return response.data
 }
 
-export const enable2FA = async (userId: string) => {
-  const response = await axiosInstance.post('/auth/2fa', { userId })
+export const enable2FA = async (userId: number) => {
+  const response = await axiosInstance.post('/auth/twoFactor/enable')
   return response.data
 }
 
