@@ -5,6 +5,7 @@ export default class RoomByOneUserIdDTO {
         public readonly id: number,
         public readonly name: string,
         public readonly isPublic: boolean,
+        public readonly hasPassword: boolean,
         public readonly participants?: Array<RoomParticipantByOneUserIdDTO>
     ) {
     }

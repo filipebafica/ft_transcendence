@@ -32,7 +32,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
 
             let entity = this.roomRepository.create({
                 name: roomName,
-                isPublic: isPublic,
+                is_public: isPublic,
                 password: password
             });
 
@@ -40,7 +40,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             return new RoomDTO(
                 entity.id,
                 entity.name,
-                entity.isPublic
+                entity.is_public
             );
 
         } catch (error) {
@@ -63,7 +63,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         return entity.map((room) => new RoomDTO(
             room.id,
             room.name,
-            room.isPublic,
+            room.is_public,
             room.password? true : false,
             room.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
@@ -88,7 +88,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         return new RoomDTO(
             entity.id,
             entity.name,
-            entity.isPublic,
+            entity.is_public,
             entity.password? true : false,
             entity.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
@@ -110,6 +110,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         .select([
             'room.id AS id',
             'room.name AS name',
+            'row.is_public AS is_public',
+            'row.password AS password',
             'participants.is_owner AS is_owner',
             'participants.is_admin AS is_admin'
         ])
@@ -118,6 +120,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         return entity.map((row) => new RoomByUserIdDTO(
             row.id,
             row.name,
+            row.is_public,
+            row.password? true : false,
             row.is_owner,
             row.is_admin,
         ))
@@ -139,7 +143,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         return new RoomByOneUserIdDTO(
             entity.id,
             entity.name,
-            entity.isPublic,
+            entity.is_public,
+            entity.password? true : false,
             entity.participants.map((participant) => new RoomParticipantByOneUserIdDTO(
                 participant.is_owner,
                 participant.is_admin,

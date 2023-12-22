@@ -12,7 +12,7 @@ export class Room {
     name: string;
 
     @Column({ nullable: true })
-    isPublic: boolean;
+    is_public: boolean;
 
     @Column({ nullable: true })
     password: string;
