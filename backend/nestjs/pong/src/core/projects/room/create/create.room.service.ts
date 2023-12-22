@@ -22,7 +22,7 @@ export class CreateService {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
             const password = this.hashRule.apply(requestDTO.password);
-            
+
             const room = await this.createRule.apply(
                 requestDTO.roomName,
                 requestDTO.isPublic,

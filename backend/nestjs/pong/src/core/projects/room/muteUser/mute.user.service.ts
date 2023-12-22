@@ -25,7 +25,7 @@ export class MuteUserService {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
-            let room = await this.getRoom.apply(requestDTO.roomId);
+            const room = await this.getRoom.apply(requestDTO.roomId);
 
             this.muteValidationRule.appy(
                 requestDTO.muterUserId,

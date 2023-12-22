@@ -64,6 +64,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             room.id,
             room.name,
             room.isPublic,
+            room.password? true : false,
             room.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
                 participant.is_admin,
@@ -88,6 +89,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             entity.id,
             entity.name,
             entity.isPublic,
+            entity.password? true : false,
             entity.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
                 participant.is_admin,
@@ -159,6 +161,15 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         })
 
         return entity.password;
+    }
+
+    async changePassword(roomId: number, newPassword?: string): Promise<void> {
+        await this.roomRepository
+        .createQueryBuilder()
+        .update()
+        .set({ password: newPassword })
+        .where('id = :roomId', { roomId: roomId })
+        .execute();
     }
 
     private isMuted(roomMutedUser?: RoomMutedUser): boolean {

@@ -41,11 +41,14 @@ import { RequestDTO as ListOneByUserIdRequestDTO } from 'src/core/projects/room/
 import { ResponseDTO as ListOneByUserIdResponseDTO } from 'src/core/projects/room/listOneByUserId/dtos/response.dto';
 import RoomByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.by.one.user.id.dto';
 import RoomParticipantByOneUserIdDTO from 'src/core/projects/room/listOneByUserId/dtos/room.participant.by.one.user.iddto';
-
 import { ToggleAdminPrivilegeService } from 'src/core/projects/room/toggleAdminPrivilege/toggle.admin.privilege.service';
 import { RequestDTO as ToggleAdminPrivilegeRequestDTO} from 'src/core/projects/room/toggleAdminPrivilege/dtos/request.dto';
 import {ToggleAdminPrivilegeDTO} from 'src/app/projects/room/toggle.admin.privilege.dto'
 import { UserIdBannedException } from 'src/core/projects/room/join/exceptions/user.is.banned.exception';
+import { ChangePasswordService } from 'src/core/projects/room/changePassword/change.password.service';
+import { ChangePasswordDTO } from './change.password.dto';
+import { RequestDTO as ChangePasswordRequestDTO } from 'src/core/projects/room/changePassword/dtos/request.dto';
+
 
 @Controller('/room')
 @ApiTags('room')
@@ -61,6 +64,7 @@ export class RoomController {
     private listByUserIdService: ListAllByUserIdService;
     private listOneByUserService: ListOneByUserIdService;
     private toggleAdminPrivilegeService: ToggleAdminPrivilegeService;
+    private changePasswordService: ChangePasswordService;
 
     constructor(
         private readonly entityManager: EntityManager
@@ -122,12 +126,17 @@ export class RoomController {
             new Logger(ListOneByUserIdService.name),
             new RoomAdapter(entityManager),
         );
+
         this.toggleAdminPrivilegeService = new ToggleAdminPrivilegeService(
             new Logger(ToggleAdminPrivilegeService.name),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
         );
 
+        this.changePasswordService = new ChangePasswordService(
+            new Logger(ChangePasswordService.name),
+            new RoomAdapter(entityManager)
+        );
     }
 
     @Post('/create')
@@ -720,7 +729,7 @@ export class RoomController {
             example: {
                 status: 'success',
                 data: new ListAllResponseDTO([
-                    new RoomDTO(1, 'room1', true, [new RoomParticipantDTO(
+                    new RoomDTO(1, 'room1', true, false, [new RoomParticipantDTO(
                         true,
                         false,
                         new UserDTO(
@@ -979,6 +988,83 @@ export class RoomController {
                 "status": "success",
                 "message": `user ${toggleAdminPrivilegeDTO.targetId} has been its privileges toogled in room ${toggleAdminPrivilegeDTO.roomId}`
             };
+        } catch (error) {
+            throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @Put('/password/change')
+    @ApiBody({
+        description: 'Data to change a room password',
+        schema: {
+            type: 'Object',
+            properties: {
+                requesterId: {type: 'number'},
+                roomId: {type: 'number'},
+                newPassword: {type: 'string'}
+            }
+        },
+        examples: {
+            example1: {
+                value: {
+                    requesterId: 1,
+                    roomId: 2,
+                    newPassword: '123password'
+                },
+                summary: 'Example of a valid request'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Successful response',
+        schema: {
+            type: 'Object',
+            properties: {
+                status: {type: 'string'},
+                message: {type: 'boolean'}
+            },
+            example: {
+                status: 'success',
+                message: 'user {userID} has changed room {roomId} password'
+            }
+        }
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unsuccessful response',
+        schema: {
+            type: "Object",
+            properties: {
+                statusCode: {type: 'number'},
+                message: {type: 'string'}
+            },
+            example: {
+                status: 500,
+                message: 'Internal Server Error'
+            }
+        }
+    })
+    async changePassword(
+        @Body() changePasswordDTO: ChangePasswordDTO
+    ) {
+        try {
+            await this.changePasswordService.execute(
+                new ChangePasswordRequestDTO(
+                    changePasswordDTO.requesterId,
+                    changePasswordDTO.roomId,
+                    changePasswordDTO.newPassword
+                )
+            );
+
+            return {
+                "status": "success",
+                "message": `user ${changePasswordDTO.requesterId} has changed room ${changePasswordDTO.roomId} password`
+            };
+
         } catch (error) {
             throw new HttpException(
                 error.message,
