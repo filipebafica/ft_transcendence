@@ -5,6 +5,9 @@ import logo from '../../../assets/logo_clean.png'
 
 import styles from './style.module.css'
 
+// API
+import { login } from 'api/user'
+
 // Provider
 import { AuthContext } from '../../../auth'
 import { DirectChatContext } from '../../../providers/directChat'
@@ -17,7 +20,7 @@ import { Badge } from '@mui/material'
 import { friendsStatusSocket } from 'socket'
 
 const Header = () => {
-  const { user, signIn, signOut } = useContext(AuthContext)
+  const { user, signOut, fakeSignIn } = useContext(AuthContext)
   const { messagesData } = useContext(DirectChatContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
@@ -25,18 +28,26 @@ const Header = () => {
   // Todo
   const [id, setId] = useState('1')
 
-  const handleSignIn = () => {
-    // const randomNumber = Math.floor(Math.random() * 10000) + 1
-    const randomNumber = id
-    signIn({ name: 'test', email: 'test', password: 'test', id: randomNumber.toString() })
+  const handleSignIn = async () => {
+    try {
+      // await login()
+      // window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483469ddaf869384d86033635e6ed1046'
+      window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2F31c9-2001-1388-91-6e3-472-8abc-b4a4-d06.ngrok-free.app%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483'
+    }
+    catch (err) {
+      console.log(err)
+    }
+  }
 
-    friendsStatusSocket.emit(
-      'statusRouter',
-      JSON.stringify({
-        userId: id,
-        status: 'online',
-      }),
-    )
+  const handleFakeSignIn = async () => {
+    try {
+      const res = fakeSignIn(id)
+      console.log(res)
+      window.location.href = '/'
+    }
+    catch (err) {
+      console.log(err)
+    }
   }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -72,7 +83,7 @@ const Header = () => {
   }
 
   const totalPendingMessages = Object.keys(messagesData.pendingMessages).reduce((acc, key) => {
-    if (key === user?.id) return acc
+    if (key === user?.id.toString()) return acc
     return acc + messagesData.pendingMessages[key]
   }, 0)
 
@@ -132,6 +143,9 @@ const Header = () => {
       {!user && (
         <div className={styles.loggedOutNavigation}>
           <input value={id} onChange={(e) => setId(e.target.value)} />
+          <Button variant="outlined" onClick={() => handleFakeSignIn()}>
+            Fake Log In
+          </Button>
           <Button variant="outlined" onClick={() => handleSignIn()}>
             Log In
           </Button>

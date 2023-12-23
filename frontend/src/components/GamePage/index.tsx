@@ -49,7 +49,7 @@ function GamePage(props: GamePageProps) {
 
 	useEffect(() => {
 		if (!user || !user.id) return;
-		gameSocket.on(user.id, (newGameId) => {
+		gameSocket.on(user.id.toString(), (newGameId) => {
 			setGameId(newGameId);
 			setIsConfigComplete(true);
 		});
@@ -58,8 +58,8 @@ function GamePage(props: GamePageProps) {
 	if (isConfigComplete && gameId && user) {
 		return (
 			<LoadingPage
-				userName={user.name}
-				playerId={user.id}
+				userName={user.nickname}
+				playerId={user.id.toString()}
 				gameId={gameId}
 			/>
 		);

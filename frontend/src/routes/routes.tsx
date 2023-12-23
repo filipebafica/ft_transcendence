@@ -8,6 +8,7 @@ import FriendsList from "../components/FriendsList";
 import StatsPage from "../components/StatsPage";
 import Profile from "../components/SignupPage/Profile";
 import DirectChatPage from "components/DirectChatPage";
+import TwoFactorAuthPage from "components/TwoFactorAuthPage";
 
 // Chat Room page
 import ChatRoomPage from "components/ChatRoomPage";
@@ -18,61 +19,65 @@ import Chat from "components/ChatRoomPage/Chat";
 import LayoutWrapper from "./layoutWrapper";
 
 const router = createBrowserRouter([
-	{
-		path: "/",
-		Component: LayoutWrapper(LandingPage),
-	},
-	{
-		path: "/login",
-		Component: LayoutWrapper(LoginPage, false),
-	},
-	{
-		path: "/game",
-		Component: LayoutWrapper(GamePage),
-	},
-	// Chat room routes
-	{
-		path: "/chatRoom",
-		Component: LayoutWrapper(ChatRoomPage),
-	},
-	{
-		path: "/chatRoom/joinRoom",
-		Component: LayoutWrapper(JoinRoom),
-	},
-	{
-		path: "/chatRoom/createRoom",
-		Component: LayoutWrapper(CreateRoom),
-	},
-	{
-		path: "/chatRoom/chat/:roomId",
-		Component: LayoutWrapper(Chat),
-	},
+  {
+    path: '/',
+    element: <LayoutWrapper Component={LandingPage} isPublic={true}/>,
+  },
+  {
+    path: '/login',
+    element: <LayoutWrapper Component={LoginPage} />,
+  },
+  {
+    path: '/game',
+    element: <LayoutWrapper Component={GamePage} />,
+  },
+  // Chat room routes
+  {
+    path: '/chatRoom',
+    element: <LayoutWrapper Component={ChatRoomPage} />,
+  },
+  {
+    path: '/chatRoom/joinRoom',
+    element: <LayoutWrapper Component={JoinRoom} />,
+  },
+  {
+    path: '/chatRoom/createRoom',
+    element: <LayoutWrapper Component={CreateRoom} />,  
+  },
+  {
+    path: '/chatRoom/chat/:roomId',
+    element: <LayoutWrapper Component={Chat} />,
+  },
 
-	// Landing
-	{
-		path: "/home",
-		Component: LayoutWrapper(LandingPage),
+  // Landing
+  {
+    path: '/home',
+    element: <LayoutWrapper Component={LandingPage} />,
+  },
+  {
+    path: '/friends',
+    element: <LayoutWrapper Component={FriendsList} />,
+  },
+  {
+    path: '/stats/:userId',
+    element: <LayoutWrapper Component={StatsPage} />,
+  },
+  {
+		path: '/settings',
+    element: <LayoutWrapper Component={Profile} />,
 	},
-	{
-		path: "/friends",
-		Component: LayoutWrapper(FriendsList),
-	},
-	{
-		path: "/stats/:userId",
-		Component: LayoutWrapper(StatsPage),
-	},
-	{
-		path: "/settings",
-		Component: LayoutWrapper(Profile),
-	},
-	{
-		path: "/friends/chat/:friendId",
-		Component: LayoutWrapper(DirectChatPage),
-	},
-	{
-		path: "/challenge/:gameId",
-		Component: LayoutWrapper(VsGamePage),
-	},
-]);
+  {
+    path: '/friends/chat/:friendId',
+    element: <LayoutWrapper Component={DirectChatPage} />,
+  },
+  {
+    path: '/2fa',
+    element: <LayoutWrapper Component={TwoFactorAuthPage} />,
+  },
+  {
+	path: "/challenge/:gameId",
+	element: <LayoutWrapper Component={VsGamePage} />,
+  }
+])
 
 export default router;
