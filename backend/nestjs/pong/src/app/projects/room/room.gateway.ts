@@ -31,7 +31,7 @@ export class RoomGateway {
         this.logger.log(JSON.stringify({"Gateway has started": {"received-message": message}}))
 
         const messageDTO: MessageDTO = JSON.parse(message);
-        this.server.emit(messageDTO.room, {
+        this.server.emit(messageDTO.room + '-room-message', {
             from: messageDTO.from,
             message: messageDTO.message,
             timeStamp: messageDTO.timeStamp

@@ -7,18 +7,17 @@ import {
   Res,
   UseGuards,
   Req,
-  Logger,
 } from '@nestjs/common';
 
 import { Response, Request } from 'node_modules/@types/express/index';
 import { AuthenticationService } from '../../../core/projects/authentication/authentication.service';
 import { LoginService } from 'src/core/projects/authentication/login/login.service';
-import { UserAdapter as UserAdapter } from './login/user.info.adapter';
+import { UserAdapter } from './login/user.adapter';
 import { EntityManager } from 'typeorm';
 import { LoginResponseDTO } from 'src/core/projects/authentication/login/dto/response.dto';
 import { JwtAdapter } from './login/jwt.adapter';
 import { JwtService } from '@nestjs/jwt';
-import { UserDTO as UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
+import { UserDTO } from 'src/core/projects/authentication/login/dto/user.dto';
 import { FortyTwoAuthGuard } from './guards/forty.two.oauth.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { LoginRedirectService } from 'src/core/projects/authentication/login/login.redirect.service';

@@ -43,9 +43,7 @@ export class AuthenticationService {
       '42 Transcendence Pong Game',
       secret,
     );
-    this.usersService.update(user.id, {
-      twoFactorAuthenticationSecret: secret,
-    });
+    this.usersService.updateUserTwoFactorAuthSecret(user, secret);
 
     return otpAuthUrl;
   }

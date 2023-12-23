@@ -4,7 +4,7 @@ import { TokenGateway, TokenType } from '../gateway/token.gateway';
 
 import { UserRepository } from './gateway/user.info.repository';
 import { LoginResponseDTO } from './dto/response.dto';
-import { UserDTO } from './dto/user.info.dto';
+import { UserDTO } from './dto/user.dto';
 import { User } from 'src/app/entities/user.entity';
 
 @Injectable()
