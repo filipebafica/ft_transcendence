@@ -12,7 +12,6 @@ import { ResponseDTO as ListByUserIdResponseDTO } from 'src/core/projects/friend
 import FriendDTO from 'src/core/projects/friend/listByUserId/dtos/friend.dto';
 import { DeleteDTO } from './delete.dto';
 import { RequestDTO as DeleteRequestDTO } from 'src/core/projects/friend/delete/dtos/request.dto';
-import { StatusDTO as FriendStatusDTO } from 'src/core/projects/friend/listByUserId/dtos/status.dto';
 
 @Controller('/friend')
 @ApiTags('friend')
