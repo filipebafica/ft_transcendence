@@ -1,13 +1,13 @@
 import { Logger } from '@nestjs/common';
 import {
-  ConnectedSocket,
-  MessageBody,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
+	ConnectedSocket,
+	MessageBody,
+	OnGatewayConnection,
+	OnGatewayDisconnect,
+	OnGatewayInit,
+	SubscribeMessage,
+	WebSocketGateway,
+	WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { JoinGameService } from 'src/core/projects/game/joinGame/join.game.service';
@@ -39,219 +39,235 @@ import { CustomizeMessageDTO } from './customize.message.dto';
 import { Request as CustomizeGameServiceRequest } from 'src/core/projects/game/inviteRouter/customize/dtos/request.dto';
 
 @WebSocketGateway({
-  path: '/websocket/game',
-  cors: {
-    origin: '*',
-  },
+	path: '/websocket/game',
+	cors: {
+		origin: '*',
+	},
 })
 export class GameGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+	implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
-  private waitingQueue: WaitingQueueAdapter;
-  private gameStateManager: GameStateAdapter;
-  private gameHistoryAdapter: GameHistoryAdapter;
-  private clientManagerAdapter: ClientManagerAdapter;
-  private messageEmitterAdapter: MessageEmitterAdapter;
-  private invitationRegisterAdapter: InvitationRegisterAdapter;
+	private waitingQueue: WaitingQueueAdapter;
+	private gameStateManager: GameStateAdapter;
+	private gameHistoryAdapter: GameHistoryAdapter;
+	private clientManagerAdapter: ClientManagerAdapter;
+	private messageEmitterAdapter: MessageEmitterAdapter;
+	private invitationRegisterAdapter: InvitationRegisterAdapter;
 
-  @WebSocketServer()
-  server: Server;
+	@WebSocketServer()
+	server: Server;
 
-  constructor(private readonly entityManager: EntityManager) {
-    this.gameHistoryAdapter = new GameHistoryAdapter(entityManager);
+	constructor(private readonly entityManager: EntityManager) {
+		this.gameHistoryAdapter = new GameHistoryAdapter(entityManager);
 
-    this.clientManagerAdapter = new ClientManagerAdapter(entityManager);
-    this.waitingQueue = new WaitingQueueAdapter(entityManager);
-    this.gameStateManager = new GameStateAdapter(this.gameHistoryAdapter);
-    this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
-    this.invitationRegisterAdapter = new InvitationRegisterAdapter(
-      entityManager,
-    );
-  }
+		this.clientManagerAdapter = new ClientManagerAdapter(entityManager);
+		this.waitingQueue = new WaitingQueueAdapter(entityManager);
+		this.gameStateManager = new GameStateAdapter(this.gameHistoryAdapter);
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
+		this.invitationRegisterAdapter = new InvitationRegisterAdapter(
+			entityManager,
+		);
+	}
 
-  afterInit() {
-    this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
-    this.handleGame();
-    this.handleFinishedGame();
-  }
+	afterInit() {
+		this.messageEmitterAdapter = new MessageEmitterAdapter(this.server);
+		this.handleGame();
+		this.handleFinishedGame();
+	}
 
-  //Handles Join Game Socket
-  @SubscribeMessage('joinGame')
-  public async joinGame(
-    @MessageBody() message: string,
-    @ConnectedSocket() client: Socket,
-  ): Promise<void> {
-    try {
-      const joinGameService: JoinGameService = new JoinGameService(
-        new Logger(JoinGameService.name),
-        this.clientManagerAdapter,
-        this.waitingQueue,
-        this.gameStateManager,
-      );
+	//Handles Join Game Socket
+	@SubscribeMessage('joinGame')
+	public async joinGame(
+		@MessageBody() message: string,
+		@ConnectedSocket() client: Socket,
+	): Promise<void> {
+		try {
+			const joinGameService: JoinGameService = new JoinGameService(
+				new Logger(JoinGameService.name),
+				this.clientManagerAdapter,
+				this.waitingQueue,
+				this.gameStateManager,
+			);
 
-      const joinMessageDTO: JoinMessageDTO = JSON.parse(message);
+			const joinMessageDTO: JoinMessageDTO = JSON.parse(message);
 
-      const response: JoinGameResponse = await joinGameService.execute(
-        new JoinGameRequest(client.id, joinMessageDTO),
-      );
+			const response: JoinGameResponse = await joinGameService.execute(
+				new JoinGameRequest(client.id, joinMessageDTO),
+			);
 
-      this.server.emit(joinMessageDTO.uuid.toString(), response.gameState.id);
-    } catch (error) {
-      console.log(`COULDN'T JOIN THE GAME: ${[error.message]}`);
-    }
-  }
+			this.server.emit(
+				joinMessageDTO.uuid.toString(),
+				response.gameState.id,
+			);
+		} catch (error) {
+			console.log(`COULDN'T JOIN THE GAME: ${[error.message]}`);
+		}
+	}
 
-  public async handleGame() {
-    try {
-      const handleGameService: HandleGameService = new HandleGameService(
-        this.gameStateManager,
-      );
+	public async handleGame() {
+		try {
+			const handleGameService: HandleGameService = new HandleGameService(
+				this.gameStateManager,
+			);
 
-      while (true) {
-        await handleGameService.gameLoop();
-        const games = this.gameStateManager.getGames();
+			while (true) {
+				await handleGameService.gameLoop();
+				const games = this.gameStateManager.getGames();
 
-        for (const [gameId, gameState] of games) {
-          this.server.emit(gameId.toString(), gameState);
-        }
-      }
-    } catch (error) {
-      console.log(`ERROR HANDLING GAME: ${[error.message]}`);
-    }
-  }
+				for (const [gameId, gameState] of games) {
+					this.server.emit(gameId.toString(), gameState);
+				}
+			}
+		} catch (error) {
+			console.log(`ERROR HANDLING GAME: ${[error.message]}`);
+		}
+	}
 
-  public async handleFinishedGame() {
-    try {
-      const handleFinishedGameService: HandleFinishedGameService =
-        new HandleFinishedGameService(
-          new Logger(),
-          this.gameStateManager,
-          this.clientManagerAdapter,
-        );
+	public async handleFinishedGame() {
+		try {
+			const handleFinishedGameService: HandleFinishedGameService =
+				new HandleFinishedGameService(
+					new Logger(),
+					this.gameStateManager,
+					this.clientManagerAdapter,
+				);
 
-      while (true) {
-        const response: HandleFinishedGameResponse =
-          await handleFinishedGameService.finishGameLoop();
-        if (response.gameStates.length) {
-          await Promise.all(
-            response.gameStates.map(async (gameState: GameState) => {
-              await this.server.emit(gameState.id.toString(), gameState);
-            }),
-          );
-        }
-        await new Promise((resolve) => setTimeout(resolve, 300));
-      }
-    } catch (error) {
-      console.log(`ERROR FINISHING GAME: ${[error.message]}`);
-    }
-  }
+			while (true) {
+				const response: HandleFinishedGameResponse =
+					await handleFinishedGameService.finishGameLoop();
+				if (response.gameStates.length) {
+					await Promise.all(
+						response.gameStates.map(
+							async (gameState: GameState) => {
+								await this.server.emit(
+									gameState.id.toString(),
+									gameState,
+								);
+							},
+						),
+					);
+				}
+				await new Promise((resolve) => setTimeout(resolve, 300));
+			}
+		} catch (error) {
+			console.log(`ERROR FINISHING GAME: ${[error.message]}`);
+		}
+	}
 
-  @SubscribeMessage('playerAction')
-  public playerAction(
-    @MessageBody() data: { gameId: number; playerId: number; action: string },
-  ) {
-    try {
-      console.log(data.action);
-      const playerActionService: PlayerActionService = new PlayerActionService(
-        new Logger(),
-        this.gameStateManager,
-      );
+	@SubscribeMessage('playerAction')
+	public playerAction(
+		@MessageBody()
+		data: {
+			gameId: number;
+			playerId: number;
+			action: string;
+		},
+	) {
+		try {
+			console.log(data.action);
+			const playerActionService: PlayerActionService =
+				new PlayerActionService(new Logger(), this.gameStateManager);
 
-      const request: PlayerActionRequest = new PlayerActionRequest(
-        data.playerId,
-        data.gameId,
-        data.action,
-      );
+			const request: PlayerActionRequest = new PlayerActionRequest(
+				data.playerId,
+				data.gameId,
+				data.action,
+			);
 
-      playerActionService.execute(request);
-    } catch (error) {
-      console.log(`COULDN'T MOVE PLAYER: ${error.message}`);
-    }
-  }
+			playerActionService.execute(request);
+		} catch (error) {
+			console.log(`COULDN'T MOVE PLAYER: ${error.message}`);
+		}
+	}
 
-  @SubscribeMessage('inviteRouter')
-  public async inviteRouter(
-    @MessageBody() message: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    try {
-      const parsedMessage = JSON.parse(message);
-      const messageType = this.getInviteRouterMessageType(parsedMessage);
+	@SubscribeMessage('inviteRouter')
+	public async inviteRouter(
+		@MessageBody() message: string,
+		@ConnectedSocket() client: Socket,
+	) {
+		try {
+			const parsedMessage = JSON.parse(message);
+			const messageType = this.getInviteRouterMessageType(parsedMessage);
 
-      if (messageType == 'invite') {
-        const inviteService: InviteService = new InviteService(
-          new Logger(InviteService.name),
-          this.messageEmitterAdapter,
-          this.gameStateManager,
-          this.invitationRegisterAdapter,
-          this.gameHistoryAdapter,
-          this.waitingQueue,
-          this.clientManagerAdapter,
-        );
+			if (messageType == 'invite') {
+				const inviteService: InviteService = new InviteService(
+					new Logger(InviteService.name),
+					this.messageEmitterAdapter,
+					this.gameStateManager,
+					this.invitationRegisterAdapter,
+					this.gameHistoryAdapter,
+					this.waitingQueue,
+					this.clientManagerAdapter,
+				);
 
-        const inviteMessageDTO: InviteMessageDTO = parsedMessage;
-        await inviteService.execute(
-          new InviteRequest(client.id, inviteMessageDTO),
-        );
-      }
+				const inviteMessageDTO: InviteMessageDTO = parsedMessage;
+				await inviteService.execute(
+					new InviteRequest(client.id, inviteMessageDTO),
+				);
+			}
 
-      if (messageType == 'customize') {
-        const customizeGameService: CustomizeGameService =
-          new CustomizeGameService(
-            new Logger(CustomizeGameService.name),
-            this.gameStateManager,
-            this.messageEmitterAdapter,
-            this.waitingQueue,
-          );
+			if (messageType == 'customize') {
+				const customizeGameService: CustomizeGameService =
+					new CustomizeGameService(
+						new Logger(CustomizeGameService.name),
+						this.gameStateManager,
+						this.messageEmitterAdapter,
+						this.waitingQueue,
+					);
 
-        const customizeMessageDTO: CustomizeMessageDTO = parsedMessage;
-        await customizeGameService.execute(
-          new CustomizeGameServiceRequest(client.id, customizeMessageDTO),
-        );
-      }
-    } catch (error) {
-      console.log(`ERROR INVITING ROUTER: ${[error.message]}`);
-    }
-  }
+				const customizeMessageDTO: CustomizeMessageDTO = parsedMessage;
+				await customizeGameService.execute(
+					new CustomizeGameServiceRequest(
+						client.id,
+						customizeMessageDTO,
+					),
+				);
+			}
+		} catch (error) {
+			console.log(`ERROR INVITING ROUTER: ${[error.message]}`);
+		}
+	}
 
-  public handleConnection(client: Socket, ...args: any[]) {
-    console.log(`Client connected from game: ${client.id}`);
-  }
+	public handleConnection(client: Socket, ...args: any[]) {
+		console.log(`Client connected from game: ${client.id}`);
+	}
 
-  public async handleDisconnect(client: Socket) {
-    try {
-      console.log(`Client disconnected from game: ${client.id}`);
-      const handleDisconnectService: HandleDisconnectService =
-        new HandleDisconnectService(
-          new Logger(),
-          this.clientManagerAdapter,
-          this.gameStateManager,
-          this.waitingQueue,
-          this.invitationRegisterAdapter,
-        );
+	public async handleDisconnect(client: Socket) {
+		try {
+			console.log(`Client disconnected from game: ${client.id}`);
+			const handleDisconnectService: HandleDisconnectService =
+				new HandleDisconnectService(
+					new Logger(),
+					this.clientManagerAdapter,
+					this.gameStateManager,
+					this.waitingQueue,
+					this.invitationRegisterAdapter,
+				);
 
-      const request: HandleDisconnectRequest = new HandleDisconnectRequest(
-        client.id,
-      );
+			const request: HandleDisconnectRequest =
+				new HandleDisconnectRequest(client.id);
 
-      const response: HandleDisconnectResponse =
-        await handleDisconnectService.execute(request);
-      this.server.emit(response.gameState.id.toString(), response.gameState);
-    } catch (error) {
-      console.log(`ERROR DISCONNECTING GAME: ${[error.message]}`);
-    }
-  }
+			const response: HandleDisconnectResponse =
+				await handleDisconnectService.execute(request);
+			this.server.emit(
+				response.gameState.id.toString(),
+				response.gameState,
+			);
+		} catch (error) {
+			console.log(`ERROR DISCONNECTING GAME: ${[error.message]}`);
+		}
+	}
 
-  private getInviteRouterMessageType(parsedMessage: any): string {
-    const messageType = parsedMessage?.meta;
-    if (messageType == undefined || messageType == null) {
-      throw Error('Invalid message type for InviteRouter');
-    }
+	private getInviteRouterMessageType(parsedMessage: any): string {
+		const messageType = parsedMessage?.meta;
+		if (messageType == undefined || messageType == null) {
+			throw Error('Invalid message type for InviteRouter');
+		}
 
-    if (messageType != 'invite' && messageType != 'customize') {
-      throw Error('Invalid message type for InviteRouter');
-    }
+		if (messageType != 'invite' && messageType != 'customize') {
+			throw Error('Invalid message type for InviteRouter');
+		}
 
-    return messageType;
-  }
+		return messageType;
+	}
 }
