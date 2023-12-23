@@ -31,10 +31,13 @@ const VsGameConfig = (props: GameConfigProps) => {
 
 	const { gameId, onJoinGame } = props;
 
+	// ! KEEPS RUNNING INFINITE TIMES WHEN CUSTOMIZING AND WHEN GAME ENDS
 	useEffect(() => {
 		if (!gameId) return;
 		gameSocket.on(gameId, (newGameState) => {
+			console.log("gameState", newGameState);
 			if (newGameState.status === 2) {
+				// ! REDIRECT AFTER ENDING GAME
 				navigate("/home");
 			}
 		});
