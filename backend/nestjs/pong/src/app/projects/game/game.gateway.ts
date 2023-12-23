@@ -226,6 +226,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect, On
 				this.clientManagerAdapter,
 				this.gameStateManager,
 				this.waitingQueue,
+				this.invitationRegisterAdapter
 			);
 
 			const request: HandleDisconnectRequest = new HandleDisconnectRequest(
