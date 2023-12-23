@@ -27,7 +27,8 @@ export default class FriendAdapter implements FriendGateway {
         const entity: Friend[] = await this.friendRepository
         .createQueryBuilder('friend')
         .innerJoinAndSelect('friend.user', 'user')
-        .innerJoinAndSelect('friend.friendship', 'friendship')
+        .innerJoinAndSelect('friend.friendship', 'friendRelation')
+        .leftJoinAndSelect('friendRelation.user_status', 'user_status')
         .where('user.id = :userId', {userId})
         .getMany();
 
