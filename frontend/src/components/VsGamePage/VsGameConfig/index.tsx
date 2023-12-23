@@ -31,7 +31,6 @@ const VsGameConfig = (props: GameConfigProps) => {
 
 	const { gameId, onJoinGame } = props;
 
-	// ! KEEPS RUNNING INFINITE TIMES WHEN CUSTOMIZING AND WHEN GAME ENDS
 	useEffect(() => {
 		if (!gameId) return;
 		gameSocket.on(gameId, (newGameState) => {
@@ -43,7 +42,6 @@ const VsGameConfig = (props: GameConfigProps) => {
 				) !== 3
 			) {
 				console.log("gameState", newGameState);
-				// ! REDIRECT AFTER ENDING GAME
 				navigate("/home");
 			}
 		});
