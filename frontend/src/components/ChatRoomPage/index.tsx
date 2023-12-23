@@ -42,8 +42,10 @@ const ChatRoomPage = () => {
   useEffect(() => {
     let rooms
     const fetchRooms = async () => {
+      if (!user?.id) return
+      
       try {
-        const response = await listMyRooms(user?.id || '')
+        const response = await listMyRooms(user?.id)
         console.log('Rooms:', response.data)
         rooms = response.data
         setMyRooms(rooms)
