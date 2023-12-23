@@ -38,12 +38,14 @@ export class ChatGateway {
                 timeStamp: messageDTO.timeStamp,
             })
 
+            console.log('FROM1:', messageDTO.from + '-direct-message')
             this.server.emit(messageDTO.to + '-direct-message', {
                 from: messageDTO.from,
                 to: messageDTO.to,
                 message: messageDTO.message,
                 timeStamp: messageDTO.timeStamp,
             })
+            console.log('TO:', messageDTO.to + '-direct-message')
 
             this.logger.log(JSON.stringify({"Gateway has finished": {"sent-message": MessageDTO}}))
     }

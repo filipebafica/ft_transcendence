@@ -78,11 +78,10 @@ function FriendsList() {
       let friends = []
       try {
         friends = await listFriends(userId)
-        console.log('Friends', friends)
         const friendsWithStatus = friends.map((friend: any) => {
           return {
             ...friend,
-            userStatus: friend.userStatus?.status,
+            userStatus: friend.userStatus,
           }
         })
         setFriends(friendsWithStatus)

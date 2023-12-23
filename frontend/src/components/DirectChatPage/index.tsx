@@ -1,43 +1,43 @@
 // URL: /friends/chat/:friendId
-import React, { useEffect, useState, useRef, useContext } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useRef, useContext } from 'react'
+import { useParams } from 'react-router-dom'
 
-import styles from "./style.module.css";
+import styles from './style.module.css'
 
 // Context
-import { AuthContext } from "auth";
-import { DirectChatContext } from "providers/directChat";
+import { AuthContext } from 'auth'
+import { DirectChatContext } from 'providers/directChat'
 
 // Socket
-import { chatSocket } from "socket";
+import { chatSocket } from 'socket'
 
 // Component
-import FriendCard from "./FriendCard";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import FriendCard from './FriendCard'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 
 // Api
-import { getUser } from "api/user";
+import { getUser } from 'api/user'
 
 interface UserMessage {
-	name: string;
-	id: string;
+  name: string
+  id: string
 }
 
 interface Message {
-	from: string;
-	to: string;
-	message: string;
-	timeStamp: number;
+  from: string
+  to: string
+  message: string
+  timeStamp: number
 }
 
 interface MessageBoxProps {
-	userFrom: UserMessage;
-	userTo: UserMessage;
-	onSendMessage: (message: Message) => void;
-	onReceiveMessage: (message: Message) => void;
-	socket: any;
-	listenTo: string;
+  userFrom: UserMessage
+  userTo: UserMessage
+  onSendMessage: (message: Message) => void
+  onReceiveMessage: (message: Message) => void
+  socket: any
+  listenTo: string
 }
 
 const DirectChatPage = (props: MessageBoxProps) => {
@@ -54,16 +54,14 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
   const sendMessage = () => {
     if (newMessage.trim() !== '') {
-      console.log('sending message to event', `messageRouter`)
-      chatSocket.emit(
-        `messageRouter`,
-        JSON.stringify({
-          from: userId,
-          to: friendId,
-          message: newMessage,
-          timeStamp: Date.now(),
-        }),
-      )
+      const messageData = {
+        from: userId,
+        to: Number(friendId),
+        message: newMessage,
+        timeStamp: Date.now(),
+      }
+      console.log('sending message to event messageRouter', messageData)
+      chatSocket.emit(`messageRouter`, JSON.stringify(messageData))
     }
     setNewMessage('')
   }
@@ -105,17 +103,22 @@ const DirectChatPage = (props: MessageBoxProps) => {
     <div className={styles.container}>
       <div className={styles.chatSection}>
         <div className={styles.messagesBox} id="message-list">
+          {friendId &&
+            messagesData.messages[friendId]?.map((msg: Message, index) => {
+              const from =
+                msg.from.toString() === userId?.toString() ? 'Me' : (friendData as any)?.nick_name
 
-          {friendId && messagesData.messages[friendId]?.map((msg: Message, index) => (
-            <div key={index} className={styles.messageContainer}>
-              <div className={styles.from}>{msg.from}</div>
-              <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
-                undefined,
-                { hour12: false },
-              )}]:`}</div>
-              <div className={styles.message}>{msg.message}</div>
-            </div>
-          ))}
+              return (
+                <div key={index} className={styles.messageContainer}>
+                  <div className={styles.from}>{from}</div>
+                  <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
+                    undefined,
+                    { hour12: false },
+                  )}]:`}</div>
+                  <div className={styles.message}>{msg.message}</div>
+                </div>
+              )
+            })}
 
           <div ref={messagesEndRef} />
         </div>
@@ -134,9 +137,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
         </div>
       </div>
       <div className={styles.friendCard}>
-        <FriendCard
-          friend={friendData as any}
-        />
+        <FriendCard friend={friendData as any} />
       </div>
     </div>
   )

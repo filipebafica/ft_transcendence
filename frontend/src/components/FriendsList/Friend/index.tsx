@@ -27,6 +27,7 @@ const userStatuses = {
   online: 'Online',
   offline: 'Offline',
   [`in-game`]: 'In Game',
+  [`off-line`]: 'Offline',
 }
 
 function Friend(props: FriendProps) {

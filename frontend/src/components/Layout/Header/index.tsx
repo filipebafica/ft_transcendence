@@ -6,7 +6,7 @@ import logo from '../../../assets/logo_clean.png'
 import styles from './style.module.css'
 
 // API
-import { login } from 'api/user'
+// import { login } from 'api/user'
 
 // Provider
 import { AuthContext } from '../../../auth'
