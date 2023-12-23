@@ -17,7 +17,7 @@ import { InviteMatchContext } from "providers/inviteMatch";
 
 interface Friend {
 	id: string | undefined;
-	nickName: string;
+	nick_name: string;
 	userStatus: string;
 	avatar?: string;
 }
@@ -48,10 +48,10 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 		<Card sx={{ maxWidth: 345, m: 2 }} className={styles.friendCard}>
 			<CardContent>
 				<Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-					<Avatar alt={friend.nickName} src={friend.avatar} />
+					<Avatar alt={friend.nick_name} src={friend.avatar} />
 					<Box>
 						<Typography gutterBottom variant="h5" component="div">
-							{friend.nickName}
+							{friend.nick_name}
 						</Typography>
 						<Typography variant="body2" color="text.secondary">
 							Status: {friend.userStatus}

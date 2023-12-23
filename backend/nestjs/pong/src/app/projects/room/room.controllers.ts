@@ -74,7 +74,7 @@ export class RoomController {
         );
 
         this.joinService = new JoinService(
-            new Logger(`room::${CreateService.name}`),
+            new Logger(`room::${JoinService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager)

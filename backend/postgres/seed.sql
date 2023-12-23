@@ -1,15 +1,12 @@
 -- Users
 
-INSERT INTO public.user (name, nick_name) VALUES ('Ringo', 'Starrman');
-INSERT INTO public.user (name, nick_name) VALUES ('John', 'GlassesGuru');
-INSERT INTO public.user (name, nick_name) VALUES ('Paul', 'BassBoss');
-INSERT INTO public.user (name, nick_name) VALUES ('George', 'QuietRocker');
-INSERT INTO public.user (name, nick_name) VALUES ('Mick', 'JumpingJack');
-INSERT INTO public.user (name, nick_name) VALUES ('Keith', 'GuitarHero');
-INSERT INTO public.user (name, nick_name) VALUES ('Freddie', 'QueenBee');
-INSERT INTO public.user (name, nick_name) VALUES ('Brian', 'AstroRocker');
-INSERT INTO public.user (name, nick_name) VALUES ('Roger', 'DrumDynamo');
-INSERT INTO public.user (name, nick_name) VALUES ('David', 'SpaceOddity');
+INSERT INTO public.user (name, nick_name, oauth_provider_id, email, is_two_factor_authentication_enabled, two_factor_authentication_secret, avatar)
+VALUES
+('Goku Son', 'Kakarot', 65192, 'goku.son@dbzuniverse.com', false, '', ''),
+('Naruto Uzumaki', 'Hokage', 65193, 'naruto.uzumaki@konohagakure.com', false, '', ''),
+('Sailor Moon', 'MoonPrincess', 65194, 'sailor.moon@silvermilkyway.com', false, '', ''),
+('Spike Spiegel', 'SpaceCowboy', 65195, 'spike.spiegel@bebopship.com', false, '', ''),
+('Luffy Monkey D.', 'StrawHat', 65196, 'luffy.monkey@grandlineadventures.com', false, '', '');
 
 -- Friends
 

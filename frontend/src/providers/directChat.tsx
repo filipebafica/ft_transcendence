@@ -51,6 +51,7 @@ export const DirectChatProvider = (props: { children: any }) => {
     if (!user) return
     console.log('connecting to socket', `${user.id}-direct-message`)
 
+    chatSocket.connect()
     chatSocket.on(`${user.id}-direct-message`, (message: any) => {
       console.log('direct message received', message)
 
@@ -82,6 +83,7 @@ export const DirectChatProvider = (props: { children: any }) => {
     })
 
     return () => {
+      console.log('disconnecting from socket', `${user.id}-direct-message`)
       chatSocket.disconnect()
     }
   }, [user])

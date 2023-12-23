@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Fake sign in
   const fakeSignIn = async (id: string) => {
     const userData = await getUser(id)
-    setUser(userData)
+    setUser({ ...user, ...userData })
+    return userData
   }
 
   const refreshUser = useCallback(async () => {
