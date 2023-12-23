@@ -33,6 +33,6 @@ export class LoginService {
     };
     const token: TokenType = await this.tokenGateway.tokenizer(tokenPayload);
 
-    return new LoginResponseDTO(token);
+    return new LoginResponseDTO(token, user.isTwoFactorAuthenticationEnabled);
   }
 }
