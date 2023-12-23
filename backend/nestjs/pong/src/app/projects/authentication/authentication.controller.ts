@@ -22,8 +22,10 @@ import { UserDTO as UserDTO } from 'src/core/projects/authentication/login/dto/u
 import { FortyTwoAuthGuard } from './guards/forty.two.oauth.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { LoginRedirectService } from 'src/core/projects/authentication/login/login.redirect.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthenticationController {
   private readonly loginService: LoginService;
   private readonly loginRedirectService: LoginRedirectService;

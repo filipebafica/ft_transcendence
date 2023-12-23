@@ -27,17 +27,17 @@ export class GameController {
 		this.gameHistoryAdapter = new GameHistoryAdapter(entityManager);
 
 		this.getWinnerByGameIdService = new GetWinnerByGameIdService(
-			new Logger(GetWinnerByGameIdService.name),
+			new Logger(`game::${GetWinnerByGameIdService.name}`),
 			this.gameHistoryAdapter,
 		);
 
 		this.listByUserIdService = new ListByUserIdService(
-			new Logger(ListByUserIdService.name),
+			new Logger(`game::${ListByUserIdService.name}`),
 			this.gameHistoryAdapter,
 		);
 
 		this.listStatsByUserIdService = new ListStatsByUserIdService(
-			new Logger(ListStatsByUserIdService.name),
+			new Logger(`game::${ListStatsByUserIdService.name}`),
 			this.gameHistoryAdapter,
 		)
 	}

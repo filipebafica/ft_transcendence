@@ -22,17 +22,17 @@ export class ChatController {
         private readonly entityManager: EntityManager
     ) {
         this.sendMessageAuthorizationService = new SendMessageAuthorizationService(
-            new Logger(SendMessageAuthorizationService.name),
+            new Logger(`chat::${SendMessageAuthorizationService.name}`),
             new UserChatAdapter(entityManager)
         );
 
         this.blockUserService = new BlockUserService(
-            new Logger(BlockUserService.name),
+            new Logger(`chat::${BlockUserService.name}`),
             new UserChatAdapter(entityManager)
         );
 
         this.unblockUserService = new UnblockUserService(
-            new Logger(UnblockUserService.name),
+            new Logger(`chat::${UnblockUserService.name}`),
             new UserChatAdapter(entityManager)
         );
     }
