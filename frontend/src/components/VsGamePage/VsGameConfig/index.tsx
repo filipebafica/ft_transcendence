@@ -35,8 +35,14 @@ const VsGameConfig = (props: GameConfigProps) => {
 	useEffect(() => {
 		if (!gameId) return;
 		gameSocket.on(gameId, (newGameState) => {
-			console.log("gameState", newGameState);
-			if (newGameState.status === 2) {
+			if (
+				newGameState.status === 2 &&
+				Math.max(
+					newGameState.player1Score,
+					newGameState.player2Score
+				) !== 3
+			) {
+				console.log("gameState", newGameState);
 				// ! REDIRECT AFTER ENDING GAME
 				navigate("/home");
 			}
