@@ -11,7 +11,8 @@ interface JoinConfig {
   roomId: string
   userId: number
   isOwner: boolean,
-  isAdmin: boolean
+  isAdmin: boolean,
+  password?: string
 }
 
 export const createRoom = async (room: Room) => {
@@ -30,7 +31,7 @@ export const listAvailableRooms = async () => {
 }
 
 export const listMyRooms = async (userId: number) => {
-  const response = await axiosInstance.get(`/room/list/${userId}`)
+  const response = await axiosInstance.get(`/room/list/user/${userId}`)
   return response.data
 }
 

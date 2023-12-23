@@ -13,3 +13,27 @@
 	padding: 10px;
 	margin-bottom: 30px;
 }
+
+.roomBox button {
+	width: 130px;
+}
+
+.roomBox button span{
+	margin-right: 5px;
+}
+
+.setPasswordContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.setPasswordContent {
+	padding: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+}
