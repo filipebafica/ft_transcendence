@@ -2,10 +2,10 @@ import { IsBase64, IsBoolean, IsEmail, IsString } from 'class-validator';
 
 export class UpdateUserDTO {
   @IsString()
-  readonly username?: string;
+  readonly name?: string;
 
   @IsString()
-  readonly nickname?: string;
+  readonly nick_name?: string;
 
   @IsEmail()
   @IsString()
@@ -14,10 +14,21 @@ export class UpdateUserDTO {
   @IsBoolean()
   readonly isTwoFactorAuthenticationEnabled?: boolean;
 
-  @IsString()
-  readonly twoFactorAuthenticationSecret?: string;
-
   @IsBase64()
   @IsString()
   readonly avatar?: string;
+
+  constructor(
+    name?: string,
+    nick_name?: string,
+    email?: string,
+    isTwoFactorAuthenticationEnabled?: boolean,
+    avatar?: string,
+  ) {
+    this.name = name;
+    this.nick_name = nick_name;
+    this.email = email;
+    this.isTwoFactorAuthenticationEnabled = isTwoFactorAuthenticationEnabled;
+    this.avatar = avatar;
+  }
 }

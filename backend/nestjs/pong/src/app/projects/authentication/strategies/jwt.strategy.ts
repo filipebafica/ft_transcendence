@@ -19,9 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     this.usersService = new UsersService(entityManager);
   }
 
-  async validate(payload: TokenPayload): Promise<Partial<User>> {
-    Logger.log('JwtStrategy validate');
-    Logger.log(`Token payload: ${JSON.stringify(payload)}`);
+  async validate(payload: TokenPayload): Promise<User> {
     try {
       const user = await this.usersService.findOne({
         id: payload.sub,
@@ -29,7 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         name: payload.name,
       });
 
-      console.log(user);
       return user;
     } catch (error) {
       throw new UnauthorizedException();

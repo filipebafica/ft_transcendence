@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create.user.dto';
 import { UpdateUserDTO } from './dto/update.user.dto';
@@ -19,6 +19,9 @@ export class UsersService {
       oAuthProviderId: _oAuthProviderId,
       ...userWithoutCredentials
     } = user;
+
+    Logger.log(JSON.stringify(user));
+    Logger.log(JSON.stringify(userWithoutCredentials));
 
     return userWithoutCredentials;
   }
@@ -87,5 +90,10 @@ export class UsersService {
     return await this.update(id, {
       isTwoFactorAuthenticationEnabled: true,
     });
+  }
+
+  async updateUserTwoFactorAuthSecret(user: User, secret: string) {
+    user.twoFactorAuthenticationSecret = secret;
+    this.userRepo.save(user);
   }
 }

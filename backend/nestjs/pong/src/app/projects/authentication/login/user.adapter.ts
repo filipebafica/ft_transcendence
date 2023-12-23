@@ -1,6 +1,6 @@
 import { User } from 'src/app/entities/user.entity';
-import { UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
-import { UserRepository as UserRepository } from 'src/core/projects/authentication/login/gateway/user.info.repository';
+import { UserDTO } from 'src/core/projects/authentication/login/dto/user.dto';
+import { UserRepository } from 'src/core/projects/authentication/login/gateway/user.info.repository';
 import { UsersService } from 'src/core/projects/users/users.service';
 import { EntityManager } from 'typeorm';
 

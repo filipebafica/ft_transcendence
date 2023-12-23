@@ -1,17 +1,21 @@
 import { Strategy } from 'passport-42';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
+import { UserDTO } from 'src/core/projects/authentication/login/dto/user.dto';
 
 type DoneCallback = (err: Error, user: UserDTO) => void;
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
   constructor() {
+    const protocol: string = process.env.NGROK_PROTOCOL || 'http';
+    const domain: string = process.env.NGROK_DOMAIN || 'localhost';
+    const port: string = process.env.NGROK_PORT || '8080';
+
     super({
       clientID: process.env.FORTYTWO_APP_ID,
       clientSecret: process.env.FORTYTWO_APP_SECRET,
-      callbackURL: 'http://localhost:8080/auth/redirect',
+      callbackURL: `${protocol}://${domain}:${port}/auth/redirect`,
     });
   }
 
