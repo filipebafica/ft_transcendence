@@ -1,7 +1,7 @@
-export interface UserInfoWithoutCredentials {
+export interface UserWithoutCredentials {
   id: number;
-  username: string;
-  nickname: string;
+  name: string;
+  nick_name: string;
   email: string;
   isTwoFactorAuthenticationEnabled: boolean;
   avatar: string;

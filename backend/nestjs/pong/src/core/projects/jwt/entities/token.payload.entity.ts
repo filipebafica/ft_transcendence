@@ -3,7 +3,7 @@ export interface TokenPayload {
   exp: number;
   sub: number;
   email: string;
-  username: string;
+  name: string;
   isTwoFactorAuthenticated: boolean;
   isTwoFactorAuthenticationEnabled: boolean;
 }

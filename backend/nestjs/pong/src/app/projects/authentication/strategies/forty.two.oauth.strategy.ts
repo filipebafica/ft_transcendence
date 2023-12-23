@@ -1,9 +1,9 @@
 import { Strategy } from 'passport-42';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { UserInfoDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
+import { UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
 
-type DoneCallback = (err: Error, user: UserInfoDTO) => void;
+type DoneCallback = (err: Error, user: UserDTO) => void;
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
@@ -22,16 +22,16 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     done: DoneCallback,
   ) {
     const {
-      username: nickname,
-      displayName: username,
+      username: nick_name,
+      displayName: name,
       emails,
       id: oAuthProviderId,
     } = profile;
 
-    const oAuthUser: UserInfoDTO = {
-      username,
-      nickname,
-      oAuthProviderId: oAuthProviderId,
+    const oAuthUser: UserDTO = {
+      name,
+      nick_name,
+      oAuthProviderId,
       email: emails[0].value,
     };
     done(null, oAuthUser);

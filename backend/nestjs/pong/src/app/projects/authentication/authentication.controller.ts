@@ -7,17 +7,18 @@ import {
   Res,
   UseGuards,
   Req,
+  Logger,
 } from '@nestjs/common';
 
 import { Response, Request } from 'node_modules/@types/express/index';
 import { AuthenticationService } from '../../../core/projects/authentication/authentication.service';
 import { LoginService } from 'src/core/projects/authentication/login/login.service';
-import { UserInfoAdapter } from './login/user.info.adapter';
+import { UserAdapter as UserAdapter } from './login/user.info.adapter';
 import { EntityManager } from 'typeorm';
 import { LoginResponseDTO } from 'src/core/projects/authentication/login/dto/response.dto';
 import { JwtAdapter } from './login/jwt.adapter';
 import { JwtService } from '@nestjs/jwt';
-import { UserInfoDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
+import { UserDTO as UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
 import { FortyTwoAuthGuard } from './guards/forty.two.oauth.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 
@@ -31,7 +32,7 @@ export class AuthenticationController {
   ) {
     this.loginService = new LoginService(
       new JwtAdapter(new JwtService()),
-      new UserInfoAdapter(entityManager),
+      new UserAdapter(entityManager),
     );
   }
 
@@ -45,17 +46,15 @@ export class AuthenticationController {
   @UseGuards(FortyTwoAuthGuard)
   async redirect(@Req() req: Request, @Res() res: Response) {
     const user: any = req.user;
-    const userDTO = new UserInfoDTO(
+    const userDTO = new UserDTO(
       user.oAuthProviderId,
-      user.username,
-      user.nickname,
+      user.name,
+      user.nick_name,
       user.email,
     );
     const loginRes: LoginResponseDTO = await this.loginService.execute(userDTO);
 
-    // res.header('authorization', loginRes.token);
-    // res.redirect('http://localhost:3000/home');
-    res.json(loginRes);
+    res.redirect(`http://localhost:3001/home?token=${loginRes.token}`);
   }
 
   @Post('twoFactor/generate')

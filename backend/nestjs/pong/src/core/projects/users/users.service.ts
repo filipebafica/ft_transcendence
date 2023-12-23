@@ -1,20 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { UserInfo } from 'src/app/entities/user.info.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { CreateUserDTO } from './dto/create.user.dto';
 import { UpdateUserDTO } from './dto/update.user.dto';
-import { UserInfoWithoutCredentials } from './dto/user.info.without.credentials';
+import { UserWithoutCredentials } from './dto/user.info.without.credentials';
+import { User } from 'src/app/entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  private userRepo: Repository<UserInfo>;
+  private userRepo: Repository<User>;
 
   constructor(entityManager: EntityManager) {
-    this.userRepo = entityManager.getRepository(UserInfo);
+    this.userRepo = entityManager.getRepository(User);
   }
 
-  private returnWithoutCredentials(user: UserInfo): UserInfoWithoutCredentials {
+  private returnWithoutCredentials(user: User): UserWithoutCredentials {
     const {
       twoFactorAuthenticationSecret: _twoFactorAuthenticationSecret,
       oAuthProviderId: _oAuthProviderId,
@@ -26,9 +25,9 @@ export class UsersService {
 
   async findOneWithoutCredentials(
     userId: number,
-  ): Promise<UserInfoWithoutCredentials | null> {
+  ): Promise<UserWithoutCredentials | null> {
     try {
-      const user: UserInfo = await this.findOne({
+      const user: User = await this.findOne({
         id: userId,
       });
       return this.returnWithoutCredentials(user);
@@ -37,34 +36,34 @@ export class UsersService {
     }
   }
 
-  async findOne(userInfo: Partial<UserInfo>): Promise<UserInfo | null> {
+  async findOne(user: Partial<User>): Promise<User> {
     try {
-      const result: UserInfo = await this.userRepo.findOne({
-        where: userInfo,
+      const result: User = await this.userRepo.findOne({
+        where: user,
       });
 
       if (!result) {
         throw new NotFoundException('User not found');
       }
-      return plainToInstance(UserInfo, result);
+      return result;
     } catch (error) {
       throw error;
     }
   }
 
-  async create(userInfo: CreateUserDTO): Promise<UserInfo> {
-    const user = this.userRepo.create(userInfo);
+  async create(userToCreate: CreateUserDTO): Promise<User> {
+    const user = this.userRepo.create(userToCreate);
 
     return await this.userRepo.save(user);
   }
 
   async update(
     id: number,
-    updatedUserInfo: UpdateUserDTO,
-  ): Promise<UserInfoWithoutCredentials | null> {
-    const userBeforeUpdate: UserInfo = await this.findOne({ id });
+    updatedUser: UpdateUserDTO,
+  ): Promise<UserWithoutCredentials | null> {
+    const userBeforeUpdate: User = await this.findOne({ id });
 
-    Object.assign(userBeforeUpdate, updatedUserInfo);
+    Object.assign(userBeforeUpdate, updatedUser);
     await this.userRepo.save(userBeforeUpdate);
 
     return this.returnWithoutCredentials(userBeforeUpdate);
@@ -80,13 +79,11 @@ export class UsersService {
     }
   }
 
-  async userExists(userInfo: Partial<UserInfo>): Promise<boolean> {
-    return !!(await this.findOne(userInfo));
+  async userExists(user: Partial<User>): Promise<boolean> {
+    return !!(await this.findOne(user));
   }
 
-  async enableUserTwoFactorAuth(
-    id: number,
-  ): Promise<UserInfoWithoutCredentials> {
+  async enableUserTwoFactorAuth(id: number): Promise<UserWithoutCredentials> {
     return await this.update(id, {
       isTwoFactorAuthenticationEnabled: true,
     });

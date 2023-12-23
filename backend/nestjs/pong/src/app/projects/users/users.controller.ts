@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -9,11 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CreateUserDTO } from 'src/core/projects/users/dto/create.user.dto';
 import { UpdateUserDTO } from 'src/core/projects/users/dto/update.user.dto';
 import { UsersService } from 'src/core/projects/users/users.service';
 import { Jwt2faAuthGuard } from '../authentication/guards/jwt.2fa.guard';
-import { UserInfo } from 'src/app/entities/user.info.entity';
 
 @Controller('users')
 export class UsersController {

@@ -1,11 +1,11 @@
-import { UserInfo } from 'src/app/entities/user.info.entity';
-import { UserInfoDTO } from '../dto/user.info.dto';
+import { User } from 'src/app/entities/user.entity';
+import { UserDTO } from '../dto/user.info.dto';
 
-export interface UserInfoRepository {
-  getUser(userInfo: Partial<UserInfo>): Promise<UserInfo | null>;
-  createUser(userInfo: UserInfoDTO): Promise<UserInfo>;
+export interface UserRepository {
+  getUser(user: Partial<User>): Promise<User | null>;
+  createUser(user: UserDTO): Promise<User>;
   updateUser(
     userId: number,
-    partialUserInfo: Partial<UserInfo>,
-  ): Promise<Partial<UserInfo> | null>;
+    partialUser: Partial<User>,
+  ): Promise<Partial<User> | null>;
 }

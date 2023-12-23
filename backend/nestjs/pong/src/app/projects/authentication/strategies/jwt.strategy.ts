@@ -4,6 +4,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { TokenPayload } from '../../../../core/projects/jwt/entities/token.payload.entity';
 import { EntityManager } from 'typeorm';
 import { UsersService } from 'src/core/projects/users/users.service';
+import { User } from 'src/app/entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -18,13 +19,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     this.usersService = new UsersService(entityManager);
   }
 
-  async validate(payload: TokenPayload) {
+  async validate(payload: TokenPayload): Promise<Partial<User>> {
+    Logger.log('JwtStrategy validate');
+    Logger.log(`Token payload: ${JSON.stringify(payload)}`);
     try {
-      return await this.usersService.findOne({
+      const user = await this.usersService.findOne({
         id: payload.sub,
         email: payload.email,
-        username: payload.username,
+        name: payload.name,
       });
+
+      console.log(user);
+      return user;
     } catch (error) {
       throw new UnauthorizedException();
     }

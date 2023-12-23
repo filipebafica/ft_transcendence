@@ -23,7 +23,7 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
       const user = await this.usersService.findOne({
         id: payload.sub,
         email: payload.email,
-        username: payload.username,
+        name: payload.name,
       });
       if (
         user.isTwoFactorAuthenticationEnabled &&

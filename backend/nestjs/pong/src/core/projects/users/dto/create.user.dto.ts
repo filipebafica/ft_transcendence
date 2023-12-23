@@ -1,8 +1,8 @@
 export class CreateUserDTO {
   constructor(
     readonly oAuthProviderId: number,
-    readonly username: string,
-    readonly nickname: string,
+    readonly name: string,
+    readonly nick_name: string,
     readonly email: string,
   ) {}
 }

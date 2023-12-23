@@ -11,12 +11,27 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({ name: 'oauth_provider_id', unique: true })
+    oAuthProviderId: number;
+  
     @Column()
     name: string;
 
     @Column()
     nick_name: string;
 
+    @Column()
+    email: string;
+
+    @Column({ name: 'is_two_factor_authentication_enabled', default: false })
+    isTwoFactorAuthenticationEnabled: boolean;
+  
+    @Column({ name: 'two_factor_authentication_secret', nullable: true })
+    twoFactorAuthenticationSecret: string;
+  
+    @Column({ nullable: true })
+    avatar: string;
+  
     @OneToMany(() => RoomParticipants, participants => participants.user)
     participants: RoomParticipants[];
 
