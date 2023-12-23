@@ -149,7 +149,6 @@ const Header = () => {
           <Button variant="outlined" onClick={() => handleSignIn()}>
             Log In
           </Button>
-          <Button variant="outlined">Sign Up</Button>
         </div>
       )}
     </header>

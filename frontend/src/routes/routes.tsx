@@ -71,10 +71,6 @@ const router = createBrowserRouter([
     element: <LayoutWrapper Component={DirectChatPage} />,
   },
   {
-    path: '/2fa',
-    element: <LayoutWrapper Component={TwoFactorAuthPage} />,
-  },
-  {
     path: '/challenge/:gameId',
     element: <LayoutWrapper Component={VsGamePage} />,
   },

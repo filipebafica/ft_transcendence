@@ -30,7 +30,7 @@ const TwoFactorAuthPage = () => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
 
-    if (currentPath === '/home' && token) {
+    if (token) {
       setToken(token, true); 
     }
   }, [location, setToken]); 
@@ -48,7 +48,6 @@ const TwoFactorAuthPage = () => {
         <Typography component="h1" variant="h5">
           Enter 2FA Code
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -69,7 +68,6 @@ const TwoFactorAuthPage = () => {
           >
             Validate
           </Button>
-        </Box>
       </Box>
     </Container>
   );
