@@ -40,9 +40,6 @@ export default class FriendAdapter implements FriendGateway {
             (row) => friendDTOs.push(new FriendDTO(
                 row.friendship.id,
                 row.friendship.nick_name,
-                // row.friendship.user_status?.status?? 'off-line',
-                // row.friendship?.blocked_user_chat.find((blockedUser) => blockedUser.user.id === userId)? true : false,
-                // row.friendship.avatar
             ))
         );
 
