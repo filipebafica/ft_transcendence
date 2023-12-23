@@ -108,4 +108,19 @@ export class InvitationRegisterAdapter implements InvitationRepository {
       throw error;
     }
   }
+
+  public async removeOpenedInviteById(
+    playerId: number,
+  ): Promise<void> {
+    try {
+      await this.invitationRepository
+      .createQueryBuilder()
+      .delete()
+      .where("(sender_id = :playerId OR receiver_id = :playerId) AND status = :status", { playerId, status: "opened" })
+      .execute();
+
+    } catch (error) {
+      throw error;
+    }
+  }
 }
