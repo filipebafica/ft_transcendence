@@ -49,7 +49,6 @@ import { ChangePasswordService } from 'src/core/projects/room/changePassword/cha
 import { ChangePasswordDTO } from './change.password.dto';
 import { RequestDTO as ChangePasswordRequestDTO } from 'src/core/projects/room/changePassword/dtos/request.dto';
 
-
 @Controller('/room')
 @ApiTags('room')
 export class RoomController {
@@ -70,71 +69,71 @@ export class RoomController {
         private readonly entityManager: EntityManager
     ) {
         this.createService = new CreateService(
-            new Logger(CreateService.name),
+            new Logger(`room::${CreateService.name}`),
             new RoomAdapter(entityManager)
         );
 
         this.joinService = new JoinService(
-            new Logger(CreateService.name),
+            new Logger(`room::${CreateService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager)
         );
 
         this.listAllService = new ListAllService(
-            new Logger(ListAllService.name),
+            new Logger(`room::${ListAllService.name}`),
             new RoomAdapter(entityManager)
         );
 
         this.listByUserIdService = new ListAllByUserIdService(
-            new Logger(ListAllByUserIdService.name),
+            new Logger(`room::${ListAllByUserIdService.name}`),
             new RoomAdapter(entityManager)
         );
 
         this.removeUserService = new RemoveUserService(
-            new Logger(RemoveUserService.name),
+            new Logger(`room::${RemoveUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager)
         );
 
         this.banUserService = new BanUserService(
-            new Logger(BanUserService.name),
+            new Logger(`room::${BanUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager)
         );
 
         this.unbanUserService = new UnbanUserService(
-            new Logger(UnbanUserService.name),
+            new Logger(`room::${UnbanUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager)
         );
 
         this.muteUserService = new MuteUserService(
-            new Logger(MuteUserService.name),
+            new Logger(`room::${MuteUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomMutedUserAdapter(entityManager)
         );
 
         this.unmuteUserService = new UnmuteUserService(
-            new Logger(UnmuteUserService.name),
+            new Logger(`room::${UnmuteUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomMutedUserAdapter(entityManager)
         );
 
         this.listOneByUserService = new ListOneByUserIdService(
-            new Logger(ListOneByUserIdService.name),
+            new Logger(`room::${ListOneByUserIdService.name}`),
             new RoomAdapter(entityManager),
         );
 
         this.toggleAdminPrivilegeService = new ToggleAdminPrivilegeService(
-            new Logger(ToggleAdminPrivilegeService.name),
+            new Logger(`room::${ToggleAdminPrivilegeService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
         );
 
         this.changePasswordService = new ChangePasswordService(
-            new Logger(ChangePasswordService.name),
+            new Logger(`room::${ChangePasswordService.name}`),
             new RoomAdapter(entityManager)
         );
     }
