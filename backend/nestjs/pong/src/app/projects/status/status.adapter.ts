@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "src/app/entities/user.entity";
 import { UserStatus } from "src/app/entities/user.status.entity";
-import StatusGateway from "src/core/projects/status/create/gateways/status.gateway";
+import StatusDTO from "src/core/projects/status/shared/dtos/status.dto";
+import StatusGateway from "src/core/projects/status/shared/gateways/status.gateway";
 import { EntityManager, Repository } from "typeorm";
 
 @Injectable()
@@ -17,7 +18,7 @@ export default class StatusAdapter implements StatusGateway {
     async create(
         userId: number,
         newStatus: string
-    ) {
+    ): Promise<void> {
         const entity = await this.statusRepository.findOne({
             where: { user: { id: userId } as User },
         })
@@ -33,5 +34,15 @@ export default class StatusAdapter implements StatusGateway {
         })
 
         await this.statusRepository.save(newEntity);
+    }
+
+    async get(userId: number): Promise<StatusDTO> {
+        const entity = await this.statusRepository.findOne({
+            where: { user: { id: userId } as User },
+        })
+
+        return new StatusDTO(
+            entity?.status ?? 'off-line'
+        );
     }
 }

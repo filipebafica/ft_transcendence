@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { StatusGateway } from './status.gateway';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config from 'src/app/ormconfig';
+import { StatusController } from './status.controller';
 
 @Module({
     imports: [
