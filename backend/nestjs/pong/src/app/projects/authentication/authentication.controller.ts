@@ -21,10 +21,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UserDTO as UserDTO } from 'src/core/projects/authentication/login/dto/user.info.dto';
 import { FortyTwoAuthGuard } from './guards/forty.two.oauth.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { LoginRedirectService } from 'src/core/projects/authentication/login/login.redirect.service';
 
 @Controller('auth')
 export class AuthenticationController {
-  private loginService: LoginService;
+  private readonly loginService: LoginService;
+  private readonly loginRedirectService: LoginRedirectService;
 
   constructor(
     private readonly authenticationService: AuthenticationService,
@@ -34,6 +36,7 @@ export class AuthenticationController {
       new JwtAdapter(new JwtService()),
       new UserAdapter(entityManager),
     );
+    this.loginRedirectService = new LoginRedirectService();
   }
 
   @Get('login')
@@ -53,8 +56,9 @@ export class AuthenticationController {
       user.email,
     );
     const loginRes: LoginResponseDTO = await this.loginService.execute(userDTO);
+    const redirectUrl = this.loginRedirectService.execute(loginRes);
 
-    res.redirect(`http://localhost:3001/home?token=${loginRes.token}`);
+    res.redirect(redirectUrl);
   }
 
   @Post('twoFactor/generate')
