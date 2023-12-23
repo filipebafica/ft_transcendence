@@ -14,12 +14,16 @@ import { DirectChatContext } from 'providers/directChat'
 // Api
 import { getUser } from 'api/user'
 
+// Icons
+import { MdBlock } from "react-icons/md";
+
 interface FriendProps {
   friend: {
     id: string
     nickName: string
     userStatus: string
     avatar?: string
+    isBlocked: boolean
   }
 }
 
@@ -69,6 +73,9 @@ function Friend(props: FriendProps) {
         <h3>{friend.nickName}</h3>
         <p>
           {friend.userStatus ? userStatuses[friend.userStatus as 'online'] : userStatuses.offline}
+          {
+          friend.isBlocked && <MdBlock title={`User Blocked`}/>
+          }
         </p>
       </div>
       {pendingMessages !== 0 && (

@@ -17,7 +17,7 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 
 // Api
-import { getUser } from 'api/user'
+import { getUser, getUserStatus } from 'api/user'
 
 interface UserMessage {
   name: string
@@ -72,8 +72,9 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
     const fetchFriendData = async () => {
       const friend = await getUser(friendId)
+      const status = await getUserStatus(friendId)
       if (friend) {
-        setFriendData(friend)
+        setFriendData({...friend, userStatus: status})
       }
     }
     fetchFriendData()

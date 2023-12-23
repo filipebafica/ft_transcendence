@@ -24,3 +24,9 @@
 .newMessages {
 	margin-left: 69px;
 }
+
+.friendInfo svg {
+	position: relative;
+	top: 2px;
+	margin-left: 10px;
+} 
