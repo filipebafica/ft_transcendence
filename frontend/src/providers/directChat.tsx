@@ -53,7 +53,7 @@ export const DirectChatProvider = (props: { children: any }) => {
 
     chatSocket.connect()
     chatSocket.on(`${user.id}-direct-message`, (message: any) => {
-      console.log('direct message received', message)
+      console.log('direct message received from-to', message.from, message.to)
 
       setMessagesData((prevMessages: MessagesData) => {
         const pendingMessages = prevMessages.pendingMessages
@@ -67,6 +67,7 @@ export const DirectChatProvider = (props: { children: any }) => {
 
         // Define a chatId that is the userID of the other user
         const chatId = from.toString() !== user.id.toString() ? from : message.to
+        console.log('chatId', chatId, user.id.toString())
 
         const newMessageData = {
           messages: {
@@ -84,6 +85,7 @@ export const DirectChatProvider = (props: { children: any }) => {
 
     return () => {
       console.log('disconnecting from socket', `${user.id}-direct-message`)
+      chatSocket.removeAllListeners(`${user.id}-direct-message`);
       chatSocket.disconnect()
     }
   }, [user])
