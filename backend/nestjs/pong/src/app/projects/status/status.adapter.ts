@@ -23,6 +23,8 @@ export default class StatusAdapter implements StatusGateway {
             where: { user: { id: userId } as User },
         })
 
+        console.log(entity);
+
         if (entity) {
             await this.statusRepository.update(entity.id, {status: newStatus});
             return ;
