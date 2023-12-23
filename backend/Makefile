@@ -3,7 +3,7 @@ include .env
 all: setup up
 
 setup:
-	mkdir -p ${SHARED_VOLUME_DEVICE}
+	sudo mkdir -p ${SHARED_VOLUME_DEVICE}
 	docker-compose build
 	npm --prefix nestjs/pong install
 

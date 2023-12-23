@@ -25,17 +25,17 @@ export class FriendController {
         private readonly entityManager: EntityManager
     ) {
         this.createService = new CreateService(
-            new Logger(CreateService.name),
+            new Logger(`friend::${CreateService.name}`),
             new FriendAdapter(entityManager)
         )
 
         this.listByUserIdService = new ListByUserIdService(
-            new Logger(CreateService.name),
+            new Logger(`friend::${CreateService.name}`),
             new FriendAdapter(entityManager)
         )
 
         this.deleteService = new DeleteService(
-            new Logger(CreateService.name),
+            new Logger(`friend::${CreateService.name}`),
             new FriendAdapter(entityManager)
         )
     }

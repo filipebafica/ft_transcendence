@@ -31,8 +31,8 @@ const Header = () => {
   const handleSignIn = async () => {
     try {
       // await login()
-      window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483469ddaf869384d86033635e6ed1046'
-      // window.location.href = 'https://api.intra.42.fr/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2F31c9-2001-1388-91-6e3-472-8abc-b4a4-d06.ngrok-free.app%2Fauth%2Fredirect&client_id=u-s4t2ud-b6e1af3d451f19aab0da44f81e6a17f483'
+      const authorizationUrl = `${process.env.REACT_APP_OAUTH_BASE_URL}?response_type=${process.env.REACT_APP_RESPONSE_TYPE}&redirect_uri=${encodeURIComponent(process.env.REACT_APP_REDIRECT_URI as string)}&client_id=${process.env.REACT_APP_CLIENT_ID}`;
+      window.location.href = authorizationUrl
     }
     catch (err) {
       console.log(err)

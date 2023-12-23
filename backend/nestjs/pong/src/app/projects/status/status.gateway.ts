@@ -33,15 +33,15 @@ export class StatusGateway {
     constructor(
         entityManager: EntityManager
     ) {
-        this.logger = new Logger(StatusGateway.name);
+        this.logger = new Logger(`userStatus::${StatusGateway.name}`);
 
         this.friendService = new ListByUserIdService(
-            new Logger(ListByUserIdService.name),
+            new Logger(`userStatus::${ListByUserIdService.name}`),
             new FriendAdapter(entityManager)
         );
 
         this.createStatusService = new CreateStatusService(
-            new Logger(CreateStatusService.name),
+            new Logger(`userStatus::${CreateStatusService.name}`),
             new StatusAdapter(entityManager)
         );
     }

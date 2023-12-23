@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 // const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000/';
 const URL =
-	process.env.NODE_ENV === "production" ? undefined : "http://localhost:8080";
+	process.env.NODE_ENV === "production" ? undefined : process.env.REACT_APP_API_BASE_URL;
 
 // const URL =
 // 	process.env.NODE_ENV === "production" ? undefined : "https://528d-2001-1388-91-6e3-472-8abc-b4a4-d06.ngrok-free.app";
