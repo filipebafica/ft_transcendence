@@ -9,9 +9,9 @@ import { getUser } from 'api/user'
 import { friendsStatusSocket } from 'socket'
 
 interface User {
-  username: string
+  name: string
   email: string
-  nickname: string
+  nick_name: string
   id: number
   token?: string
   isTwoFactorAuthenticationEnabled: boolean
@@ -22,7 +22,7 @@ interface AuthContextProps {
   user: User | null
   signIn: (userData: User) => void
   signOut: () => void
-  setToken: (token: string) => void
+  setToken: (token: string, twoFa?: boolean) => void
   refreshUser: () => void
   fakeSignIn: (id: string) => void
 }
@@ -52,37 +52,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user?.id) return
     const userData = await getUser(user.id)
 
-    setUser((prevUser: any) => ({...prevUser, ...userData}))
+    setUser((prevUser: any) => ({ ...prevUser, ...userData }))
   }, [user?.id])
 
-  const setToken = useCallback(async (token: string) => {
-	// Set token in the localStorage for reloads of the app
-    localStorage.setItem('token', token)
+  const setToken = useCallback(
+    async (token: string, twoFa?: boolean) => {
+      // Set token in the localStorage for reloads of the app
+      localStorage.setItem('token', token)
 
-	// Set token in the axios default headers for future requests
-    axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`
+      // Set token in the axios default headers for future requests
+      axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`
 
-	// Get user data from the API
-	const userId = getUserIdFromToken(token)
-	const userData = await getUser(userId)
+      // Get user data from the API
+      if (!twoFa) {
+        const userId = getUserIdFromToken(token)
+        const userData = await getUser(userId)
 
-	// Send user status online
-	friendsStatusSocket.emit(
-      'statusRouter',
-      JSON.stringify({
-        userId: userId,
-        status: 'online',
-      }),
-    )
+        // Send user status online
+        friendsStatusSocket.emit(
+          'statusRouter',
+          JSON.stringify({
+            userId: userId,
+            status: 'online',
+          }),
+        )
 
-    setUser({ ...userData, token })
-  }, [setUser])
- 	
+        setUser({ ...userData, token })
+      }
+    },
+    [setUser],
+  )
+
   useEffect(() => {
-	const token = localStorage.getItem('token')
-	if (token) {
-	  setToken(token)
-	}
+    const token = localStorage.getItem('token')
+    if (token) {
+      setToken(token)
+    }
   }, [setToken])
 
   const signIn = (userData: User) => {
@@ -93,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = () => {
     setUser(null)
     localStorage.removeItem('user')
-	localStorage.removeItem('token')
+    localStorage.removeItem('token')
   }
 
   return (

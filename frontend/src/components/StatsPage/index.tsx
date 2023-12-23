@@ -143,7 +143,7 @@ function StatsPage() {
 
     const fetchUser = async () => {
       if (isCurrentUser && user) {
-        const { nickname, avatar } = user
+        const { nick_name: nickname, avatar } = user
         setUserName(nickname)
         setUserAvatar(avatar || '')
       } else {
@@ -189,7 +189,7 @@ function StatsPage() {
     <div className={styles.statsContainer}>
       <div className={styles.summaryContainer}>
         <Avatar
-          alt={user?.nickname}
+          alt={user?.nick_name}
           sx={{ width: 100, height: 100 }}
           className={styles.userAvatar}
           src={userAvatar}

@@ -13,9 +13,9 @@ import { AuthContext } from '../../auth'
 
 function Profile() {
   const inputFile = useRef<HTMLInputElement>(null)
-  const { user, refreshUser } = useContext(AuthContext)
+  const { user, refreshUser, setToken } = useContext(AuthContext)
 
-  const [nickName, setNickname] = React.useState<string>(user?.nickname || '')
+  const [nickName, setNickname] = React.useState<string>(user?.nick_name || '')
   const [twoFactorModal, setTwoFactorModal] = React.useState<boolean>(false)
   const [twoFactoQR, setTwoFactorQR] = React.useState<string>('')
   const [twoFactorCode, setTwoFactorCode] = React.useState<number>(0)
@@ -30,14 +30,15 @@ function Profile() {
 
     console.log('Two Factor Button')
     const res = await generate2FA()
-    console.log('Click two factor', res)
+
     setTwoFactorModal(true)
     setTwoFactorQR(res)
   }
 
   const handleUpdate = () => {
+    console.log('Handle Nickname', user, nickName)
     if (!user?.id) return
-    if (nickName === user?.nickname) return
+    if (nickName === user?.nick_name) return
     if (nickName === '') return
 
     updateUserNickname(user?.id, nickName)
@@ -47,7 +48,7 @@ function Profile() {
       })
       .catch((err) => {
         console.log(err)
-        setNickname(user?.nickname || '')
+        setNickname(user?.nick_name || '')
       })
   }
 
@@ -80,7 +81,12 @@ function Profile() {
     try {
       const res = await enable2FA(twoFactorCode)
       setTwoFactorModal(false)
-      console.log('Enable result', res)
+
+      // Get token
+      const token = res.access_token
+
+      // Save token to local storage and context
+      setToken(token)
     } catch (error) {
       console.log('Error enable 2FA', error);
     }
@@ -137,8 +143,11 @@ function Profile() {
       </div>
       <div className={styles.twoFactor}>
         <h3>Security</h3>
-        <Button variant="outlined" onClick={handleTwoFactor}>
-          Enable two factor authentication
+        <Button variant="outlined" onClick={handleTwoFactor} disabled={user?.isTwoFactorAuthenticationEnabled}>
+          { user?.isTwoFactorAuthenticationEnabled 
+            ? 'Two factor authentication already enabled' 
+            : 'Enable two factor authentication'
+          }
         </Button>
       </div>
     </div>

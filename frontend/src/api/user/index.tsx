@@ -16,8 +16,8 @@ export const getUser = async (userId: string) => {
   return userData
 }
 
-export const updateUserNickname = async (userId: number, nickname: string) => {
-  const response = await axiosInstance.patch(`/users/${userId}`, { nickname })
+export const updateUserNickname = async (userId: number, nick_name: string) => {
+  const response = await axiosInstance.patch(`/users/${userId}`, { nick_name })
   return response.data
 }
 
@@ -33,13 +33,13 @@ export const login = async () => {
 
 export const enable2FA = async (code: number) => {
   const response = await axiosInstance.post('/auth/twoFactor/enable', {
-    twoFactorAuthenticationCode: code,
+    twoFactorAuthenticationCode: code.toString(),
   })
   return response.data
 }
 
-export const authenticate2FA = async (userId: string, token: string) => {
-  const response = await axiosInstance.post('/auth/2fa/authenticate', { userId, token })
+export const authenticate2FA = async (twoFactorAuthenticationCode: string) => {
+  const response = await axiosInstance.post('/auth/twoFactor/login', { twoFactorAuthenticationCode })
   return response.data
 }
 

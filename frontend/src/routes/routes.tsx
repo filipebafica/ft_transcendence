@@ -1,27 +1,27 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from 'react-router-dom'
 
-import GamePage from "../components/GamePage";
-import VsGamePage from "../components/VsGamePage";
-import LoginPage from "../components/LoginPage";
-import LandingPage from "../components/LandingPage";
-import FriendsList from "../components/FriendsList";
-import StatsPage from "../components/StatsPage";
-import Profile from "../components/SignupPage/Profile";
-import DirectChatPage from "components/DirectChatPage";
-import TwoFactorAuthPage from "components/TwoFactorAuthPage";
+import GamePage from '../components/GamePage'
+import VsGamePage from '../components/VsGamePage'
+import LoginPage from '../components/LoginPage'
+import LandingPage from '../components/LandingPage'
+import FriendsList from '../components/FriendsList'
+import StatsPage from '../components/StatsPage'
+import Profile from '../components/SignupPage/Profile'
+import DirectChatPage from 'components/DirectChatPage'
+import TwoFactorAuthPage from 'components/TwoFactorAuthPage'
 
 // Chat Room page
-import ChatRoomPage from "components/ChatRoomPage";
-import JoinRoom from "components/ChatRoomPage/JoinRoom";
-import CreateRoom from "components/ChatRoomPage/CreateRoom";
-import Chat from "components/ChatRoomPage/Chat";
+import ChatRoomPage from 'components/ChatRoomPage'
+import JoinRoom from 'components/ChatRoomPage/JoinRoom'
+import CreateRoom from 'components/ChatRoomPage/CreateRoom'
+import Chat from 'components/ChatRoomPage/Chat'
 
-import LayoutWrapper from "./layoutWrapper";
+import LayoutWrapper from './layoutWrapper'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <LayoutWrapper Component={LandingPage} isPublic={true}/>,
+    element: <LayoutWrapper Component={LandingPage} isPublic={true} />,
   },
   {
     path: '/login',
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/chatRoom/createRoom',
-    element: <LayoutWrapper Component={CreateRoom} />,  
+    element: <LayoutWrapper Component={CreateRoom} />,
   },
   {
     path: '/chatRoom/chat/:roomId',
@@ -63,9 +63,9 @@ const router = createBrowserRouter([
     element: <LayoutWrapper Component={StatsPage} />,
   },
   {
-		path: '/settings',
+    path: '/settings',
     element: <LayoutWrapper Component={Profile} />,
-	},
+  },
   {
     path: '/friends/chat/:friendId',
     element: <LayoutWrapper Component={DirectChatPage} />,
@@ -75,9 +75,13 @@ const router = createBrowserRouter([
     element: <LayoutWrapper Component={TwoFactorAuthPage} />,
   },
   {
-	path: "/challenge/:gameId",
-	element: <LayoutWrapper Component={VsGamePage} />,
-  }
+    path: '/challenge/:gameId',
+    element: <LayoutWrapper Component={VsGamePage} />,
+  },
+  {
+    path: '/login/2fa',
+    element: <TwoFactorAuthPage />,
+  },
 ])
 
-export default router;
+export default router

@@ -58,7 +58,7 @@ function GamePage(props: GamePageProps) {
 	if (isConfigComplete && gameId && user) {
 		return (
 			<LoadingPage
-				userName={user.nickname}
+				userName={user.nick_name}
 				playerId={user.id.toString()}
 				gameId={gameId}
 			/>

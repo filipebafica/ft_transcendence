@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
+
+import { useNavigate, useLocation } from 'react-router-dom';
+
+import { authenticate2FA } from "api/user";
+
+import { AuthContext } from '../../auth'
 
 const TwoFactorAuthPage = () => {
   const [code, setCode] = useState('');
+  const { setToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const location = useLocation();
 
   const handleSubmit = async () => {
-    // Logic to validate the 2FA code
     console.log('Validating 2FA code:', code);
-    // You would typically send a request to your backend server here
+    const res = await authenticate2FA(code.toString());
+
+    const token = res.access_token
+    if (token) {
+      setToken(token)
+      navigate('/home')
+    } 
   };
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+
+    if (currentPath === '/home' && token) {
+      setToken(token, true); 
+    }
+  }, [location, setToken]); 
 
   return (
     <Container component="main" maxWidth="xs">
