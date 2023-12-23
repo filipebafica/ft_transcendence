@@ -21,7 +21,6 @@ function VsGamePage(props: GamePageProps) {
 	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
 	const { gameId } = useParams();
-	// const navigate = useNavigate();
 
 	const handleMatching = (config: {
 		paddleColor: number;
@@ -53,8 +52,6 @@ function VsGamePage(props: GamePageProps) {
 			alert("Please enter your username");
 		}
 	};
-
-	// TODO: If refresh, redirect to home
 
 	if (isConfigComplete && gameId && user) {
 		return (
