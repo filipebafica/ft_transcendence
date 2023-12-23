@@ -55,16 +55,6 @@ function VsGamePage(props: GamePageProps) {
 	};
 
 	// TODO: If refresh, redirect to home
-	// useEffect(() => {
-	// 	const redirectHome = (e: any) => {
-	// 		e.preventDefault();
-	// 		navigate("/home");
-	// 	};
-	// 	window.addEventListener("beforeunload", redirectHome);
-	// 	return () => {
-	// 		window.removeEventListener("beforeunload", redirectHome);
-	// 	};
-	// }, [navigate]);
 
 	if (isConfigComplete && gameId && user) {
 		return (
@@ -79,6 +69,7 @@ function VsGamePage(props: GamePageProps) {
 	return (
 		<div className={styles.container}>
 			<VsGameConfig
+				gameId={gameId}
 				onJoinGame={(paddle, fan, field) =>
 					handleMatching({
 						paddleColor: paddle,

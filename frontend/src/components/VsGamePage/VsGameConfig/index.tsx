@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import styles from "./style.module.css";
+
+import { gameSocket } from "../../../socket/index";
 
 // Constants
 
@@ -12,6 +15,7 @@ import FanPicker from "./FanPicker";
 import Button from "@mui/material/Button";
 
 interface GameConfigProps {
+	gameId: string | undefined;
 	onJoinGame: (
 		paddleColorIndex: number,
 		fanIndex: number,
@@ -23,8 +27,18 @@ const VsGameConfig = (props: GameConfigProps) => {
 	const [paddleColorIndex, setPaddleColorIndex] = useState(0);
 	const [fanIndex, setFanIndex] = useState(0);
 	const [fieldColorIndex, setFieldColorIndex] = useState(0);
+	const navigate = useNavigate();
 
-	const { onJoinGame } = props;
+	const { gameId, onJoinGame } = props;
+
+	useEffect(() => {
+		if (!gameId) return;
+		gameSocket.on(gameId, (newGameState) => {
+			if (newGameState.status === 2) {
+				navigate("/home");
+			}
+		});
+	}, [gameId, navigate]);
 
 	return (
 		<div className={styles.gameConfigContainer}>
