@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import CreateRule from './rules/create.rule';
 import { RequestDTO } from './dtos/request.dto';
-import StatusGateway from './gateways/status.gateway';
+import StatusGateway from '../shared/gateways/status.gateway';
 
 export class CreateStatusService {
     private createRule: CreateRule;
