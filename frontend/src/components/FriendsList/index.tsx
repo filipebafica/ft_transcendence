@@ -75,22 +75,20 @@ function FriendsList() {
     if (!userId) return
 
     const fetchFriends = async () => {
-      let friends
+      let friends = []
       try {
         friends = await listFriends(userId)
+        console.log('Friends', friends)
+        const friendsWithStatus = friends.map((friend: any) => {
+          return {
+            ...friend,
+            userStatus: friend.userStatus?.status,
+          }
+        })
+        setFriends(friendsWithStatus)
       } catch (err) {
-        console.log(err)
+        console.log('Error while fetching friends', err)
       }
-      console.log('Friends',friends)
-
-      const friendsWithStatus = friends.map((friend: any) => {
-        return {
-          ...friend,
-          userStatus: friend.userStatus?.status,
-        }
-      })
-
-      setFriends(friendsWithStatus)
     }
 
     fetchFriends()
@@ -118,8 +116,6 @@ function FriendsList() {
     })
   }, [userId])
 
-  console.log('Friends before render', friends)
-
   return (
     <div className={styles.friendsListContainer}>
       <div className={styles.addFriendSection}>
@@ -138,15 +134,17 @@ function FriendsList() {
       </div>
       <div className={styles.friendsList}>
         <List>
-          {friends.map((friend) => (
-            <FriendItem
-              key={friend.id}
-              friend={friend}
-              onProfileClick={handleClickProfile}
-              onChatClick={handleClickChat}
-              onBlockClick={handleClickBlock}
-            />
-          ))}
+          {friends.length === 0 && <div>No friends</div>}
+          {friends.length > 0 &&
+            friends.map((friend) => (
+              <FriendItem
+                key={friend.id}
+                friend={friend}
+                onProfileClick={handleClickProfile}
+                onChatClick={handleClickChat}
+                onBlockClick={handleClickBlock}
+              />
+            ))}
         </List>
       </div>
     </div>
