@@ -6,7 +6,7 @@ import logo from '../../../assets/logo_clean.png'
 import styles from './style.module.css'
 
 // API
-import { login } from 'api/user'
+// import { login } from 'api/user'
 
 // Provider
 import { AuthContext } from '../../../auth'
@@ -41,9 +41,15 @@ const Header = () => {
 
   const handleFakeSignIn = async () => {
     try {
-      const res = fakeSignIn(id)
-      console.log(res)
-      window.location.href = '/'
+      const res = await fakeSignIn(id)
+      console.log('Test', res)
+      friendsStatusSocket.emit(
+        'statusRouter',
+        JSON.stringify({
+          userId: id,
+          status: 'online',
+        }),
+      )
     }
     catch (err) {
       console.log(err)
@@ -95,6 +101,10 @@ const Header = () => {
 
       {user && (
         <div className={styles.loggedOutNavigation}>
+          <input value={id} onChange={(e) => setId(e.target.value)} />
+          <Button variant="outlined" onClick={() => handleFakeSignIn()}>
+            Fake Log In
+          </Button>
           <Button
             variant="contained"
             onClick={() => {
@@ -142,10 +152,6 @@ const Header = () => {
       )}
       {!user && (
         <div className={styles.loggedOutNavigation}>
-          <input value={id} onChange={(e) => setId(e.target.value)} />
-          <Button variant="outlined" onClick={() => handleFakeSignIn()}>
-            Fake Log In
-          </Button>
           <Button variant="outlined" onClick={() => handleSignIn()}>
             Log In
           </Button>
