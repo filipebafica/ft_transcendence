@@ -37,9 +37,11 @@ const JoinRoom = () => {
 
   const handleJoinRoom = async (roomId: string) => {
     console.log('Joining room:', roomId)
+    if (!user?.id) return
+    
     await joinRoom({
       roomId: roomId,
-      userId: user?.id || '',
+      userId: user?.id,
       isOwner: false,
       isAdmin: false,
     })

@@ -4,6 +4,9 @@ import { io } from "socket.io-client";
 const URL =
 	process.env.NODE_ENV === "production" ? undefined : "http://localhost:8080";
 
+// const URL =
+// 	process.env.NODE_ENV === "production" ? undefined : "https://528d-2001-1388-91-6e3-472-8abc-b4a4-d06.ngrok-free.app";
+
 // export const socket = io(URL!);
 
 export const chatSocket = io(URL!, { path: "/websocket/chat", extraHeaders: {"ngrok-skip-browser-warning": "true"} });
