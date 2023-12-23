@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 // Style
 import styles from './style.module.css'
@@ -10,6 +10,9 @@ import Chip from '@mui/material/Chip'
 
 // Context
 import { DirectChatContext } from 'providers/directChat'
+
+// Api
+import { getUser } from 'api/user'
 
 interface FriendProps {
   friend: {
@@ -29,8 +32,21 @@ const userStatuses = {
 function Friend(props: FriendProps) {
   const { friend } = props
   const { messagesData } = useContext(DirectChatContext)
+  const [avatar, setAvatar] = useState<string>(friend.avatar || '')
 
   const pendingMessages = messagesData.pendingMessages[friend.id] || 0
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (friend.avatar) return
+
+      const user = await getUser(friend.id)
+      if (user) {
+        setAvatar(user.avatar)
+      }
+    }
+    fetchAvatar()
+  }, [friend])
 
   return (
     <div className={styles.friendContainer}>
@@ -46,7 +62,7 @@ function Friend(props: FriendProps) {
             : styles.offline
         }`}
       >
-        <Avatar alt={friend.nickName} src={friend.avatar} />
+        <Avatar alt={friend.nickName} src={avatar} />
       </StyledBadge>
       <div className={styles.friendInfo}>
         <h3>{friend.nickName}</h3>

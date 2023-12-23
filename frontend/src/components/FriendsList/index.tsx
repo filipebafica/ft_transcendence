@@ -69,7 +69,7 @@ function FriendsList() {
   const handleClickBlock = (friendId: string) => {
     console.log('block', friendId)
   }
-
+  
   // Fetch friends list
   useEffect(() => {
     if (!userId) return

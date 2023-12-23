@@ -16,6 +16,9 @@ import FriendCard from "./FriendCard";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
+// Api
+import { getUser } from "api/user";
+
 interface UserMessage {
 	name: string;
 	id: string;
@@ -45,6 +48,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
   const userId = user?.id
 
   const [newMessage, setNewMessage] = useState('')
+  const [friendData, setFriendData] = useState({})
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -63,6 +67,19 @@ const DirectChatPage = (props: MessageBoxProps) => {
     }
     setNewMessage('')
   }
+
+  // Fetch friend data
+  useEffect(() => {
+    if (!friendId) return
+
+    const fetchFriendData = async () => {
+      const friend = await getUser(friendId)
+      if (friend) {
+        setFriendData(friend)
+      }
+    }
+    fetchFriendData()
+  }, [friendId])
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -118,12 +135,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
       </div>
       <div className={styles.friendCard}>
         <FriendCard
-          friend={{
-            id: friendId,
-            nickName: 'Friend No data',
-            userStatus: 'no data',
-            avatar: 'https://i.imgur.com/sd64OhO.png',
-          }}
+          friend={friendData as any}
         />
       </div>
     </div>
