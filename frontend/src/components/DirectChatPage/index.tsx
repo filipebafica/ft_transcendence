@@ -72,9 +72,9 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
     const fetchFriendData = async () => {
       const friend = await getUser(friendId)
-      const status = await getUserStatus(friendId)
+      const statusData = await getUserStatus(friendId)
       if (friend) {
-        setFriendData({...friend, userStatus: status})
+        setFriendData({ ...friend, userStatus: statusData.data.status })
       }
     }
     fetchFriendData()

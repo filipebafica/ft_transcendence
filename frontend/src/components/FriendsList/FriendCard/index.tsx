@@ -56,7 +56,7 @@ const FriendItem = ({ friend, onProfileClick, onChatClick, onBlockClick }: Frien
         >
           <Typography textAlign="center">Profile</Typography>
         </MenuItem>
-        <MenuItem key={'chat'} onClick={() => onChatClick(friend.id)}>
+        <MenuItem key={'chat'} disabled={friend.isBlocked} onClick={() => onChatClick(friend.id)}>
           <Typography textAlign="center">Chat </Typography>
         </MenuItem>
         <MenuItem
