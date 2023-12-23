@@ -16,6 +16,12 @@ export const getUser = async (userId: string) => {
   return userData
 }
 
+// /users/status/{id}
+export const getUserStatus = async (userId: string) => {
+  const response = await axiosInstance.get(`/users/status/${userId}`)
+  return response.data
+}
+
 export const updateUserNickname = async (userId: number, nick_name: string) => {
   const response = await axiosInstance.patch(`/users/${userId}`, { nick_name })
   return response.data

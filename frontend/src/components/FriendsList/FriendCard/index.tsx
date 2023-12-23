@@ -10,12 +10,10 @@ import Typography from '@mui/material/Typography'
 
 import Friend from '../Friend'
 
+import { FriendInterface } from '../index'
+
 interface FriendItemProps {
-  friend: {
-    id: string
-    nickName: string
-    userStatus: string
-  }
+  friend: FriendInterface
   onProfileClick: (friendId: string) => void
   onChatClick: (friendId: string) => void
   onBlockClick: (friendId: string) => void
@@ -49,14 +47,26 @@ const FriendItem = ({ friend, onProfileClick, onChatClick, onBlockClick }: Frien
           horizontal: 'center',
         }}
       >
-        <MenuItem key={'profile'} onClick={() => onProfileClick(friend.id)}>
+        <MenuItem
+          key={'profile'}
+          onClick={() => {
+            setAnchorEl(null)
+            onProfileClick(friend.id)
+          }}
+        >
           <Typography textAlign="center">Profile</Typography>
         </MenuItem>
-        <MenuItem key={'chat'} onClick={() => onChatClick(friend.id)}>
+        <MenuItem key={'chat'} disabled={friend.isBlocked} onClick={() => onChatClick(friend.id)}>
           <Typography textAlign="center">Chat </Typography>
         </MenuItem>
-        <MenuItem key={'block'} onClick={() => onBlockClick(friend.id)}>
-          <Typography textAlign="center">Block</Typography>
+        <MenuItem
+          key={'block'}
+          onClick={() => {
+            setAnchorEl(null)
+            onBlockClick(friend.id)
+          }}
+        >
+          <Typography textAlign="center">{friend.isBlocked ? 'Unblock' : 'Block'}</Typography>
         </MenuItem>
       </Menu>
       <Divider component="li" />

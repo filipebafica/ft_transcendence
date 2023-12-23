@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 // API
 import { listFriends, addFriend } from 'api/friend'
+import { blockFriend, unblockFriend } from 'api/friend'
 
 // Style
 import styles from './style.module.css'
@@ -18,12 +19,13 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
 
-import FriendItem from './FriendItem'
+import FriendCard from './FriendCard'
 
-interface FriendInterface {
+export interface FriendInterface {
   id: string
   nickName: string
   userStatus: string
+  isBlocked: boolean
 }
 
 function FriendsList() {
@@ -58,7 +60,7 @@ function FriendsList() {
   }
 
   const handleClickProfile = (friendId: string) => {
-    console.log('profile', friendId)
+    navigate(`/stats/${friendId}`)
   }
 
   const handleClickChat = (friendId: string) => {
@@ -66,10 +68,40 @@ function FriendsList() {
     navigate(`/friends/chat/${friendId}`)
   }
 
-  const handleClickBlock = (friendId: string) => {
-    console.log('block', friendId)
+  const handleClickBlock = async (friendId: string) => {
+    console.log('block/unblock', friendId)
+    if (!userId) return
+
+    try {
+      // We request block/unblock to friend
+
+      const isBlocked = friends.find((friend: FriendInterface) => friend.id === friendId)?.isBlocked
+      
+      console.log('isBlocked', isBlocked)
+      let res;
+      if (isBlocked) {
+        res = await unblockFriend(userId, Number(friendId))
+        console.log('Unblock friend response', res)
+      }
+      else {
+        res = await blockFriend(userId, Number(friendId))
+        console.log('Block friend response', res)
+      }
+
+      // Reload friends list
+      const reloadedFriends = await listFriends(userId)
+      const friendsWithStatus = reloadedFriends.map((friend: any) => {
+        return {
+          ...friend,
+          userStatus: friend.userStatus,
+        }
+      })
+      setFriends(friendsWithStatus)
+    } catch (err) {
+      console.log('Error blocking friend', err)
+    }
   }
-  
+
   // Fetch friends list
   useEffect(() => {
     if (!userId) return
@@ -136,7 +168,7 @@ function FriendsList() {
           {friends.length === 0 && <div>No friends</div>}
           {friends.length > 0 &&
             friends.map((friend) => (
-              <FriendItem
+              <FriendCard
                 key={friend.id}
                 friend={friend}
                 onProfileClick={handleClickProfile}
