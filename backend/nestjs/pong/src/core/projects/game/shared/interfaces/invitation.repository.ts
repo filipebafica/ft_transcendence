@@ -25,4 +25,8 @@ export interface InvitationRepository {
 		senderId: number,
 		receiverId: number,
 	): Promise<InviteDTO>
+
+	removeOpenedInviteById(
+		playerId: number,
+	): Promise<void>
 }
