@@ -29,6 +29,8 @@ export default class FriendAdapter implements FriendGateway {
         .innerJoinAndSelect('friend.user', 'user')
         .innerJoinAndSelect('friend.friendship', 'friendRelation')
         .leftJoinAndSelect('friendRelation.user_status', 'user_status')
+        .leftJoinAndSelect('friendRelation.blocked_user_chat', 'blockedUserRelation')
+        .leftJoinAndSelect('blockedUserRelation.user', 'blocked_User')
         .where('user.id = :userId', {userId})
         .getMany();
 
@@ -38,7 +40,6 @@ export default class FriendAdapter implements FriendGateway {
             (row) => friendDTOs.push(new FriendDTO(
                 row.friendship.id,
                 row.friendship.nick_name,
-                row.friendship.user_status?.status,
             ))
         );
 

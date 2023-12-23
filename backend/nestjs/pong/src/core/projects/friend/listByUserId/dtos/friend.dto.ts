@@ -3,7 +3,7 @@ export default class FriendDTO {
         public readonly id: number,
         public readonly nickName: string,
         public readonly userStatus?: string,
-        public readonly isBlocked?: boolean,
+        public readonly isBlocked?: boolean
     ) {
     }
 }
