@@ -67,7 +67,6 @@ export const DirectChatProvider = (props: { children: any }) => {
 
         // Define a chatId that is the userID of the other user
         const chatId = from.toString() !== user.id.toString() ? from : message.to
-        console.log('chatId', chatId, user.id.toString())
 
         const newMessageData = {
           messages: {
