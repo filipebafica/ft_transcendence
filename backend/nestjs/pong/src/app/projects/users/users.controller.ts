@@ -20,13 +20,21 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(Jwt2faAuthGuard)
-  async findOne(@Param('id') id: number) {
+  findOne(@Param('id') id: number) {
     return this.usersService.findOneWithoutCredentials(id);
   }
 
   @Patch(':id')
   @UseGuards(Jwt2faAuthGuard)
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDTO) {
+  update(@Param('id') id: number, @Body() body: any) {
+    const updateUserDto: UpdateUserDTO = new UpdateUserDTO(
+      body.name,
+      body.nick_name,
+      body.email,
+      body.isTwoFactorAuthenticationEnabled,
+      body.avatar,
+    );
+
     return this.usersService.update(id, updateUserDto);
   }
 
