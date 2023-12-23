@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 import styles from "./style.module.css";
 
 // Socket
@@ -21,7 +21,7 @@ function VsGamePage(props: GamePageProps) {
 	const { user } = useContext(AuthContext);
 	const [isConfigComplete, setIsConfigComplete] = useState(false);
 	const { gameId } = useParams();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
 	const handleMatching = (config: {
 		paddleColor: number;
@@ -55,16 +55,6 @@ function VsGamePage(props: GamePageProps) {
 	};
 
 	// TODO: If refresh, redirect to home
-	// useEffect(() => {
-	// 	const redirectHome = (e: any) => {
-	// 		e.preventDefault();
-	// 		navigate("/home");
-	// 	};
-	// 	window.addEventListener("beforeunload", redirectHome);
-	// 	return () => {
-	// 		window.removeEventListener("beforeunload", redirectHome);
-	// 	};
-	// }, [navigate]);
 
 	if (isConfigComplete && gameId && user) {
 		return (
@@ -79,6 +69,7 @@ function VsGamePage(props: GamePageProps) {
 	return (
 		<div className={styles.container}>
 			<VsGameConfig
+				gameId={gameId}
 				onJoinGame={(paddle, fan, field) =>
 					handleMatching({
 						paddleColor: paddle,
