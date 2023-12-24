@@ -4,12 +4,13 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // API
-import { listAvailableRooms, joinRoom } from 'api/chat'
+import { listAvailableRooms, joinRoom } from 'api/room'
 
 import style from './style.module.css'
 
 // Context
 import { AuthContext } from 'auth'
+import { RoomChatContext } from 'providers/roomChat'
 
 // Components
 import Button from '@mui/material/Button'
@@ -32,7 +33,9 @@ const JoinRoom = () => {
   const [roomPasswordModal, setRoomPasswordModal] = useState<boolean>(false)
   const [password, setPassword] = useState<string>('')
   const [roomIdToJoin, setRoomIdToJoin] = useState<string>('')
+
   const { user } = useContext(AuthContext)
+  const { reloadRooms } = useContext(RoomChatContext)
 
   const navigate = useNavigate()
 
@@ -67,6 +70,10 @@ const JoinRoom = () => {
         isOwner: false,
         isAdmin: false,
       })
+
+      // Reload rooms
+      await reloadRooms()
+
       // Redirect to chat room
       navigate(`/chatRoom/chat/${roomId}`)
     }
@@ -97,6 +104,10 @@ const JoinRoom = () => {
         return
       }
       setRoomPasswordModal(false)
+
+      // Reload rooms
+      await reloadRooms()
+
       navigate(`/chatRoom/chat/${roomIdToJoin}`)
     } catch (error) {
       console.error('Error joining room:', error)

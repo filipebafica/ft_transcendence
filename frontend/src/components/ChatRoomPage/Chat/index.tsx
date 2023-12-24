@@ -1,11 +1,17 @@
 // URL: /chatRoom/chat/:roomId
-import React, { useEffect, useState, useRef, useContext } from 'react'
+import React, { useEffect, useState, useRef, useContext, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 
 import styles from './style.module.css'
 
 // API
-import { listRoomMembers, getRoomName } from 'api/chat'
+import { listRoomMembers, getRoomName } from 'api/room'
+import { toggleAdmin} from 'api/room'
+import { removeMember } from 'api/room'
+import { banMember } from 'api/room'
+// import { unBanMember } from 'api/room'
+import { muteMember } from 'api/room'
+// import { unMuteMember } from 'api/room'
 
 // Context
 import { AuthContext } from 'auth'
@@ -52,7 +58,7 @@ interface MessageBoxProps {
 
 const Chat = (props: MessageBoxProps) => {
   const { user } = useContext(AuthContext)
-  const { messagesData, setMessagesData } = useContext(RoomChatContext)
+  const { messagesData, cleanPendingMessages } = useContext(RoomChatContext)
 
   const [members, setMembers] = useState([] as Member[])
   const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
@@ -87,39 +93,93 @@ const Chat = (props: MessageBoxProps) => {
     }
   }, [messagesData.messages])
 
+  const fetchMembers = useCallback(async () => {
+    if (!roomId) return
+    const members = await listRoomMembers(roomId)
+
+    // Check if user is admin or owner
+    const member = members.find((member: Member) => member.user.id.toString() === userId?.toString())
+    if (member) {
+      if (member.isOwner) setUserRole('owner')
+      else if (member.isAdmin) setUserRole('admin')
+    }
+    console.log('Members', members)
+
+    // Room Name
+    const roomName = await getRoomName(roomId)
+    setRoomName(roomName)
+    setMembers(members)
+  },[roomId, userId])
+
   // Fetch members of the room
   useEffect(() => {
-    async function fetchMembers() {
-      if (!roomId) return
-      const members = await listRoomMembers(roomId)
-
-      // Check if user is admin or owner
-      const member = members.find((member: Member) => member.user.id.toString() === userId?.toString())
-      if (member) {
-        if (member.isOwner) setUserRole('owner')
-        else if (member.isAdmin) setUserRole('admin')
-      }
-
-      // Room Name
-      const roomName = await getRoomName(roomId)
-      setRoomName(roomName)
-      setMembers(members)
-    }
     fetchMembers()
-  }, [roomId, userId])
+  }, [fetchMembers])
 
+  // Check for changes in the messageData
   useEffect(() => {
     if (!userId || !roomId) return
+
     // Remove pending messages
-    const pendingMessages = messagesData.pendingMessages
-    if (pendingMessages[roomId] && pendingMessages[roomId] > 0) {
-      pendingMessages[roomId] = 0
-      setMessagesData({
-        messages: messagesData.messages,
-        pendingMessages: pendingMessages,
-      })
+    cleanPendingMessages(roomId)
+  }, [cleanPendingMessages, roomId, userId]) 
+
+  // Handlers
+  const handleSetAdmin = async (memberId: string, toggle: boolean) => {
+    if (!user?.id) return
+    if (!roomId) return
+
+    try {
+      const res = await toggleAdmin(user?.id, Number(memberId), roomId, toggle)
+      console.log('Admin res', res)
+      fetchMembers()
     }
-  }, [userId, roomId, messagesData, setMessagesData])
+    catch (error) {
+      console.error('Error setting admin:', error)
+    }
+  }
+
+  const handleOnKick = async (memberId: string) => {
+    if (!user?.id) return
+    if (!roomId) return
+
+    try {
+      const res = await removeMember(user?.id, Number(memberId), roomId)
+      console.log('Kick res', res)
+      fetchMembers()
+    }
+    catch (error) {
+      console.error('Error kicking member:', error)
+    }
+  }
+
+  const handleOnBan = async (memberId: string) => {
+    if (!user?.id) return
+    if (!roomId) return
+
+    try {
+      const res = await banMember(user?.id, Number(memberId), roomId)
+      console.log('Ban res', res)
+      fetchMembers()
+    }
+    catch (error) {
+      console.error('Error banning member:', error)
+    }
+  }
+
+  const handleOnMute = async (memberId: string) => {
+    if (!user?.id) return
+    if (!roomId) return
+
+    try {
+      const res = await muteMember(user?.id, Number(memberId), roomId, 10)
+      console.log('Mute res', res)
+      fetchMembers()
+    }
+    catch (error) {
+      console.error('Error muting member:', error)
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -158,7 +218,14 @@ const Chat = (props: MessageBoxProps) => {
       <div className={styles.usersSection}>
         <h2> Members: {members.length}</h2>
         {members.map((member: Member) => {
-          return <RoomUserCard member={member} userRole={userRole}/>
+          return <RoomUserCard 
+            member={member} 
+            userRole={userRole} 
+            onSetAdmin={handleSetAdmin}
+            onKick={handleOnKick}
+            onBan={handleOnBan}
+            onMute={handleOnMute}
+            />
         })}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useContext } from 'react'
+import React, { createContext, useEffect, useState, useContext, useCallback } from 'react'
 
 // Socket
 import { roomSocket } from 'socket'
@@ -7,7 +7,7 @@ import { roomSocket } from 'socket'
 import { AuthContext } from 'auth'
 
 // API
-import { listMyRooms } from 'api/chat'
+import { listMyRooms } from 'api/room'
 
 interface Message {
   from: string
@@ -36,6 +36,8 @@ export const RoomChatContext = createContext({
   messagesData: { messages: {}, pendingMessages: {} } as MessagesData,
   setMessagesData: (messages: MessagesData) => {},
   myRooms: [] as Room[],
+  reloadRooms: () => {},
+  cleanPendingMessages: (roomId: string) => {},
 })
 
 export const RoomChatProvider = (props: { children: any }) => {
@@ -46,6 +48,45 @@ export const RoomChatProvider = (props: { children: any }) => {
     pendingMessages: {},
   } as MessagesData)
   const { user } = useContext(AuthContext)
+
+  // Reload the rooms of the user
+  const reloadRooms = useCallback(async () => {
+    if (!user?.id) return
+
+    try {
+      const response = await listMyRooms(user?.id)
+      setMyRooms(response.data)
+    } catch (error) {
+      console.error('Error fetching rooms:', error)
+    }
+  }, [user])
+
+  // Clean pending messages
+  const cleanPendingMessages = useCallback(
+    async (roomId: string) => {
+      setMessagesData((prevMessages: MessagesData) => {
+        const pendingMessages = prevMessages.pendingMessages
+        const from = roomId
+
+        if (pendingMessages[from]) {
+          pendingMessages[from] = 0
+        } else {
+          pendingMessages[from] = 0
+        }
+
+        const newMessageData = {
+          messages: {
+            ...prevMessages.messages,
+          },
+          pendingMessages: pendingMessages,
+        }
+
+        localStorage.setItem(`roomMessagesData-${user?.id}`, JSON.stringify(newMessageData))
+        return newMessageData
+      })
+    },
+    [setMessagesData, user?.id],
+  )
 
   // We load the rooms of the user
   useEffect(() => {
@@ -115,16 +156,18 @@ export const RoomChatProvider = (props: { children: any }) => {
     })
 
     return () => {
-	  myRooms.forEach((room) => {
-      	console.log('disconnecting from socket', `${room.id}-room-message`)
-		roomSocket.removeAllListeners(`${room.id}-room-message`)
-	  })
-	  roomSocket.disconnect()
+      myRooms.forEach((room) => {
+        console.log('disconnecting from socket', `${room.id}-room-message`)
+        roomSocket.removeAllListeners(`${room.id}-room-message`)
+      })
+      roomSocket.disconnect()
     }
   }, [myRooms, user])
 
   return (
-    <RoomChatContext.Provider value={{ messagesData, setMessagesData, myRooms }}>
+    <RoomChatContext.Provider
+      value={{ messagesData, setMessagesData, myRooms, reloadRooms, cleanPendingMessages }}
+    >
       {children}
     </RoomChatContext.Provider>
   )

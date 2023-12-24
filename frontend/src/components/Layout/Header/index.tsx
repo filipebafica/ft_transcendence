@@ -11,6 +11,7 @@ import styles from './style.module.css'
 // Provider
 import { AuthContext } from '../../../auth'
 import { DirectChatContext } from '../../../providers/directChat'
+import { RoomChatContext } from '../../../providers/roomChat'
 
 // Components
 import { Button, Menu, MenuItem, Typography } from '@mui/material'
@@ -22,19 +23,23 @@ import { friendsStatusSocket } from 'socket'
 const Header = () => {
   const { user, signOut, fakeSignIn } = useContext(AuthContext)
   const { messagesData } = useContext(DirectChatContext)
+  const { messagesData: messagesDataRoom } = useContext(RoomChatContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
 
   // Todo
-  const [id, setId] = useState('1')
+  const [id, setId] = useState(user?.id.toString() || '1')
 
   const handleSignIn = async () => {
     try {
       // await login()
-      const authorizationUrl = `${process.env.REACT_APP_OAUTH_BASE_URL}?response_type=${process.env.REACT_APP_RESPONSE_TYPE}&redirect_uri=${encodeURIComponent(process.env.REACT_APP_REDIRECT_URI as string)}&client_id=${process.env.REACT_APP_CLIENT_ID}`;
+      const authorizationUrl = `${process.env.REACT_APP_OAUTH_BASE_URL}?response_type=${
+        process.env.REACT_APP_RESPONSE_TYPE
+      }&redirect_uri=${encodeURIComponent(
+        process.env.REACT_APP_REDIRECT_URI as string,
+      )}&client_id=${process.env.REACT_APP_CLIENT_ID}`
       window.location.href = authorizationUrl
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -50,8 +55,7 @@ const Header = () => {
           status: 'online',
         }),
       )
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -93,6 +97,11 @@ const Header = () => {
     return acc + messagesData.pendingMessages[key]
   }, 0)
 
+  const totalPendingRoomMessages = Object.keys(messagesDataRoom.pendingMessages).reduce((acc, key) => {
+    if (key === user?.id.toString()) return acc
+    return acc + messagesDataRoom.pendingMessages[key]
+  },0)
+
   return (
     <header className={styles.header}>
       <div className={styles.logo} onClick={() => navigate('/')}>
@@ -101,7 +110,7 @@ const Header = () => {
 
       {user && (
         <div className={styles.loggedOutNavigation}>
-          <input value={id} onChange={(e) => setId(e.target.value)} />
+          <input value={id} onChange={(e) => setId(e.target.value)} style={{ width: '30px' }} />
           <Button variant="outlined" onClick={() => handleFakeSignIn()}>
             Fake Log In
           </Button>
@@ -113,14 +122,24 @@ const Header = () => {
           >
             Play Game!
           </Button>
-          <Button
-            onClick={() => {
-              navigate('/chatRoom')
-            }}
+          <Badge
+            color="secondary"
+            badgeContent={totalPendingRoomMessages}
+            className={styles.badgePending}
           >
-            Chat Rooms
-          </Button>
-          <Badge color="secondary" badgeContent={totalPendingMessages} className={styles.badgePending}>
+            <Button
+              onClick={() => {
+                navigate('/chatRoom')
+              }}
+            >
+              Chat Rooms
+            </Button>
+          </Badge>
+          <Badge
+            color="secondary"
+            badgeContent={totalPendingMessages}
+            className={styles.badgePending}
+          >
             <Button
               onClick={() => {
                 navigate('/friends')

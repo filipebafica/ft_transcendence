@@ -3,7 +3,7 @@
 import React, { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { createRoom, joinRoom } from 'api/chat'
+import { createRoom, joinRoom } from 'api/room'
 
 import {
   Button,
@@ -19,6 +19,7 @@ import styles from './style.module.css'
 
 // Context
 import { AuthContext } from 'auth'
+import { RoomChatContext } from 'providers/roomChat'
 
 const CreateRoom = () => {
   const [roomName, setRoomName] = useState('')
@@ -28,6 +29,7 @@ const CreateRoom = () => {
   const navigate = useNavigate()
 
   const { user } = useContext(AuthContext)
+  const { reloadRooms } = useContext(RoomChatContext)
 
   const handleSubmit = async () => {
     if (!user?.id) return
@@ -59,6 +61,10 @@ const CreateRoom = () => {
         isAdmin: true,
       })
       console.log('Joined room:', joinRes)
+
+      // Reload rooms
+      await reloadRooms()
+
       navigate(`/chatRoom/chat/${roomId}`)
     } catch (error) {
       console.error('Error joining room:', error)

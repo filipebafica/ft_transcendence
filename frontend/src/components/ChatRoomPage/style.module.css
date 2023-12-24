@@ -26,8 +26,16 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 10px;
+	min-width: 450px;
 }
 
 .roomName {
-	min-width: 300px;
+	width: 150px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.roomMessages {
+	width: 130px;
 }

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState, useContext } from 'react'
-// import { useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 // Components
 import Card from '@mui/material/Card'
@@ -16,6 +17,14 @@ import styles from './style.module.css'
 // Context
 import { AuthContext } from 'auth'
 
+// API
+import { getUser } from 'api/user'
+import { addFriend } from 'api/friend'
+
+
+// Icons
+import { CiStar } from "react-icons/ci";
+
 interface Member {
   isOwner: boolean
   isAdmin: boolean
@@ -29,17 +38,20 @@ interface RoomUserCardProps {
   userRole: 'admin' | 'owner' | 'member'
   member: Member
   onAddFriend?: () => {}
-  onSetAdmin?: () => {}
-  onKick?: () => {}
-  onBan?: () => {}
-  onMute?: () => {}
+  onSetAdmin?: (id: string, toggle: boolean) => {}
+  onKick?: (memberId: string) => {}
+  onBan?: (memberId: string) => {}
+  onMute?: (memberId: string) => {}
 }
 
 const RoomUserCard = (props: RoomUserCardProps) => {
   // const navigate = useNavigate();
   const { member } = props
   const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
+
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+  const [avatar, setAvatar] = useState('' as string)
 
   const handleOpenOptionsMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -49,23 +61,66 @@ const RoomUserCard = (props: RoomUserCardProps) => {
     setAnchorElUser(null)
   }
 
+  useEffect(() => {
+    if (!member.user.id) return
+    getUser(member.user.id)
+      .then((res) => {
+        const avatar = res.avatar
+        setAvatar(avatar)
+      })
+      .catch((err: any) => {
+        console.log('Error fetchin user avatar', err)
+      })
+  }, [member.user.id])
+
+  // Handlers
+  const handleAddFriend = async (userId: string) => {
+    if (!user?.id) return
+    
+    try {
+      await addFriend(user?.id, member.user.nickName)
+    }
+    catch (error) {
+      console.error('Error adding friend:', error)
+    }
+  }
+
+  const handleSeeProfile = () => {
+    navigate(`/stats/${member.user.id}`)
+  }
+
+  const handleKick = (memberId: string) => {
+    props.onKick && props.onKick(memberId)
+    handleCloseOptionsMenu()
+  }
+
+  const handleClickBan = (memberId: string) => {
+    props.onBan && props.onBan(memberId)
+    handleCloseOptionsMenu()
+  }
+
+  const handleClickMute = (memberId: string) => {
+    props.onMute && props.onMute(memberId)
+    handleCloseOptionsMenu()
+  }
+
   return (
     <Card className={styles.userCard}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-          <Avatar src="" alt="" />
+          <Avatar src={avatar} alt={member.user.nickName} />
           <Box className={styles.infos}>
-            <Typography gutterBottom variant="h5" component="div" className={styles.userName}>
-              {member.user.nickName}
-            </Typography>
+            <div className={styles.userName}>
+              <span> {member.user.nickName} </span> {member.isOwner && <CiStar className={styles.ownerIcon}/>}
+            </div>
             <CardActions>
               <Button
                 size="small"
                 color="secondary"
                 disabled={member.user.id.toString() === user?.id.toString()}
-                // onClick={() => navigate(`/stats/${friend.id}`)}
+                onClick={() => handleAddFriend(member.user.id)}
               >
-                Invite to Duel
+                Add Friend
               </Button>
               <div>
                 <Button
@@ -81,34 +136,41 @@ const RoomUserCard = (props: RoomUserCardProps) => {
                   onClose={handleCloseOptionsMenu}
                 >
                   <MenuItem
-                    key={'addFriend'}
-                    // onClick={handleClickAddFriend}
+                    key={'seeProfile'}
+                    onClick={handleSeeProfile}
                   >
-                    <Typography textAlign="center">{'Add friend'}</Typography>
+                    <Typography textAlign="center">{'See Profile'}</Typography>
                   </MenuItem>
                   {props.userRole !== 'member' && (
                     <>
                       <MenuItem
                         key={'setAdmin'}
-                        // onClick={handleClickSetAdmin}
+                        disabled={member.isOwner}
+                        onClick={() => {
+                          props.onSetAdmin && props.onSetAdmin(member.user.id, !(member.isAdmin))
+                          handleCloseOptionsMenu()}
+                        }
                       >
-                        <Typography textAlign="center">{'Set as Admin'}</Typography>
+                        <Typography textAlign="center">{member.isAdmin ? 'Remove Admin' : 'Set Admin'}</Typography>
                       </MenuItem>
                       <MenuItem
                         key={'kick'}
-                        // onClick={handleClickKick}
+                        disabled={member.isOwner}
+                        onClick={() => handleKick(member.user.id)}
                       >
                         <Typography textAlign="center">{'Kick'}</Typography>
                       </MenuItem>
                       <MenuItem
                         key={'ban'}
-                        // onClick={handleClickBan}
+                        disabled={member.isOwner}
+                        onClick={() => handleClickBan(member.user.id)}
                       >
                         <Typography textAlign="center">{'Ban'}</Typography>
                       </MenuItem>
                       <MenuItem
                         key={'mute'}
-                        // onClick={handleClickMute}
+                        disabled={member.isOwner}
+                        onClick={() => handleClickMute(member.user.id)}
                       >
                         <Typography textAlign="center">{'Mute'}</Typography>
                       </MenuItem>
