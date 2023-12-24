@@ -4,15 +4,16 @@ import { useNavigate } from 'react-router-dom'
 import styles from './style.module.css'
 
 // Api
-import { listMyRooms } from 'api/chat'
+import { listMyRooms } from 'api/room'
 
 // Components
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
 
 // Context
 import { AuthContext } from 'auth'
+import { RoomChatContext } from 'providers/roomChat'
 
 interface Room {
   id: string
@@ -26,6 +27,7 @@ const ChatRoomPage = () => {
   const navigate = useNavigate()
 
   const { user } = useContext(AuthContext)
+  const { messagesData } = useContext(RoomChatContext)
 
   const handleCreateRoom = () => {
     navigate('/chatRoom/createRoom')
@@ -43,7 +45,7 @@ const ChatRoomPage = () => {
     let rooms
     const fetchRooms = async () => {
       if (!user?.id) return
-      
+
       try {
         const response = await listMyRooms(user?.id)
         console.log('Rooms:', response.data)
@@ -65,16 +67,28 @@ const ChatRoomPage = () => {
             <i> No rooms available. </i> <i>Create or join an existing room! </i>{' '}
           </>
         )}
-        {myRooms.map((room) => (
-          <><div className={styles.roomBox}>
-            <Typography className={styles.roomName} variant="body1">{room.name}</Typography>
-            <Button variant="outlined" onClick={() => handleChatRoomClick(room.id)}>
-              Enter Room
-            </Button>
-          </div>
-          <Divider  flexItem/>
+        {myRooms.map((room) => {
+          const pendingMessages = messagesData.pendingMessages[room.id] || 0
+
+          return <>
+            <div className={styles.roomBox}>
+              <div className={styles.roomName}>
+                {room.name}
+              </div>
+              {pendingMessages !== 0 && (
+                <Chip
+                  className={styles.roomMessages}
+                  label={`${pendingMessages} new message${pendingMessages > 1 ? 's' : ''}`}
+                  variant="outlined"
+                />
+              )}
+              <Button variant="outlined" onClick={() => handleChatRoomClick(room.id)}>
+                Enter Room
+              </Button>
+            </div>
+            <Divider flexItem />
           </>
-        ))}
+})}
       </div>
       <Divider orientation="vertical" flexItem />
       <div className={styles.actionsContainer}>

@@ -9,5 +9,14 @@
 }
 
 .userName {
-	margin: 0;
+	width: 150px;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.ownerIcon {
+	margin-left: 5px;
+	width: 30px;
+	height: 20px;
 }
