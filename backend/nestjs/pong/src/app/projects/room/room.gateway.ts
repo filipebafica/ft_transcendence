@@ -5,7 +5,7 @@ import {
     WebSocketServer,
   } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { MessageDTO } from './message.dto';
+import { RoomMessageDTO } from './room.message.dto';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
@@ -28,15 +28,15 @@ export class RoomGateway {
     handleEvent(
         @MessageBody() message: string,
     ): void {
-        this.logger.log(JSON.stringify({"Gateway has started": {"received-message": message}}))
+        this.logger.log(JSON.stringify({"Gateway has started": {"received-message": message}}));
 
-        const messageDTO: MessageDTO = JSON.parse(message);
+        const messageDTO: RoomMessageDTO = JSON.parse(message);
         this.server.emit(messageDTO.room + '-room-message', {
             from: messageDTO.from,
             message: messageDTO.message,
             timeStamp: messageDTO.timeStamp
-        })
+        });
 
-        this.logger.log(JSON.stringify({"Gateway has finished": {"sent-message": MessageDTO}}))
+        this.logger.log(JSON.stringify({"Gateway has finished": {"sent-message": messageDTO}}));
     }
 }

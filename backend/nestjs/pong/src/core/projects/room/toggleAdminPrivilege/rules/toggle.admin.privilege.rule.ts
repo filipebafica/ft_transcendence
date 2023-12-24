@@ -1,4 +1,4 @@
-import RoomParticipantsGateway from "../../shared/gateways/room.participants.gateways";
+import RoomParticipantsGateway from "../../shared/gateways/room.participants.gateway";
 
 export class ToggleAdminPrivilegeRule {
 	constructor(
