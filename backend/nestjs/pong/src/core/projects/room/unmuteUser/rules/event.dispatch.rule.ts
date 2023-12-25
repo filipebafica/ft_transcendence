@@ -1,7 +1,7 @@
 import EventDispatchGateway from "../../shared/gateways/event.dispatch.gateway";
 
 export default class EventDispatchRule {
-    static ACTION: string = 'USER_HAS_BEEN_UNMUTED_FROM_ROOM';
+    static ACTION: string = 'USER_HAS_BEEN_UNMUTED_IN_ROOM';
 
     constructor(
         private readonly eventDispatchGateway: EventDispatchGateway
