@@ -1,4 +1,4 @@
-export class MessageDTO {
+export class RoomMessageDTO {
     room: string;
     from: string;
     message: string;
