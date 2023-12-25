@@ -8,7 +8,7 @@ import { RoomParticipantsMessageDTO } from "./room.participants.message.dto";
 import { OnEvent } from "@nestjs/event-emitter";
 
 @WebSocketGateway({
-    namespace:'/websocket/room/participants',
+    path:'/websocket/room/participants',
     cors: {
         origin: '*',
     }
