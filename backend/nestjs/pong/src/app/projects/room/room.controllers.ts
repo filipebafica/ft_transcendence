@@ -48,6 +48,9 @@ import { UserIdBannedException } from 'src/core/projects/room/join/exceptions/us
 import { ChangePasswordService } from 'src/core/projects/room/changePassword/change.password.service';
 import { ChangePasswordDTO } from './change.password.dto';
 import { RequestDTO as ChangePasswordRequestDTO } from 'src/core/projects/room/changePassword/dtos/request.dto';
+import EventDispatchAdapter from './event.dispatch.adapter';
+import { RoomParticipantsGateway } from './room.participants.gateway';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('/room')
 @ApiTags('room')
@@ -66,7 +69,8 @@ export class RoomController {
     private changePasswordService: ChangePasswordService;
 
     constructor(
-        private readonly entityManager: EntityManager
+        private readonly entityManager: EntityManager,
+        private readonly eventEmitter: EventEmitter2
     ) {
         this.createService = new CreateService(
             new Logger(`room::${CreateService.name}`),
@@ -77,7 +81,8 @@ export class RoomController {
             new Logger(`room::${JoinService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
-            new RoomBannedUserAdapter(entityManager)
+            new RoomBannedUserAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.listAllService = new ListAllService(
@@ -93,14 +98,16 @@ export class RoomController {
         this.removeUserService = new RemoveUserService(
             new Logger(`room::${RemoveUserService.name}`),
             new RoomAdapter(entityManager),
-            new RoomParticipantsAdapter(entityManager)
+            new RoomParticipantsAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.banUserService = new BanUserService(
             new Logger(`room::${BanUserService.name}`),
             new RoomAdapter(entityManager),
             new RoomBannedUserAdapter(entityManager),
-            new RoomParticipantsAdapter(entityManager)
+            new RoomParticipantsAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.unbanUserService = new UnbanUserService(
@@ -112,13 +119,15 @@ export class RoomController {
         this.muteUserService = new MuteUserService(
             new Logger(`room::${MuteUserService.name}`),
             new RoomAdapter(entityManager),
-            new RoomMutedUserAdapter(entityManager)
+            new RoomMutedUserAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.unmuteUserService = new UnmuteUserService(
             new Logger(`room::${UnmuteUserService.name}`),
             new RoomAdapter(entityManager),
-            new RoomMutedUserAdapter(entityManager)
+            new RoomMutedUserAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.listOneByUserService = new ListOneByUserIdService(
@@ -130,6 +139,7 @@ export class RoomController {
             new Logger(`room::${ToggleAdminPrivilegeService.name}`),
             new RoomAdapter(entityManager),
             new RoomParticipantsAdapter(entityManager),
+            new EventDispatchAdapter(eventEmitter)
         );
 
         this.changePasswordService = new ChangePasswordService(

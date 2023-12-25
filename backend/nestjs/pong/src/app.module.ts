@@ -8,6 +8,7 @@ import { FriendModule } from './app/projects/friend/friend.module';
 import { AuthenticationModule } from './app/projects/authentication/authentication.module';
 import { UsersModule } from './app/projects/users/users.module';
 import { StatusModule } from './app/projects/status/status.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -18,6 +19,15 @@ import { StatusModule } from './app/projects/status/status.module';
     StatusModule,
     GameModule,
     UsersModule,
+    EventEmitterModule.forRoot({
+      wildcard: false,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    })
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,24 +6,29 @@ import BanValidationRule from './rules/ban.validation.rule';
 import RoomGateway from '../shared/gateways/room.gateway';
 import RoomBannedUserGateway from '../shared/gateways/room.user.banned.gateway';
 import RemoveRule from './rules/remove.user';
-import RoomParticipantsGateway from '../shared/gateways/room.participants.gateways';
+import RoomParticipantsGateway from '../shared/gateways/room.participants.gateway';
+import EventDispatchRule from './rules/event.dispatch.rule';
+import EventDispatchGateway from '../shared/gateways/event.dispatch.gateway';
 
 export class BanUserService {
     private getRoom:           GetRoomRule;
     private banValidationRule: BanValidationRule;
     private banRule:           BanRule;
     private removeRule:        RemoveRule;
+    private eventDispatchRule: EventDispatchRule;
 
     constructor(
         private readonly logger: Logger,
         roomGateway:             RoomGateway,
-        roomBannedUserGateway: RoomBannedUserGateway,
-        roomParticipantsGateway: RoomParticipantsGateway
+        roomBannedUserGateway:   RoomBannedUserGateway,
+        roomParticipantsGateway: RoomParticipantsGateway,
+        eventDispatchGateway:    EventDispatchGateway
     ) {
         this.getRoom = new GetRoomRule(roomGateway);
         this.banValidationRule = new BanValidationRule();
         this.banRule = new BanRule(roomBannedUserGateway);
         this.removeRule = new RemoveRule(roomParticipantsGateway);
+        this.eventDispatchRule = new EventDispatchRule(eventDispatchGateway);
     }
 
     async execute(requestDTO: RequestDTO): Promise<void> {
@@ -46,6 +51,11 @@ export class BanUserService {
             await this.removeRule.apply(
                 requestDTO.bannedUserId,
                 requestDTO.roomId
+            );
+
+            this.eventDispatchRule.apply(
+                requestDTO.roomId,
+                requestDTO.bannedUserId
             );
 
             this.logger.log(JSON.stringify({"Service has finished": `User ${requestDTO.bannedUserId} has been banned from room ${requestDTO.roomId}`}));

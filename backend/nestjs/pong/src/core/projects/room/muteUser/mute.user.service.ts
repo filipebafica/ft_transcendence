@@ -5,20 +5,25 @@ import GetRoomRule from './rules/get.room';
 import MuteValidationRule from './rules/mute.validation.rule';
 import RoomGateway from '../shared/gateways/room.gateway';
 import RoomMutedUserGateway from '../shared/gateways/room.user.muted.gateway';
+import EventDispatchRule from './rules/event.dispatch.rule';
+import EventDispatchGateway from '../shared/gateways/event.dispatch.gateway';
 
 export class MuteUserService {
     private getRoom:           GetRoomRule;
     private muteValidationRule: MuteValidationRule;
     private muteRule:           MuteRule;
+    private eventDispatchRule:  EventDispatchRule;
 
     constructor(
         private readonly logger: Logger,
         roomGateway:             RoomGateway,
-        roomMutedUserGateway:    RoomMutedUserGateway
+        roomMutedUserGateway:    RoomMutedUserGateway,
+        eventDispatchGateway:    EventDispatchGateway
     ) {
         this.getRoom = new GetRoomRule(roomGateway);
         this.muteValidationRule = new MuteValidationRule();
         this.muteRule = new MuteRule(roomMutedUserGateway);
+        this.eventDispatchRule = new EventDispatchRule(eventDispatchGateway);
     }
 
     async execute(requestDTO: RequestDTO): Promise<void> {
@@ -37,6 +42,11 @@ export class MuteUserService {
                 requestDTO.mutedUserId,
                 requestDTO.roomId,
                 requestDTO.muteTme
+            );
+
+            this.eventDispatchRule.apply(
+                requestDTO.roomId,
+                requestDTO.mutedUserId
             );
 
             this.logger.log(JSON.stringify({"Service has finished": `User ${requestDTO.mutedUserId} has been muted from room ${requestDTO.roomId}`}));

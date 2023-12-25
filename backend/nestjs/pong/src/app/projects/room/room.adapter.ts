@@ -80,10 +80,15 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
     async getByRomId(roomId: number): Promise<RoomDTO> {
         const entity = await this.roomRepository
         .createQueryBuilder('room')
-        .innerJoinAndSelect('room.participants', 'participants')
+        .leftJoinAndSelect('room.participants', 'participants')
         .leftJoinAndSelect('participants.user', 'user')
         .where('room.id = :roomId', { roomId })
         .getOne();
+
+
+        if (!entity) {
+            throw new Error("Could not find a room that satisfy the criteria");
+        }
 
         return new RoomDTO(
             entity.id,
