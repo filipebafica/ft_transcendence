@@ -67,9 +67,15 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 				>
 					View Profile
 				</Button>
-				<Button size="small" color="secondary" onClick={handleInvite}>
-					Invite to Duel
-				</Button>
+				{friend.userStatus === "online" && (
+					<Button
+						size="small"
+						color="secondary"
+						onClick={handleInvite}
+					>
+						Invite to Duel
+					</Button>
+				)}
 			</CardActions>
 		</Card>
 	);
