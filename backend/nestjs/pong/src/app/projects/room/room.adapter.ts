@@ -58,6 +58,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         .createQueryBuilder('room')
         .leftJoinAndSelect('room.participants', 'participants')
         .leftJoinAndSelect('participants.user', 'user')
+        .leftJoinAndSelect('user.muted_user_room', 'mutedRelation')
+        .leftJoinAndSelect('mutedRelation.room', 'muted_rooms')
         .getMany();
 
         return entity.map((room) => new RoomDTO(
@@ -68,6 +70,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             room.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
                 participant.is_admin,
+                this.isMuted(participant.user.muted_user_room.find((mutedRoom) => mutedRoom.room.id === room.id)),
                 new UserDTO(
                     participant.user.id,
                     participant.user.name,
@@ -82,6 +85,8 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
         .createQueryBuilder('room')
         .leftJoinAndSelect('room.participants', 'participants')
         .leftJoinAndSelect('participants.user', 'user')
+        .leftJoinAndSelect('user.muted_user_room', 'mutedRelation')
+        .leftJoinAndSelect('mutedRelation.room', 'muted_rooms')
         .where('room.id = :roomId', { roomId })
         .getOne();
 
@@ -98,6 +103,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
             entity.participants.map((participant) => new RoomParticipantDTO(
                 participant.is_owner,
                 participant.is_admin,
+                this.isMuted(participant.user.muted_user_room.find((mutedRoom) => mutedRoom.room.id === entity.id)),
                 new UserDTO(
                     participant.user.id,
                     participant.user.name,
@@ -155,7 +161,7 @@ export default class RoomAdapter implements CreateGateway, RoomGateway {
                 participant.is_admin,
                 participant.user.friend.find((friend) => friend.friendship.id === userId)? true : false,
                 this.isMuted(participant.user.muted_user_room.find((mutedRoom) => mutedRoom.room.id === roomId)),
-                participant.user.user_status.status,
+                participant.user?.user_status?.status?? 'off-line',
                 new UserDTO(
                     participant.user.id,
                     participant.user.name,
