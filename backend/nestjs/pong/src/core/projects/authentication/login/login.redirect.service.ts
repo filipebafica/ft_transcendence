@@ -6,11 +6,7 @@ export class LoginRedirectService {
   private readonly baseURL: string;
 
   constructor() {
-    const protocol: string = process.env.REACT_PROTOCOL || 'http';
-    const domain: string = process.env.REACT_DOMAIN || 'localhost';
-    const port: string = process.env.REACT_PORT || '3001';
-
-    this.baseURL = `${protocol}://${domain}:${port}`;
+    this.baseURL = process.env.REACT_BASE_URL;
   }
   execute(response: LoginResponseDTO): string {
     if (response.isTwoFactorAuthenticationEnabled) {
