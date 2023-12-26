@@ -148,9 +148,9 @@ function StatsPage() {
 				setUserAvatar(avatar || '')
 			} else {
 				const data = await getUser(userId)
-				const { nickname, avatar } = data
+				const { nick_name, avatar } = data
 
-				setUserName(nickname)
+				setUserName(nick_name)
 				setUserAvatar(avatar)
 			}
 		}

@@ -70,6 +70,7 @@ const Chat = () => {
 
   const [members, setMembers] = useState([] as Member[])
   const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
+  const [isMuted, setIsMuted] = useState(false)
   const [roomName, setRoomName] = useState('')
   const [newMessage, setNewMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
@@ -116,6 +117,9 @@ const Chat = () => {
     if (member) {
       if (member.isOwner) setUserRole('owner')
       else if (member.isAdmin) setUserRole('admin')
+
+      if (member.isMuted) setIsMuted(true)
+      else setIsMuted(false)
     }
     console.log('Members', members)
 
@@ -247,7 +251,7 @@ const Chat = () => {
       console.log('Removing listener', `${roomId}-room-participants-action-message`)
       roomActionsSocket.off(`${roomId}-room-participants-action-message`)
     }
-  }, [roomId, userId, userRole, fetchMembers, showSnackbar]) // <-- why here if fetchMembers is include cause infinite loop?
+  }, [roomId, userId, userRole, fetchMembers, showSnackbar]) 
 
   return (
     <div className={styles.container}>
@@ -280,8 +284,9 @@ const Chat = () => {
             placeholder="Type a message..."
             multiline
             rows={2}
+            disabled={isMuted}
           />
-          <Button onClick={sendMessage} variant="outlined">
+          <Button onClick={sendMessage} variant="outlined" disabled={isMuted}>
             Send
           </Button>
         </div>
