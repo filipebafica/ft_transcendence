@@ -50,8 +50,10 @@ function GamePage(props: GamePageProps) {
 	useEffect(() => {
 		if (!user || !user.id) return;
 		gameSocket.on(user.id.toString(), (newGameId) => {
-			setGameId(newGameId);
-			setIsConfigComplete(true);
+			if (typeof newGameId === "number") {
+				setGameId(String(newGameId));
+				setIsConfigComplete(true);
+			}
 		});
 	}, [user]);
 
