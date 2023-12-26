@@ -16,3 +16,5 @@ export const roomSocket = io(URL!, { path: "/websocket/room", extraHeaders: {"ng
 export const gameSocket = io(URL!, { path: "/websocket/game", extraHeaders: {"ngrok-skip-browser-warning": "true"} });
 
 export const friendsStatusSocket = io(URL!, { path: "/websocket/status", extraHeaders: {"ngrok-skip-browser-warning": "true"} });
+
+export const roomActionsSocket = io(URL!, { path: "/websocket/room/participants", extraHeaders: {"ngrok-skip-browser-warning": "true"} });

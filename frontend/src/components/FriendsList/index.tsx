@@ -18,8 +18,10 @@ import { friendsStatusSocket } from 'socket'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
-
 import FriendCard from './FriendCard'
+
+// Hooks
+import { useSnackbar } from 'providers'
 
 export interface FriendInterface {
   id: string
@@ -34,6 +36,7 @@ function FriendsList() {
   const [friendNickName, setFriendNickName] = useState<string>('')
 
   const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
 
   const userId = user?.id
 
@@ -54,7 +57,9 @@ function FriendsList() {
         }
       })
       setFriends(friendsWithStatus)
+      showSnackbar('Friend added', 'success')
     } catch (err) {
+      showSnackbar('Error adding friend', 'error')
       console.log(err)
     }
   }
@@ -73,8 +78,6 @@ function FriendsList() {
     if (!userId) return
 
     try {
-      // We request block/unblock to friend
-
       const isBlocked = friends.find((friend: FriendInterface) => friend.id === friendId)?.isBlocked
       
       console.log('isBlocked', isBlocked)
@@ -82,10 +85,12 @@ function FriendsList() {
       if (isBlocked) {
         res = await unblockFriend(userId, Number(friendId))
         console.log('Unblock friend response', res)
+        showSnackbar('Friend unblocked', 'success')
       }
       else {
         res = await blockFriend(userId, Number(friendId))
         console.log('Block friend response', res)
+        showSnackbar('Friend blocked', 'success')
       }
 
       // Reload friends list
