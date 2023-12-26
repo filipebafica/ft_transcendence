@@ -741,6 +741,7 @@ export class RoomController {
                     new RoomDTO(1, 'room1', true, false, [new RoomParticipantDTO(
                         true,
                         false,
+                        false,
                         new UserDTO(
                             1,
                             'user',
