@@ -81,6 +81,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		if (!user) return;
 		console.log("connecting to socket", `${user.id}-invite`);
 
+		gameSocket.connect();
 		// ! RECEIVE INVITE FOR GAME
 		gameSocket.on(`${user.id}-invite`, (msg: any) => {
 			console.log(user.id, msg);
@@ -102,6 +103,11 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				}
 			}
 		});
+		return () => {
+			console.log("disconnecting from socket", `${user.id}-invite`);
+			gameSocket.removeAllListeners(`${user.id}-invite`);
+			gameSocket.disconnect();
+		};
 	}, [user]);
 
 	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER
