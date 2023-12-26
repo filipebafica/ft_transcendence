@@ -22,8 +22,10 @@ export default class FriendAdapter implements FriendGateway {
         friedUserId?: number,
         friendNickName?: string
 
-    ) {
+    ): Promise<void> {        
         if (friedUserId) {
+            await this.checkFriendship(userId, friedUserId);
+
             let user = this.friendRepository.create({
                 user: { id: userId } as User,
                 friendship: { id: friedUserId } as User
@@ -43,6 +45,12 @@ export default class FriendAdapter implements FriendGateway {
             let friedUserId = await this.userRepository.findOne({
                 where: { nick_name: friendNickName },
             });
+
+            if (!friedUserId) {
+                throw new Error(`Could not find a user with nickname ${friendNickName}`);
+            }
+
+            await this.checkFriendship(userId, friedUserId.id);
 
             let user = this.friendRepository.create({
                 user: { id: userId } as User,
@@ -102,5 +110,22 @@ export default class FriendAdapter implements FriendGateway {
 
         await this.friendRepository.delete(user);
         await this.friendRepository.delete(friend);
+    }
+
+    private async checkFriendship(userId: number, friedUserId: number): Promise<void> {
+        let friendship = await this.friendRepository.findOne({
+            where: {
+                user: { id: userId } as User,
+                friendship: { id: friedUserId } as User
+            }
+        });
+
+        if (userId === friedUserId) {
+            throw new Error("User can't be friend with herself/himself");
+        }
+
+        if (friendship) {
+            throw new Error(`User ${userId} is already friend with user ${friedUserId}`);
+        }
     }
 }

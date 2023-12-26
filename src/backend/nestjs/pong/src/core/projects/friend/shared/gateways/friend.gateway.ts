@@ -7,10 +7,10 @@ export default interface FriendGateway {
         userId: number,
         friedUserId?: number,
         friendNickName?: string,
-    );
+    ): Promise<void>;
 
     delete(
         userId: number,
         friedUserId: number,
-    );
+    ): Promise<void>;
 }

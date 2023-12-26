@@ -10,7 +10,7 @@ export default class CreateRule {
         userId: number,
         friendUserId?: number,
         friendNickName?: string
-    ) {
+    ): Promise<void> {
         return await this.friendGateway.create(
             userId,
             friendUserId,
