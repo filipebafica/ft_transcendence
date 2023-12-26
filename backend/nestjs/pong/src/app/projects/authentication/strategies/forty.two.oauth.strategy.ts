@@ -8,14 +8,10 @@ type DoneCallback = (err: Error, user: UserDTO) => void;
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    const protocol: string = process.env.NGROK_PROTOCOL || 'http';
-    const domain: string = process.env.NGROK_DOMAIN || 'localhost';
-    const port: string = process.env.NGROK_PORT || '8080';
-
     super({
-      clientID: process.env.FORTYTWO_APP_ID,
-      clientSecret: process.env.FORTYTWO_APP_SECRET,
-      callbackURL: `${protocol}://${domain}:${port}/auth/redirect`,
+      clientID: process.env.FORTYTWO_CLIENT_ID,
+      clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
+      callbackURL: `${process.env.NGINX_BASE_URL}/auth/redirect`,
     });
   }
 

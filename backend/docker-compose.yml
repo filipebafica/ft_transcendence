@@ -52,6 +52,7 @@ services:
       - postgres
     env_file:
       - .env
+      - ../.env.shared
     build:
       context: nestjs
       dockerfile: ${BUILD_ENVIROMENT}
