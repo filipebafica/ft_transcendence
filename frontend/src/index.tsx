@@ -16,6 +16,7 @@ import { AuthProvider } from './auth'
 import { DirectChatProvider } from './providers/directChat'
 import { InviteMatchProvider } from './providers/inviteMatch'
 import { RoomChatProvider } from './providers/roomChat'
+import { SnackbarProvider } from './providers/snackBar'
 
 // Routes
 
@@ -49,14 +50,16 @@ initializeAxiosAuthToken()
 
 root.render(
   <AuthProvider>
-    <DirectChatProvider>
-      <RoomChatProvider>
-        <InviteMatchProvider>
-          <ThemeProvider theme={theme}>
-            <RouterProvider router={router} />
-          </ThemeProvider>
-        </InviteMatchProvider>
-      </RoomChatProvider>
-    </DirectChatProvider>
+    <SnackbarProvider>
+      <DirectChatProvider>
+        <RoomChatProvider>
+          <InviteMatchProvider>
+            <ThemeProvider theme={theme}>
+              <RouterProvider router={router} />
+            </ThemeProvider>
+          </InviteMatchProvider>
+        </RoomChatProvider>
+      </DirectChatProvider>
+    </SnackbarProvider>
   </AuthProvider>,
 )

@@ -1,12 +1,12 @@
 // URL: /chatRoom/chat/:roomId
 import React, { useEffect, useState, useRef, useContext, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 import styles from './style.module.css'
 
 // API
 import { listRoomMembers, getRoomName } from 'api/room'
-import { toggleAdmin} from 'api/room'
+import { toggleAdmin } from 'api/room'
 import { removeMember } from 'api/room'
 import { banMember } from 'api/room'
 // import { unBanMember } from 'api/room'
@@ -21,9 +21,14 @@ import { RoomChatContext } from 'providers/roomChat'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import RoomUserCard from './RoomUserCard'
+import AlertDialog from './AlertDialog'
 
 // Socket
 import { roomSocket } from 'socket'
+import { roomActionsSocket } from 'socket'
+
+// Hooks
+import { useSnackbar } from 'providers'
 
 interface Member {
   isOwner: boolean
@@ -35,11 +40,6 @@ interface Member {
   }
 }
 
-interface UserMessage {
-  name: string
-  id: string
-}
-
 interface Message {
   from: string
   to: string
@@ -47,16 +47,23 @@ interface Message {
   timeStamp: number
 }
 
-interface MessageBoxProps {
-  userFrom: UserMessage
-  userTo: UserMessage
-  onSendMessage: (message: Message) => void
-  onReceiveMessage: (message: Message) => void
-  socket: any
-  listenTo: string
+const roomActions = {
+  USER_HAS_JOINED_ROOM: 'USER_HAS_JOINED_ROOM',
+  USER_HAS_BEEN_BANNED_FROM_ROOM: 'USER_HAS_BEEN_BANNED_FROM_ROOM',
+  USER_HAS_BEEN_MUTED_IN_ROOM: 'USER_HAS_BEEN_MUTED_IN_ROOM',
+  USER_HAS_BEEN_REMOVED_FROM_ROOM: 'USER_HAS_BEEN_REMOVED_FROM_ROOM',
+  USER_HAS_ADMIN_PRIVILEGE_CHANGED_IN_ROOM: 'USER_HAS_ADMIN_PRIVILEGE_CHANGED_IN_ROOM',
+  USER_HAS_BEEN_UNMUTED_IN_ROOM: 'USER_HAS_BEEN_UNMUTED_IN_ROOM',
 }
 
-const Chat = (props: MessageBoxProps) => {
+interface RoomActionMessage {
+  room: string
+  user: string
+  action: string
+  timeStamp: number
+}
+
+const Chat = () => {
   const { user } = useContext(AuthContext)
   const { messagesData, cleanPendingMessages } = useContext(RoomChatContext)
 
@@ -64,8 +71,12 @@ const Chat = (props: MessageBoxProps) => {
   const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
   const [roomName, setRoomName] = useState('')
   const [newMessage, setNewMessage] = useState('')
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
 
   const { roomId } = useParams()
+  const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
   const userId = user?.id
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -73,7 +84,7 @@ const Chat = (props: MessageBoxProps) => {
   // Send message to messageRouter event
   const sendMessage = () => {
     if (newMessage.trim() !== '') {
-      console.log('sending message to event', `messageRouter`)
+      console.log('sending message to event room', `messageRouter`)
       roomSocket.emit(
         `messageRouter`,
         JSON.stringify({
@@ -98,7 +109,9 @@ const Chat = (props: MessageBoxProps) => {
     const members = await listRoomMembers(roomId)
 
     // Check if user is admin or owner
-    const member = members.find((member: Member) => member.user.id.toString() === userId?.toString())
+    const member = members.find(
+      (member: Member) => member.user.id.toString() === userId?.toString(),
+    )
     if (member) {
       if (member.isOwner) setUserRole('owner')
       else if (member.isAdmin) setUserRole('admin')
@@ -109,7 +122,7 @@ const Chat = (props: MessageBoxProps) => {
     const roomName = await getRoomName(roomId)
     setRoomName(roomName)
     setMembers(members)
-  },[roomId, userId])
+  }, [roomId, userId])
 
   // Fetch members of the room
   useEffect(() => {
@@ -122,7 +135,7 @@ const Chat = (props: MessageBoxProps) => {
 
     // Remove pending messages
     cleanPendingMessages(roomId)
-  }, [cleanPendingMessages, roomId, userId]) 
+  }, [cleanPendingMessages, roomId, userId])
 
   // Handlers
   const handleSetAdmin = async (memberId: string, toggle: boolean) => {
@@ -132,9 +145,7 @@ const Chat = (props: MessageBoxProps) => {
     try {
       const res = await toggleAdmin(user?.id, Number(memberId), roomId, toggle)
       console.log('Admin res', res)
-      fetchMembers()
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error setting admin:', error)
     }
   }
@@ -146,9 +157,7 @@ const Chat = (props: MessageBoxProps) => {
     try {
       const res = await removeMember(user?.id, Number(memberId), roomId)
       console.log('Kick res', res)
-      fetchMembers()
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error kicking member:', error)
     }
   }
@@ -160,9 +169,7 @@ const Chat = (props: MessageBoxProps) => {
     try {
       const res = await banMember(user?.id, Number(memberId), roomId)
       console.log('Ban res', res)
-      fetchMembers()
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error banning member:', error)
     }
   }
@@ -174,30 +181,75 @@ const Chat = (props: MessageBoxProps) => {
     try {
       const res = await muteMember(user?.id, Number(memberId), roomId, 10)
       console.log('Mute res', res)
-      fetchMembers()
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error muting member:', error)
     }
   }
+
+  // Check for changes in the room members (bans, mutes etc)
+  useEffect(() => {
+    if (!roomId) return
+    console.log('Listening to room action messages', `${roomId}-room-participants-action-message`)
+    roomActionsSocket.on(`${roomId}-room-participants-action-message`, (message: RoomActionMessage) => {
+      console.log('Room action message', message)
+      const isCurrentUser = message.user.toString() === userId?.toString()
+
+      if (message.action === roomActions.USER_HAS_JOINED_ROOM) {
+        fetchMembers()
+      } else if (message.action === roomActions.USER_HAS_BEEN_BANNED_FROM_ROOM) {
+        if (isCurrentUser) {
+          setShowAlert(true)
+          setAlertMessage('You have been banned from this room')
+        }
+        fetchMembers()
+      } else if (message.action === roomActions.USER_HAS_BEEN_MUTED_IN_ROOM) {
+        if (isCurrentUser) {
+          showSnackbar('You have been muted', 'warning');
+        }
+        fetchMembers()
+      } else if (message.action === roomActions.USER_HAS_BEEN_UNMUTED_IN_ROOM) {
+        if (isCurrentUser) {
+          showSnackbar('You have been unmuted', 'info');
+        }
+        fetchMembers()
+      } else if (message.action === roomActions.USER_HAS_BEEN_REMOVED_FROM_ROOM) {
+        if (message.user.toString() === userId?.toString()) {
+          setShowAlert(true)
+          setAlertMessage('You have been removed from this room')
+        }
+        fetchMembers()
+      } else if (message.action === roomActions.USER_HAS_ADMIN_PRIVILEGE_CHANGED_IN_ROOM) {
+        if (isCurrentUser) {
+          if (userRole === 'member')
+            showSnackbar('You are now an admin', 'info');
+          else
+            showSnackbar('You are no longer an admin', 'info');
+        }
+        fetchMembers()
+      }
+    })
+  }, [fetchMembers, roomId, userId, showSnackbar, userRole])
 
   return (
     <div className={styles.container}>
       <div className={styles.chatSection}>
         <h2>Room: {roomName}</h2>
         <div className={styles.messagesBox} id="message-list">
-          {roomId && (messagesData.messages[roomId!] || []).map((msg: Message, index) => {
-            const member = members.find((member: Member) => member.user.id === msg.from)
+          {roomId &&
+            (messagesData.messages[roomId!] || []).map((msg: Message, index) => {
+              const member = members.find((member: Member) => member.user.id === msg.from)
 
-            return <div key={index} className={styles.messageContainer}>
-              <div className={styles.from}>{member?.user.nickName}</div>
-              <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
-                undefined,
-                { hour12: false },
-              )}]:`}</div>
-              <div className={styles.message}>{msg.message}</div>
-            </div>
-          })}
+              return (
+                <div key={index} className={styles.messageContainer}>
+                  <div className={styles.from}>{member?.user.nickName}</div>
+                  <div className={styles.timeStamp}>{`[${new Date(msg.timeStamp).toLocaleTimeString(
+                    undefined,
+                    { hour12: false },
+                  )}]:`}</div>
+                  <div className={styles.message}>{msg.message}</div>
+                </div>
+              )
+            })}
 
           <div ref={messagesEndRef} />
         </div>
@@ -218,16 +270,29 @@ const Chat = (props: MessageBoxProps) => {
       <div className={styles.usersSection}>
         <h2> Members: {members.length}</h2>
         {members.map((member: Member) => {
-          return <RoomUserCard 
-            member={member} 
-            userRole={userRole} 
-            onSetAdmin={handleSetAdmin}
-            onKick={handleOnKick}
-            onBan={handleOnBan}
-            onMute={handleOnMute}
+          return (
+            <RoomUserCard
+              member={member}
+              userRole={userRole}
+              onSetAdmin={handleSetAdmin}
+              onKick={handleOnKick}
+              onBan={handleOnBan}
+              onMute={handleOnMute}
             />
+          )
         })}
       </div>
+
+      {showAlert && (
+        <AlertDialog
+          message={alertMessage}
+          onAccept={() => {
+            setShowAlert(false)
+            navigate('/')
+          }}
+          isOpen={showAlert}
+        />
+      )}
     </div>
   )
 }
