@@ -53,6 +53,14 @@ export class StatusGateway {
         this.logger.log(JSON.stringify({"Gateway has started": {"received-message": message}}))
 
         const messageDTO: MessageDTO = JSON.parse(message);
+
+        this.createStatusService.execute(
+            new CreateStatusRequestDTO(
+                messageDTO.userId,
+                messageDTO.status
+            )
+        );
+
         const responseDTO = await this.friendService.execute(
             new ListByUserIdRequestDTO(messageDTO.userId)
         );
@@ -62,19 +70,12 @@ export class StatusGateway {
                 this.server.emit(
                     friendDTO.id + '-friend-status-change', messageDTO
                 );
-
-                this.createStatusService.execute(
-                    new CreateStatusRequestDTO(
-                        messageDTO.userId,
-                        messageDTO.status
-                    )
-                );
-
-                this.logger.log(JSON.stringify({"Gateway has finished": {
-                    "sent-message-to": friendDTO.id + '-friend-status-change',
-                    "message":  messageDTO.status
-                }}));
             }
         );
+
+        this.logger.log(JSON.stringify({"Gateway has finished": {
+            "sent-message-to": responseDTO.friends,
+            "message":  messageDTO.status
+        }}));
     }
 }
