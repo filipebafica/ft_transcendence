@@ -70,25 +70,25 @@ const ChatRoomPage = () => {
         {myRooms.map((room) => {
           const pendingMessages = messagesData.pendingMessages[room.id] || 0
 
-          return <>
-            <div className={styles.roomBox}>
-              <div className={styles.roomName}>
-                {room.name}
+          return (
+            <>
+              <div className={styles.roomBox}>
+                <div className={styles.roomName}>{room.name}</div>
+                {pendingMessages !== 0 && (
+                  <Chip
+                    className={styles.roomMessages}
+                    label={`${pendingMessages} new message${pendingMessages > 1 ? 's' : ''}`}
+                    variant="outlined"
+                  />
+                )}
+                <Button variant="outlined" onClick={() => handleChatRoomClick(room.id)}>
+                  Enter Room
+                </Button>
               </div>
-              {pendingMessages !== 0 && (
-                <Chip
-                  className={styles.roomMessages}
-                  label={`${pendingMessages} new message${pendingMessages > 1 ? 's' : ''}`}
-                  variant="outlined"
-                />
-              )}
-              <Button variant="outlined" onClick={() => handleChatRoomClick(room.id)}>
-                Enter Room
-              </Button>
-            </div>
-            <Divider flexItem />
-          </>
-})}
+              <Divider flexItem />
+            </>
+          )
+        })}
       </div>
       <Divider orientation="vertical" flexItem />
       <div className={styles.actionsContainer}>
