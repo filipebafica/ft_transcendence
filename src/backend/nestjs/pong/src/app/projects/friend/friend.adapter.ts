@@ -113,16 +113,16 @@ export default class FriendAdapter implements FriendGateway {
     }
 
     private async checkFriendship(userId: number, friedUserId: number): Promise<void> {
+        if (userId === friedUserId) {
+            throw new Error("User can't be friend with herself/himself");
+        }
+
         let friendship = await this.friendRepository.findOne({
             where: {
                 user: { id: userId } as User,
                 friendship: { id: friedUserId } as User
             }
         });
-
-        if (userId === friedUserId) {
-            throw new Error("User can't be friend with herself/himself");
-        }
 
         if (friendship) {
             throw new Error(`User ${userId} is already friend with user ${friedUserId}`);
