@@ -75,9 +75,7 @@ export const RoomChatProvider = (props: { children: any }) => {
         }
 
         const newMessageData = {
-          messages: {
-            ...prevMessages.messages,
-          },
+          messages: prevMessages.messages,
           pendingMessages: pendingMessages,
         }
 

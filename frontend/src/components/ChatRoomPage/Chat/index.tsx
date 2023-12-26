@@ -140,7 +140,7 @@ const Chat = () => {
 
     // Remove pending messages
     cleanPendingMessages(roomId)
-  }, [cleanPendingMessages, roomId, userId])
+  }, [cleanPendingMessages, roomId, userId, messagesData.messages])
 
   // Handlers
   const handleSetAdmin = async (memberId: string, toggle: boolean) => {
