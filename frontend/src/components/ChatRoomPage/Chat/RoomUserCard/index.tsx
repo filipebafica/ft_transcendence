@@ -28,6 +28,7 @@ import { CiStar } from "react-icons/ci";
 interface Member {
   isOwner: boolean
   isAdmin: boolean
+  isMuted: boolean
   user: {
     id: string
     name: string
@@ -172,7 +173,7 @@ const RoomUserCard = (props: RoomUserCardProps) => {
                         disabled={member.isOwner}
                         onClick={() => handleClickMute(member.user.id)}
                       >
-                        <Typography textAlign="center">{'Mute'}</Typography>
+                        <Typography textAlign="center">{member.isMuted ? 'UnMute' : 'Mute'}</Typography>
                       </MenuItem>
                     </>
                   )}

@@ -11,7 +11,7 @@ import { removeMember } from 'api/room'
 import { banMember } from 'api/room'
 // import { unBanMember } from 'api/room'
 import { muteMember } from 'api/room'
-// import { unMuteMember } from 'api/room'
+import { unMuteMember } from 'api/room'
 
 // Context
 import { AuthContext } from 'auth'
@@ -33,6 +33,7 @@ import { useSnackbar } from 'providers'
 interface Member {
   isOwner: boolean
   isAdmin: boolean
+  isMuted: boolean
   user: {
     id: string
     name: string
@@ -69,6 +70,7 @@ const Chat = () => {
 
   const [members, setMembers] = useState([] as Member[])
   const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
+  const [isMuted, setIsMuted] = useState(false)
   const [roomName, setRoomName] = useState('')
   const [newMessage, setNewMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
@@ -115,6 +117,9 @@ const Chat = () => {
     if (member) {
       if (member.isOwner) setUserRole('owner')
       else if (member.isAdmin) setUserRole('admin')
+
+      if (member.isMuted) setIsMuted(true)
+      else setIsMuted(false)
     }
     console.log('Members', members)
 
@@ -179,8 +184,20 @@ const Chat = () => {
     if (!roomId) return
 
     try {
-      const res = await muteMember(user?.id, Number(memberId), roomId, 10)
-      console.log('Mute res', res)
+      const memberIsMuted = members.find(
+        (member: Member) => member.user.id.toString() === memberId.toString(),
+      )?.isMuted
+
+      if (memberIsMuted) {
+        // Unmute
+        const res = await unMuteMember(user?.id, Number(memberId), roomId)
+        console.log('Unmute res', res)
+        return
+      } else {
+        // Mute
+        const res = await muteMember(user?.id, Number(memberId), roomId, 10)
+        console.log('Mute res', res)
+      }
     } catch (error) {
       console.error('Error muting member:', error)
     }
@@ -189,9 +206,10 @@ const Chat = () => {
   // Check for changes in the room members (bans, mutes etc)
   useEffect(() => {
     if (!roomId) return
+
     console.log('Listening to room action messages', `${roomId}-room-participants-action-message`)
     roomActionsSocket.on(`${roomId}-room-participants-action-message`, (message: RoomActionMessage) => {
-      console.log('Room action message', message)
+      console.log('Room action message received', message.action)
       const isCurrentUser = message.user.toString() === userId?.toString()
 
       if (message.action === roomActions.USER_HAS_JOINED_ROOM) {
@@ -228,7 +246,12 @@ const Chat = () => {
         fetchMembers()
       }
     })
-  }, [fetchMembers, roomId, userId, showSnackbar, userRole])
+
+    return () => {
+      console.log('Removing listener', `${roomId}-room-participants-action-message`)
+      roomActionsSocket.off(`${roomId}-room-participants-action-message`)
+    }
+  }, [roomId, userId, userRole, fetchMembers, showSnackbar]) 
 
   return (
     <div className={styles.container}>
@@ -261,8 +284,9 @@ const Chat = () => {
             placeholder="Type a message..."
             multiline
             rows={2}
+            disabled={isMuted}
           />
-          <Button onClick={sendMessage} variant="outlined">
+          <Button onClick={sendMessage} variant="outlined" disabled={isMuted}>
             Send
           </Button>
         </div>
