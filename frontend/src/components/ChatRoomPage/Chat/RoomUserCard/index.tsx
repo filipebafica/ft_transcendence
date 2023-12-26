@@ -24,6 +24,8 @@ import { addFriend } from 'api/friend'
 
 // Icons
 import { CiStar } from "react-icons/ci";
+import { AiOutlineAudioMuted } from "react-icons/ai";
+
 
 interface Member {
   isOwner: boolean
@@ -112,7 +114,9 @@ const RoomUserCard = (props: RoomUserCardProps) => {
           <Avatar src={avatar} alt={member.user.nickName} />
           <Box className={styles.infos}>
             <div className={styles.userName}>
-              <span> {member.user.nickName} </span> {member.isOwner && <CiStar className={styles.ownerIcon}/>}
+              <span> {member.user.nickName} </span> 
+              {member.isOwner && <CiStar className={styles.ownerIcon}/>}
+              {member.isMuted && <AiOutlineAudioMuted className={styles.mutedIcon}/>}
             </div>
             <CardActions>
               <Button
