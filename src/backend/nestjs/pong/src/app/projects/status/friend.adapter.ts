@@ -18,7 +18,8 @@ export default class FriendAdapter implements FriendGateway {
         userId: number,
         friedUserId?: number,
         friendNickName?: string
-    ) {
+    ): Promise<void> {
+        return ;
     }
 
     async getByUserId(
@@ -49,6 +50,7 @@ export default class FriendAdapter implements FriendGateway {
     delete(
         userId: number,
         friedUserId: number
-    ) {
+    ): Promise<void> {
+        return ;
     }
 }

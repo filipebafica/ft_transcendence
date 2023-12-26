@@ -13,7 +13,7 @@ export class CreateService {
         this.createRule = new CreateRule(friendGateway);
     }
 
-    async execute(requestDTO: RequestDTO) {
+    async execute(requestDTO: RequestDTO): Promise<void> {
         try {
             this.logger.log(JSON.stringify({"Service has started": {"request": requestDTO}}));
 
