@@ -34,8 +34,7 @@ export default class RoomBannedUserAdapter implements RoomBannedUserGateway {
         await this.roomBannedUserRepository
             .createQueryBuilder()
             .delete()
-            .where('room_id = :roomId', { roomId: roomId })
-            .where('banned_user_id = :userId', { userId: userId })
+            .where('room_id = :roomId AND banned_user_id = :userId', { roomId: roomId, userId: userId })
             .execute();
     }
 

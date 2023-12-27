@@ -54,8 +54,7 @@ export default class RoomMutedUserAdapter implements RoomMutedUserGateway {
         await this.roomMutedUserRepository
             .createQueryBuilder()
             .delete()
-            .where('room_id = :roomId', { roomId: roomId })
-            .where('muted_user_id = :userId', { userId: userId })
+            .where('room_id = :roomId AND muted_user_id = :userId', { roomId: roomId, userId: userId })
             .execute();
     }
 }
