@@ -66,6 +66,7 @@ function VsGamePage(props: GamePageProps) {
 	return (
 		<div className={styles.container}>
 			<VsGameConfig
+				playerId={user?.id.toString()}
 				gameId={gameId}
 				onJoinGame={(paddle, fan, field) =>
 					handleMatching({

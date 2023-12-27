@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./style.module.css";
 
 import { gameSocket } from "../../../socket/index";
+import { friendsStatusSocket } from "../../../socket/index";
 
 // Constants
 
@@ -15,6 +16,7 @@ import FanPicker from "./FanPicker";
 import Button from "@mui/material/Button";
 
 interface GameConfigProps {
+	playerId: string | undefined;
 	gameId: string | undefined;
 	onJoinGame: (
 		paddleColorIndex: number,
@@ -29,10 +31,10 @@ const VsGameConfig = (props: GameConfigProps) => {
 	const [fieldColorIndex, setFieldColorIndex] = useState(0);
 	const navigate = useNavigate();
 
-	const { gameId, onJoinGame } = props;
+	const { playerId, gameId, onJoinGame } = props;
 
 	useEffect(() => {
-		if (!gameId) return;
+		if (!gameId || !playerId) return;
 		gameSocket.on(gameId, (newGameState) => {
 			if (
 				newGameState.status === 2 &&
@@ -41,11 +43,17 @@ const VsGameConfig = (props: GameConfigProps) => {
 					newGameState.player2Score
 				) !== 3
 			) {
-				console.log("gameState", newGameState);
+				friendsStatusSocket.emit(
+					"statusRouter",
+					JSON.stringify({
+						userId: playerId,
+						status: "online",
+					})
+				);
 				navigate("/home");
 			}
 		});
-	}, [gameId, navigate]);
+	}, [playerId, gameId, navigate]);
 
 	return (
 		<div className={styles.gameConfigContainer}>

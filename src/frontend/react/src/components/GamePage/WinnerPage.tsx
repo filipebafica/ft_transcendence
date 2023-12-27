@@ -31,7 +31,6 @@ function WinnerPage(props: WinnerProps) {
 		};
 		fetchWinnerResults();
 
-		console.log("Finished game");
 		friendsStatusSocket.emit(
 			"statusRouter",
 			JSON.stringify({
