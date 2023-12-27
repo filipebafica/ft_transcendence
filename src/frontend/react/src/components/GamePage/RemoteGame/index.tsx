@@ -25,56 +25,64 @@ function PongGame(props: PlayersProps) {
 			/>
 			<div className={styles.board}>
 				<div className={styles.fans}>
-					<div className={styles.playerFans}>
+					<div className={styles.playerFans1}>
 						<img
 							src={fansArr[gameState.player1.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player1.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player1.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player1.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 					</div>
-					<div className={styles.playerFans}>
+					<div className={styles.playerFans2}>
 						<img
 							src={fansArr[gameState.player2.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player2.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player2.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 						<img
 							src={fansArr[gameState.player2.customization.fans]}
 							alt=""
 							width={100}
 							height={100}
+							className={styles.jumpingImage}
 						/>
 					</div>
 				</div>

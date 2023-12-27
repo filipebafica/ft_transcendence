@@ -7,6 +7,7 @@ import styles from './style.module.css'
 // Context
 import { AuthContext } from 'auth'
 import { DirectChatContext } from 'providers/directChat'
+import { useSnackbar } from 'providers'
 
 // Socket
 import { chatSocket } from 'socket'
@@ -18,6 +19,7 @@ import Button from '@mui/material/Button'
 
 // Api
 import { getUser, getUserStatus } from 'api/user'
+import { checkChatAuthorization } from 'api/friend'
 
 interface UserMessage {
   name: string
@@ -45,6 +47,7 @@ const DirectChatPage = (props: MessageBoxProps) => {
   const { messagesData, setMessagesData } = useContext(DirectChatContext)
 
   const { friendId } = useParams()
+  const { showSnackbar } = useSnackbar()
   const userId = user?.id
 
   const [newMessage, setNewMessage] = useState('')
@@ -52,7 +55,18 @@ const DirectChatPage = (props: MessageBoxProps) => {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
+    try {
+      const isAuthorized = await checkChatAuthorization(userId as number, Number(friendId))
+      if (!isAuthorized) {
+        showSnackbar('You were blocked by the user', 'error')
+        return
+      }
+    }
+    catch (e) {
+      showSnackbar('Something went wrong', 'error')
+      return
+    }
     if (newMessage.trim() !== '') {
       const messageData = {
         from: userId,

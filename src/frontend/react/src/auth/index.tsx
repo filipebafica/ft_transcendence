@@ -65,20 +65,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       axiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`
 
       // Get user data from the API
-      if (!twoFa) {
-        const userId = getUserIdFromToken(token)
-        const userData = await getUser(userId)
+      try {
+        if (!twoFa) {
+          const userId = getUserIdFromToken(token)
+          const userData = await getUser(userId)
 
-        // Send user status online
-        friendsStatusSocket.emit(
-          'statusRouter',
-          JSON.stringify({
-            userId: userId,
-            status: 'online',
-          }),
-        )
+          // Send user status online
+          friendsStatusSocket.emit(
+            'statusRouter',
+            JSON.stringify({
+              userId: userId,
+              status: 'online',
+            }),
+          )
 
-        setUser({ ...userData, token })
+          setUser({ ...userData, token })
+        }
+      }
+      catch (err) {
+        console.log(err)
       }
     },
     [setUser],

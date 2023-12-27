@@ -12,6 +12,7 @@ import { banMember } from 'api/room'
 // import { unBanMember } from 'api/room'
 import { muteMember } from 'api/room'
 import { unMuteMember } from 'api/room'
+import { changePassword } from 'api/room'
 
 // Context
 import { AuthContext } from 'auth'
@@ -75,6 +76,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState('')
   const [showAlert, setShowAlert] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
+  const [roomPassword, setRoomPassword] = useState('' as string)
 
   const { roomId } = useParams()
   const navigate = useNavigate()
@@ -203,6 +205,22 @@ const Chat = () => {
     }
   }
 
+  const handleRoomPassword = async () => {
+    if (!user?.id || !roomId ) return
+    if (roomPassword.trim() === '') {
+      showSnackbar('Password cannot be empty', 'error');
+      return
+    }
+
+    try {
+      await changePassword(user?.id, roomId, roomPassword)
+    }
+    catch (error) {
+      console.error('Error changing room password:', error)
+    }
+  }
+
+
   // Check for changes in the room members (bans, mutes etc)
   useEffect(() => {
     if (!roomId) return
@@ -306,6 +324,19 @@ const Chat = () => {
           )
         })}
       </div>
+      { userRole === 'owner' &&
+        <div className={styles.updatePasswordSection}>
+        <h2> Change Room Password </h2>
+        <TextField
+          type="password"
+          size="small"
+          value={roomPassword}
+          onChange={(e) => setRoomPassword(e.target.value)}/>
+        <Button onClick={handleRoomPassword} variant="outlined" disabled={isMuted} >
+          Change Password
+        </Button>
+        </div>
+      }
 
       {showAlert && (
         <AlertDialog

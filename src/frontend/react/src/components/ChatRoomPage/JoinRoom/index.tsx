@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // API
-import { listAvailableRooms, joinRoom } from 'api/room'
+import { listAvailableRooms, joinRoom, listMyRooms } from 'api/room'
 
 import style from './style.module.css'
 
@@ -43,8 +43,14 @@ const JoinRoom = () => {
     const fetchRooms = async () => {
       try {
         const response = await listAvailableRooms()
-        console.log('Rooms:', response.data)
-        setRooms(response.data)
+        const myRooms = await listMyRooms(user?.id as number)
+
+        // Remove rooms that user is already in
+        const filteredRooms = response.data.filter((room: any) => {
+          return !myRooms.data.some((myRoom: any) => myRoom.id === room.id)
+        })
+        console.log('Rooms:', filteredRooms)
+        setRooms(filteredRooms)
       } catch (error) {
         console.error('Error fetching rooms:', error)
       }
@@ -111,7 +117,7 @@ const JoinRoom = () => {
       navigate(`/chatRoom/chat/${roomIdToJoin}`)
     } catch (error) {
       console.error('Error joining room:', error)
-      alert('Wrong password.')
+      alert('Wrong password or you were banned.')
     }
   }
 
