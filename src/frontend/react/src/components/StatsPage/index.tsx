@@ -75,7 +75,7 @@ const parseGamesHistory = (games: any[], userId: string) => {
 			: `${player2Score} - ${player1Score}`
 		const statusText = gameStatuses[status]
 
-		const disconnect = String(disconnectedId)
+		let disconnect = String(disconnectedId)
 
 		const getOutcome = (
 			disconnectedId: string,
@@ -96,6 +96,10 @@ const parseGamesHistory = (games: any[], userId: string) => {
 		}
 
 		const outcome = getOutcome(disconnect, userIdString, String(winnerId))
+
+		if (disconnect === 'null') {
+			disconnect = ''
+		}
 
 		return {
 			gameId: gameId,

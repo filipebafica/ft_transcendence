@@ -7,8 +7,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 
 // Socket
 import { gameSocket } from "socket";
@@ -28,7 +26,6 @@ interface Message {
 export const InviteMatchContext = createContext({
 	challengeAccepted: "",
 	setChallengeAccepted: (challengeAccepted: string) => {},
-	setWaiting: (waiting: boolean) => {},
 });
 
 export const InviteMatchProvider = (props: { children: any }) => {
@@ -36,7 +33,6 @@ export const InviteMatchProvider = (props: { children: any }) => {
 	const { user } = useContext(AuthContext);
 	const [inviteArrived, setInviteArrived] = useState(false);
 	const [challengeAccepted, setChallengeAccepted] = useState("");
-	const [waiting, setWaiting] = useState(false);
 	const [message, setMessage] = useState<Message>({
 		meta: "",
 		data: { to: "", from: "", content: "" },
@@ -92,9 +88,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				msg.meta === "invite" &&
 				msg.data.content === "rejected"
 			) {
-				setWaiting(false);
 			} else if (msg.meta === "game") {
-				setWaiting(false);
 				if (
 					typeof msg.data === "string" ||
 					typeof msg.data === "number"
@@ -110,19 +104,10 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		};
 	}, [user]);
 
-	// ! BLOCK SCREEN UNTIL RESPONSE FROM PLAYER
-	if (waiting) {
-		return (
-			<Backdrop open={waiting}>
-				<CircularProgress color="inherit" />
-			</Backdrop>
-		);
-	}
-
 	return (
 		// ! INVITE ALERT
 		<InviteMatchContext.Provider
-			value={{ challengeAccepted, setChallengeAccepted, setWaiting }}
+			value={{ challengeAccepted, setChallengeAccepted }}
 		>
 			<Dialog
 				open={inviteArrived}
