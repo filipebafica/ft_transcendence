@@ -53,7 +53,7 @@ function FriendsList() {
       const friendsWithStatus = friends.map((friend: any) => {
         return {
           ...friend,
-          userStatus: friend.userStatus?.status,
+          userStatus: friend.userStatus,
         }
       })
       setFriends(friendsWithStatus)
@@ -78,16 +78,17 @@ function FriendsList() {
     if (!userId) return
 
     try {
-      const isBlocked = friends.find((friend: FriendInterface) => friend.id === friendId)?.isBlocked
-      
+      const isBlocked = friends.find(
+        (friend: FriendInterface) => friend.id === friendId
+      )?.isBlocked
+
       console.log('isBlocked', isBlocked)
-      let res;
+      let res
       if (isBlocked) {
         res = await unblockFriend(userId, Number(friendId))
         console.log('Unblock friend response', res)
         showSnackbar('Friend unblocked', 'success')
-      }
-      else {
+      } else {
         res = await blockFriend(userId, Number(friendId))
         console.log('Block friend response', res)
         showSnackbar('Friend blocked', 'success')

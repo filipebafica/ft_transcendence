@@ -3,6 +3,8 @@ import { Button } from "@mui/material";
 import { getMatchResult } from "api/matchResult";
 import styles from "./style.module.css";
 
+import { friendsStatusSocket } from "socket";
+
 import GamePage from ".";
 
 interface WinnerProps {
@@ -27,9 +29,16 @@ function WinnerPage(props: WinnerProps) {
 			}
 			setWinnerResults(matchResult);
 		};
-
 		fetchWinnerResults();
-	}, [props.gameId]);
+
+		friendsStatusSocket.emit(
+			"statusRouter",
+			JSON.stringify({
+				userId: props.playerId,
+				status: "online",
+			})
+		);
+	}, [props]);
 
 	const handleGamePage = () => {
 		setReturnGamePage(true);
