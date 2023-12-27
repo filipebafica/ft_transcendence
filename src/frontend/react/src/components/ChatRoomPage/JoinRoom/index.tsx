@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 // API
 import { listAvailableRooms, joinRoom, listMyRooms } from 'api/room'
+import { searchPrivateRoom } from 'api/room'
 
 import style from './style.module.css'
 
@@ -30,6 +31,8 @@ interface Room {
 
 const JoinRoom = () => {
   const [rooms, setRooms] = useState([] as Room[])
+  const [privateRooms, setPrivateRooms] = useState([] as Room[])
+  const [privateRoomName, setPrivateRoomName] = useState('' as string)
   const [roomPasswordModal, setRoomPasswordModal] = useState<boolean>(false)
   const [password, setPassword] = useState<string>('')
   const [roomIdToJoin, setRoomIdToJoin] = useState<string>('')
@@ -56,7 +59,7 @@ const JoinRoom = () => {
       }
     }
     fetchRooms()
-  }, [])
+  }, [user?.id])
 
   const handleJoinRoom = async (roomId: string, hasPassword: boolean) => {
     if (!user?.id) return
@@ -82,9 +85,21 @@ const JoinRoom = () => {
 
       // Redirect to chat room
       navigate(`/chatRoom/chat/${roomId}`)
-    }
-    catch (error) {
+    } catch (error) {
       console.log('Error joining room:', error)
+    }
+  }
+
+  const handleSearchRoom = async () => {
+    if (!user?.id) return
+    if (roomIdToJoin === '') return
+
+    try {
+      const response = await searchPrivateRoom(privateRoomName)
+      console.log('Private room:', response)
+      setPrivateRooms(response.data)
+    } catch (error) {
+      console.error('Error searching private room:', error)
     }
   }
 
@@ -123,20 +138,51 @@ const JoinRoom = () => {
 
   return (
     <div className={style.container}>
-      <h2>Available Rooms to Join:</h2>
-      {rooms.length === 0 && <i>No rooms available to join.</i>}
-      {rooms.map((room: any) => (
-        <>
-          <div className={style.roomBox}>
-            <Typography variant="body1">{room.name}</Typography>
-            <Button variant="outlined" onClick={() => handleJoinRoom(room.id, room.hasPassword)}>
-              <span> Join Room </span>
-              {room.hasPassword && <FaLock />}
-            </Button>
-          </div>
-          <Divider flexItem />
-        </>
-      ))}
+      <div className={style.publicRooms}>
+        <h2>Public Rooms to Join:</h2>
+        {rooms.length === 0 && <i>No rooms available to join.</i>}
+        {rooms.map((room: any) => (
+          <>
+            <div className={style.roomBox}>
+              <Typography variant="body1">{room.name}</Typography>
+              <Button variant="outlined" onClick={() => handleJoinRoom(room.id, room.hasPassword)}>
+                <span> Join Room </span>
+                {room.hasPassword && <FaLock />}
+              </Button>
+            </div>
+            <Divider flexItem />
+          </>
+        ))}
+      </div>
+
+      <Divider orientation="vertical" flexItem />
+
+      <div className={style.privateRooms}>
+        <h2>Private Rooms:</h2>
+        <TextField
+          label="Room Name"
+          variant="outlined"
+          size="small"
+          className={style.searchRoomInput}
+          onChange={(e) => setPrivateRoomName(e.target.value)}
+        />
+        <Button variant="outlined" onClick={() => handleSearchRoom()}>
+          Search
+        </Button>
+        {privateRooms.length === 0 && <i>Search for a private room to join.</i>}
+        {privateRooms.map((room: any) => (
+          <>
+            <div className={style.roomBox}>
+              <Typography variant="body1">{room.name}</Typography>
+              <Button variant="outlined" onClick={() => handleJoinRoom(room.id, room.hasPassword)}>
+                <span> Join Room </span>
+                {room.hasPassword && <FaLock />}
+              </Button>
+            </div>
+            <Divider flexItem />
+          </>
+        ))}
+      </div>
 
       {
         <Dialog
