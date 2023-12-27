@@ -48,21 +48,29 @@ function WinnerPage(props: WinnerProps) {
 		return <GamePage />;
 	}
 
-	let result: string;
+	let result = "";
 	if (winnerResults.result === "draw") {
 		result = "Empate!";
-	} else if (Number(props.playerId) === winnerResults.winnerId) {
-		result = "You won! Congratulations!";
-	} else {
-		result = "You lose! :(";
+	} else if (winnerResults.result === "normal") {
+		if (Number(props.playerId) === winnerResults.winnerId) {
+			result = "You won! Congratulations!";
+		} else {
+			result = "You lose! :(";
+		}
 	}
 
 	return (
 		<div className={styles.winner}>
 			<div className={styles.result}>{result}</div>
-			<Button variant="outlined" size="large" onClick={handleGamePage}>
-				New Game
-			</Button>
+			{result !== "" && (
+				<Button
+					variant="outlined"
+					size="large"
+					onClick={handleGamePage}
+				>
+					New Game
+				</Button>
+			)}
 		</div>
 	);
 }
