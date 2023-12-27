@@ -146,7 +146,6 @@ function FriendsList() {
           }
           return friend
         })
-        console.log('New friends', newFriends)
         return newFriends
       })
     })

@@ -48,7 +48,6 @@ const ChatRoomPage = () => {
 
       try {
         const response = await listMyRooms(user?.id)
-        console.log('Rooms:', response.data)
         rooms = response.data
         setMyRooms(rooms)
       } catch (error) {

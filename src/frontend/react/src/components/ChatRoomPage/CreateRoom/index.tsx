@@ -60,7 +60,6 @@ const CreateRoom = () => {
         isOwner: true,
         isAdmin: true,
       })
-      console.log('Joined room:', joinRes)
 
       // Reload rooms
       await reloadRooms()

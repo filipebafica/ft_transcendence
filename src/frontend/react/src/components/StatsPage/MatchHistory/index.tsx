@@ -23,7 +23,6 @@ const MatchHistory = (props: MatchHistoryProps) => {
   const { rows, columns, onPageChange, numPages, currentPage } = props
 
   const handlePageChange = (event: any, page: number) => {
-    console.log('page changed', page)
     onPageChange(page)
   }
 

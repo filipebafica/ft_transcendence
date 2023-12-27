@@ -21,14 +21,14 @@ import { Badge } from '@mui/material'
 import { friendsStatusSocket } from 'socket'
 
 const Header = () => {
-  const { user, signOut, fakeSignIn } = useContext(AuthContext)
+  const { user, signOut } = useContext(AuthContext)
   const { messagesData } = useContext(DirectChatContext)
   const { messagesData: messagesDataRoom } = useContext(RoomChatContext)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const navigate = useNavigate()
 
-  // Todo
-  const [id, setId] = useState(user?.id.toString() || '1')
+  // For dev purposes
+  // const [id, setId] = useState(user?.id.toString() || '1')
 
   const handleSignIn = async () => {
     try {
@@ -44,21 +44,22 @@ const Header = () => {
     }
   }
 
-  const handleFakeSignIn = async () => {
-    try {
-      const res = await fakeSignIn(id)
-      console.log('Test', res)
-      friendsStatusSocket.emit(
-        'statusRouter',
-        JSON.stringify({
-          userId: id,
-          status: 'online',
-        }),
-      )
-    } catch (err) {
-      console.log(err)
-    }
-  }
+  // For dev Purposes
+  // const handleFakeSignIn = async () => {
+  //   try {
+  //     const res = await fakeSignIn(id)
+  //     console.log('Test', res)
+  //     friendsStatusSocket.emit(
+  //       'statusRouter',
+  //       JSON.stringify({
+  //         userId: id,
+  //         status: 'online',
+  //       }),
+  //     )
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -80,10 +81,12 @@ const Header = () => {
   }
 
   const handleClickSignOut = () => {
+    if (!user) return
+
     friendsStatusSocket.emit(
       'statusRouter',
       JSON.stringify({
-        userId: id,
+        userId: user?.id,
         status: 'offline',
       }),
     )
@@ -104,16 +107,32 @@ const Header = () => {
 
   return (
     <header className={styles.header}>
-      <div className={styles.logo} onClick={() => navigate('/')}>
+      <div className={styles.logo} onClick={() => {
+          navigate('/')
+
+          if (user) {
+            friendsStatusSocket.emit(
+              'statusRouter',
+              JSON.stringify({
+                userId: user?.id,
+                status: 'online',
+              }),
+            )
+          }
+        }}>
         <img src={logo} alt="Logo" />
       </div>
 
       {user && (
         <div className={styles.loggedOutNavigation}>
-          <input value={id} onChange={(e) => setId(e.target.value)} style={{ width: '30px' }} />
+
+          { // For Dev Purposes
+          /* <input value={id} onChange={(e) => setId(e.target.value)} style={{ width: '30px' }} />
           <Button variant="outlined" onClick={() => handleFakeSignIn()}>
             Fake Log In
-          </Button>
+          </Button> */
+          }
+
           <Button
             variant="contained"
             onClick={() => {

@@ -41,7 +41,6 @@ const VsGameConfig = (props: GameConfigProps) => {
 					newGameState.player2Score
 				) !== 3
 			) {
-				console.log("gameState", newGameState);
 				navigate("/home");
 			}
 		});
