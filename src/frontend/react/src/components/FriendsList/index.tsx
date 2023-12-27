@@ -150,6 +150,10 @@ function FriendsList() {
         return newFriends
       })
     })
+
+    return () => {
+      friendsStatusSocket.off(`${userId}-friend-status-change`)
+    }
   }, [userId])
 
   return (
