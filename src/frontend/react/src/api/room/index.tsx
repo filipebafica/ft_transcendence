@@ -110,3 +110,12 @@ export const unMuteMember = async (unmuterUserId: number, unmutedUserId: number,
   })
   return response.data
 }
+
+export const changePassword = async (requesterId: number, roomId: string, newPassword: string) => {
+  const response = await axiosInstance.put(`/room/password/change`, {
+    requesterId,
+    roomId,
+    newPassword
+  })
+  return response.data
+}

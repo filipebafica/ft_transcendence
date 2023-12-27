@@ -67,3 +67,15 @@
 .usersSection > div {
 	margin-bottom: 15px;
 }
+
+.updatePasswordSection {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	margin-left: 30px;
+}
+
+.updatePasswordSection button {
+	margin-top: 15px;
+	width: 225px;
+}
