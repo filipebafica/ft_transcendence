@@ -25,7 +25,7 @@ export class CreateStatusService {
             this.logger.log(JSON.stringify({"Service has finished": "status has been created"}));
         } catch (error) {
             this.logger.error(JSON.stringify({"Service has faield": error.message}))
-            throw error;
+            // throw error;
         }
     }
 }
