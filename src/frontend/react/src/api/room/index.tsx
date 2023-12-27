@@ -119,3 +119,8 @@ export const changePassword = async (requesterId: number, roomId: string, newPas
   })
   return response.data
 }
+
+export const searchPrivateRoom = async (roomName: string) => {
+  const response = await axiosInstance.get(`/room/search/${roomName}`)
+  return response.data
+}

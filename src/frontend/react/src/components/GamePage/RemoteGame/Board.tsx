@@ -61,6 +61,7 @@ function Board(props: BoardProps) {
 	// Key Handles
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			event.preventDefault();
 			if (event.key === "ArrowUp" || event.key === "ArrowDown") {
 				gameSocket.emit("playerAction", {
 					gameId: gameId,
@@ -71,6 +72,7 @@ function Board(props: BoardProps) {
 		};
 
 		const handleKeyUp = (event: KeyboardEvent) => {
+			event.preventDefault();
 			if (event.key === "ArrowUp" || event.key === "ArrowDown") {
 				gameSocket.emit("playerAction", {
 					gameId: gameId,
