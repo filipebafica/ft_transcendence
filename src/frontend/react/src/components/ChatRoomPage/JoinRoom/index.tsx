@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 
 // API
 import { listAvailableRooms, joinRoom, listMyRooms } from 'api/room'
-import { searchPrivateRoom } from 'api/room'
 
 import style from './style.module.css'
 
@@ -22,6 +21,10 @@ import { Dialog, TextField } from '@mui/material'
 // Icons
 import { FaLock } from 'react-icons/fa'
 
+// Hooks
+import { useSnackbar } from 'providers'
+
+
 interface Room {
   id: number
   hasPassword: boolean
@@ -32,6 +35,7 @@ interface Room {
 const JoinRoom = () => {
   const [rooms, setRooms] = useState([] as Room[])
   const [privateRooms, setPrivateRooms] = useState([] as Room[])
+  const [searchedPrivateRooms, setSearchedPrivateRooms] = useState([] as Room[])
   const [privateRoomName, setPrivateRoomName] = useState('' as string)
   const [roomPasswordModal, setRoomPasswordModal] = useState<boolean>(false)
   const [password, setPassword] = useState<string>('')
@@ -39,6 +43,7 @@ const JoinRoom = () => {
 
   const { user } = useContext(AuthContext)
   const { reloadRooms } = useContext(RoomChatContext)
+  const { showSnackbar } = useSnackbar()
 
   const navigate = useNavigate()
 
@@ -52,8 +57,15 @@ const JoinRoom = () => {
         const filteredRooms = response.data.filter((room: any) => {
           return !myRooms.data.some((myRoom: any) => myRoom.id === room.id)
         })
-        console.log('Rooms:', filteredRooms)
-        setRooms(filteredRooms)
+
+        // Filter rooms that are public
+        const filteredPublicRooms = filteredRooms.filter((room: any) => room.isPublic === true)
+
+        // Filter rooms that are private
+        const filteredPrivateRooms = filteredRooms.filter((room: any) => room.isPublic === false)
+
+        setRooms(filteredPublicRooms)
+        setPrivateRooms(filteredPrivateRooms)
       } catch (error) {
         console.error('Error fetching rooms:', error)
       }
@@ -91,15 +103,26 @@ const JoinRoom = () => {
   }
 
   const handleSearchRoom = async () => {
+    console.log('test')
     if (!user?.id) return
-    if (roomIdToJoin === '') return
 
     try {
-      const response = await searchPrivateRoom(privateRoomName)
-      console.log('Private room:', response)
-      setPrivateRooms(response.data)
+      if (privateRoomName === '') {
+        setSearchedPrivateRooms([])
+        return
+      }
+      else {
+        const searchedRooms = privateRooms.filter((room: any) => room.name === privateRoomName)
+
+        if (searchedRooms.length === 0) {
+          showSnackbar('No rooms found.', 'error')
+        }
+        else {
+          setSearchedPrivateRooms(searchedRooms)
+        }
+      }
     } catch (error) {
-      console.error('Error searching private room:', error)
+      console.error('Error searching room:', error)
     }
   }
 
@@ -170,7 +193,7 @@ const JoinRoom = () => {
           Search
         </Button>
         {privateRooms.length === 0 && <i>Search for a private room to join.</i>}
-        {privateRooms.map((room: any) => (
+        {searchedPrivateRooms.map((room: any) => (
           <>
             <div className={style.roomBox}>
               <Typography variant="body1">{room.name}</Typography>
