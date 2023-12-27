@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import Ball from 'src/core/projects/game/shared/entities/ball';
 import Canvas from 'src/core/projects/game/shared/entities/canvas';
 import GameState from 'src/core/projects/game/shared/entities/game.state';
@@ -22,8 +23,11 @@ export default class GameStateAdapter implements GameStateInterface {
   private ballWidth: number = 10;
   private ballHeight: number = 10;
   private initialPlayerSpeed: number = 0;
+  private logger: Logger;
 
-  constructor(private gameHistoryRepository: GameHistoryRepository) {}
+  constructor(private gameHistoryRepository: GameHistoryRepository) {
+    this.logger = new Logger(GameStateAdapter.name);
+  }
 
   public async createGame(
     playerId: number,
@@ -194,6 +198,14 @@ export default class GameStateAdapter implements GameStateInterface {
         ball.vX *= -1.1;
         ball.vY *= 1.1;
       }
+      let signVX: number = ball.vX < 0 ? -1 : 1;
+      let signVY: number = ball.vY < 0 ? -1 : 1;
+
+      ball.vX = Math.min(Math.abs(ball.vX), 20) * signVX;
+      ball.vY = Math.min(Math.abs(ball.vY), 20) * signVY;
+
+      this.logger.log(`ball.vX: ${ball.vX}`);
+      this.logger.log(`ball.vY: ${ball.vY}`);
 
       return ball;
     };
@@ -293,6 +305,7 @@ export default class GameStateAdapter implements GameStateInterface {
     const positive: number = Math.floor(Math.random() * 2);
     const angle: number = (Math.floor(Math.random() * 4) + 1) * 15;
     const direction: number = positive === 0 ? -angle : angle;
+    // const direction: number = 0;
     return (direction * Math.PI) / 180;
   };
 
