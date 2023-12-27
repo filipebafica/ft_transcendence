@@ -38,7 +38,6 @@ function Profile() {
 	}
 
 	const handleUpdate = () => {
-		console.log('Handle Nickname', user, nickName)
 		if (!user?.id) return
 		if (nickName === user?.nick_name) return
 		if (nickName === '') return
@@ -49,14 +48,12 @@ function Profile() {
 				refreshUser()
 			})
 			.catch((err) => {
-				console.log(err)
 				setNickname(user?.nick_name || '')
 			})
 	}
 
 	const handleFileChange = async (event: any) => {
 		const file = event.target.files[0]
-		console.log('handleFileChange', file)
 		if (!file) return
 		if (!user?.id) return
 

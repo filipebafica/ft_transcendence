@@ -15,7 +15,6 @@ const TwoFactorAuthPage = () => {
   const location = useLocation();
 
   const handleSubmit = async () => {
-    console.log('Validating 2FA code:', code);
     const res = await authenticate2FA(code.toString());
 
     const token = res.access_token

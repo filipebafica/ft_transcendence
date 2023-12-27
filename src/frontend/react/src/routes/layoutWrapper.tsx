@@ -9,7 +9,6 @@ import { AuthContext } from 'auth'
 const LayoutWrapper = ({ Component, disableFooter = false, isPublic = false, ...props }: any) => {
   const { user, setToken } = useContext(AuthContext);
   const isAuth = user?.token != null;
-  console.log('isAuth', isAuth)
   
   const location = useLocation();
 

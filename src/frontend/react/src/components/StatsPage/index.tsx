@@ -160,8 +160,6 @@ function StatsPage() {
 		}
 		const fetchStats = async () => {
 			const data = await getStats(userId)
-			console.log('data from getStats', data)
-
 			const stats = data.stats
 			const { wins, loses, winRate } = stats
 
