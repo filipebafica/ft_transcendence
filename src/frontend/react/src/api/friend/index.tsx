@@ -24,3 +24,8 @@ export const unblockFriend = async (userId: number, friendId: number) => {
   })
   return response.data
 }
+
+export const checkChatAuthorization = async (senderId: number, receiverId: number) => {
+  const response = await axiosInstance.get(`/chat/authorization?senderId=${senderId}&receiverId=${receiverId}`)
+  return response.data.message as boolean
+}
