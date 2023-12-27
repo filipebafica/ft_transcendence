@@ -13,7 +13,6 @@ import { AuthContext } from "auth";
 import { gameSocket } from "socket";
 
 import styles from "./style.module.css";
-import { InviteMatchContext } from "providers/inviteMatch";
 
 interface Friend {
 	id: string | undefined;
@@ -24,7 +23,6 @@ interface Friend {
 
 const FriendCard = ({ friend }: { friend: Friend }) => {
 	const { user } = useContext(AuthContext);
-	const { setWaiting } = useContext(InviteMatchContext);
 	const navigate = useNavigate();
 
 	const handleInvite = () => {
@@ -40,7 +38,6 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 				},
 			})
 		);
-		setWaiting(true);
 	};
 
 	// ! FRIEND CARD
