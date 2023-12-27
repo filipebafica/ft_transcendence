@@ -3,6 +3,8 @@ import { Button } from "@mui/material";
 import { getMatchResult } from "api/matchResult";
 import styles from "./style.module.css";
 
+import { friendsStatusSocket } from "socket";
+
 import GamePage from ".";
 
 interface WinnerProps {
@@ -27,9 +29,16 @@ function WinnerPage(props: WinnerProps) {
 			}
 			setWinnerResults(matchResult);
 		};
-
 		fetchWinnerResults();
-	}, [props.gameId]);
+
+		friendsStatusSocket.emit(
+			"statusRouter",
+			JSON.stringify({
+				userId: props.playerId,
+				status: "online",
+			})
+		);
+	}, [props]);
 
 	const handleGamePage = () => {
 		setReturnGamePage(true);
@@ -39,21 +48,29 @@ function WinnerPage(props: WinnerProps) {
 		return <GamePage />;
 	}
 
-	let result: string;
+	let result = "";
 	if (winnerResults.result === "draw") {
 		result = "Empate!";
-	} else if (Number(props.playerId) === winnerResults.winnerId) {
-		result = "You won! Congratulations!";
-	} else {
-		result = "You lose! :(";
+	} else if (winnerResults.result === "normal") {
+		if (Number(props.playerId) === winnerResults.winnerId) {
+			result = "You won! Congratulations!";
+		} else {
+			result = "You lose! :(";
+		}
 	}
 
 	return (
 		<div className={styles.winner}>
 			<div className={styles.result}>{result}</div>
-			<Button variant="outlined" size="large" onClick={handleGamePage}>
-				New Game
-			</Button>
+			{result !== "" && (
+				<Button
+					variant="outlined"
+					size="large"
+					onClick={handleGamePage}
+				>
+					New Game
+				</Button>
+			)}
 		</div>
 	);
 }

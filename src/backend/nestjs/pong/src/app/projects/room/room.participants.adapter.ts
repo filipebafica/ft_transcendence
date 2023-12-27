@@ -48,8 +48,7 @@ export default class RoomParticipantsAdapter implements RoomParticipantsGateway 
         await this.roomParticipantsRepository
         .createQueryBuilder()
         .delete()
-        .where('room_id = :roomId', { roomId: roomId })
-        .where('user_id = :userId', { userId: userId })
+        .where('room_id = :roomId AND user_id = :userId', { roomId: roomId, userId: userId })
         .execute();
     }
 
