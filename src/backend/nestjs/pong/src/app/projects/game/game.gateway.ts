@@ -61,6 +61,7 @@ export class GameGateway
 
 	constructor(private readonly entityManager: EntityManager) {
 		this.gameHistoryAdapter = new GameHistoryAdapter(entityManager);
+		this.userAdapter = new UserAdapter(entityManager);
 
 		this.clientManagerAdapter = new ClientManagerAdapter(entityManager);
 		this.waitingQueue = new WaitingQueueAdapter(entityManager);
