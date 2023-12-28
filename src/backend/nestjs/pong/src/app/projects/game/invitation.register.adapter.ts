@@ -67,6 +67,7 @@ export class InvitationRegisterAdapter implements InvitationRepository {
         where: {
           sender_id: senderId,
           receiver_id: receiverId,
+          status: InviteStatus.Opened,
         },
       });
 
@@ -109,16 +110,16 @@ export class InvitationRegisterAdapter implements InvitationRepository {
     }
   }
 
-  public async removeOpenedInviteById(
-    playerId: number,
-  ): Promise<void> {
+  public async removeOpenedInviteById(playerId: number): Promise<void> {
     try {
       await this.invitationRepository
-      .createQueryBuilder()
-      .delete()
-      .where("(sender_id = :playerId OR receiver_id = :playerId) AND status = :status", { playerId, status: "opened" })
-      .execute();
-
+        .createQueryBuilder()
+        .delete()
+        .where(
+          '(sender_id = :playerId OR receiver_id = :playerId) AND status = :status',
+          { playerId, status: 'opened' },
+        )
+        .execute();
     } catch (error) {
       throw error;
     }
