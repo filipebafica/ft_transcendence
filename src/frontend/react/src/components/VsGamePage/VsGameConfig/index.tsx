@@ -11,7 +11,7 @@ import { friendsStatusSocket } from "../../../socket/index";
 import { paddleColors, fieldColors } from "constants/colors";
 
 // Components
-import VsLoadingPage from "./VsLoading";
+import VsLoadingPage from "../VsLoadingPage";
 import ColorPicker from "./ColorPicker";
 import FanPicker from "./FanPicker";
 import Button from "@mui/material/Button";
@@ -74,6 +74,7 @@ const VsGameConfig = (props: GameConfigProps) => {
 		});
 		return () => {
 			console.log("disconnecting from socket game", `${gameId}`);
+			gameSocket.off(`${gameId}`);
 			gameSocket.disconnect();
 		};
 	}, [playerId, gameId, navigate]);
@@ -82,7 +83,6 @@ const VsGameConfig = (props: GameConfigProps) => {
 		return (
 			<VsLoadingPage
 				playerId={user.id.toString()}
-				// gameId={gameId}
 				loadingDone={loadingDone}
 				gameState={gameState}
 			/>

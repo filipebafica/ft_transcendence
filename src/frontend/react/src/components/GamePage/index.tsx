@@ -35,6 +35,7 @@ function GamePage(props: GamePageProps) {
 					status: "in-game",
 				})
 			);
+			gameSocket.connect();
 			gameSocket.emit(
 				"joinGame",
 				JSON.stringify({

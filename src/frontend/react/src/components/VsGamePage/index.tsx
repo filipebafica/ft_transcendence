@@ -35,6 +35,7 @@ function VsGamePage(props: GamePageProps) {
 					status: "in-game",
 				})
 			);
+			gameSocket.connect();
 			gameSocket.emit(
 				"inviteRouter",
 				JSON.stringify({

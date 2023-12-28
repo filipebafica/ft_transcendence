@@ -6,7 +6,6 @@ import RemoteGame from "../../GamePage/RemoteGame";
 
 interface LoadingProps {
 	playerId: string;
-	// gameId: string; -> no need?
 	loadingDone: boolean;
 	gameState: any;
 }
