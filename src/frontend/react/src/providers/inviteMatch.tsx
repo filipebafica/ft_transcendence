@@ -80,6 +80,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		gameSocket.connect();
 		// ! RECEIVE INVITE FOR GAME
 		gameSocket.on(`${user.id}-invite`, (msg: any) => {
+			console.log("HERE");
 			if (msg.meta === "invite" && msg.data.content === "opened") {
 				setInviteArrived(true);
 				setMessage(msg);

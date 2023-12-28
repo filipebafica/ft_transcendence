@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, CircularProgress } from "@mui/material";
 import styles from "./style.module.css";
 
 import { gameSocket } from "socket";
+import { friendsStatusSocket } from "socket";
 
-import WinnerPage from "./WinnerPage";
 import RemoteGame from "./RemoteGame";
 
 interface LoadingProps {
@@ -14,28 +15,36 @@ interface LoadingProps {
 }
 
 function LoadingPage(props: LoadingProps) {
-	const [finishedDone, setFinishedDone] = useState(false);
 	const [loadingDone, setLoadingDone] = useState(false);
 	const [gameState, setGameState] = useState({} as any);
+	const navigate = useNavigate();
 
 	const gameId = props.gameId;
 	const playerId = props.playerId;
 
 	useEffect(() => {
+		gameSocket.connect();
 		gameSocket.on(gameId, (newGameState) => {
 			if (newGameState.status === 2) {
-				setFinishedDone(true);
+				friendsStatusSocket.emit(
+					"statusRouter",
+					JSON.stringify({
+						userId: playerId,
+						status: "online",
+					})
+				);
+				navigate(`/game/winner/${gameId}/${playerId}`);
 			}
 			if (newGameState.status === 1) {
 				setLoadingDone(true);
 				setGameState(newGameState);
 			}
 		});
-	}, [gameId]);
-
-	if (finishedDone) {
-		return <WinnerPage gameId={gameId} playerId={playerId} />;
-	}
+		return () => {
+			console.log("disconnecting from socket game", `${gameId}`);
+			gameSocket.disconnect();
+		};
+	}, [gameId, playerId, navigate]);
 
 	if (loadingDone) {
 		return <RemoteGame gameState={gameState} playerId={playerId} />;

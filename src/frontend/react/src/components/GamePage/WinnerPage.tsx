@@ -1,58 +1,36 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { getMatchResult } from "api/matchResult";
 import styles from "./style.module.css";
 
-import { friendsStatusSocket } from "socket";
-
-import GamePage from ".";
-
-interface WinnerProps {
-	gameId: string;
-	playerId: string;
-}
-
-function WinnerPage(props: WinnerProps) {
+function WinnerPage() {
 	const [winnerResults, setWinnerResults] = useState({
 		result: "",
 		winnerId: 0,
 	});
-	const [returnGamePage, setReturnGamePage] = useState(false);
+	const navigate = useNavigate();
+	const { gameId, playerId } = useParams();
 
 	useEffect(() => {
+		if (!gameId) return;
 		const fetchWinnerResults = async () => {
 			let matchResult;
 			try {
-				matchResult = await getMatchResult(props.gameId);
+				matchResult = await getMatchResult(gameId);
 			} catch (err) {
 				console.log(err);
 			}
 			setWinnerResults(matchResult);
 		};
 		fetchWinnerResults();
-
-		friendsStatusSocket.emit(
-			"statusRouter",
-			JSON.stringify({
-				userId: props.playerId,
-				status: "online",
-			})
-		);
-	}, [props]);
-
-	const handleGamePage = () => {
-		setReturnGamePage(true);
-	};
-
-	if (returnGamePage) {
-		return <GamePage />;
-	}
+	}, [gameId]);
 
 	let result = "";
 	if (winnerResults.result === "draw") {
 		result = "Empate!";
 	} else if (winnerResults.result === "normal") {
-		if (Number(props.playerId) === winnerResults.winnerId) {
+		if (Number(playerId) === winnerResults.winnerId) {
 			result = "You won! Congratulations!";
 		} else {
 			result = "You lose! :(";
@@ -66,7 +44,7 @@ function WinnerPage(props: WinnerProps) {
 				<Button
 					variant="outlined"
 					size="large"
-					onClick={handleGamePage}
+					onClick={() => navigate("/game")}
 				>
 					New Game
 				</Button>

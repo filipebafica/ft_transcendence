@@ -10,7 +10,6 @@ import { friendsStatusSocket } from "socket";
 import { AuthContext } from "../../auth";
 
 // Components
-import LoadingPage from "../GamePage/LoadingPage";
 import VsGameConfig from "./VsGameConfig";
 
 interface GamePageProps {
@@ -53,20 +52,21 @@ function VsGamePage(props: GamePageProps) {
 		}
 	};
 
-	if (isConfigComplete && gameId && user) {
-		return (
-			<LoadingPage
-				userName={user.nick_name}
-				playerId={user.id.toString()}
-				gameId={gameId}
-			/>
-		);
-	}
+	// if (isConfigComplete && gameId && user) {
+	// 	return (
+	// 		<LoadingPage
+	// 			userName={user.nick_name}
+	// 			playerId={user.id.toString()}
+	// 			gameId={gameId}
+	// 		/>
+	// 	);
+	// }
 
 	return (
 		<div className={styles.container}>
 			<VsGameConfig
 				playerId={user?.id.toString()}
+				user={user}
 				gameId={gameId}
 				onJoinGame={(paddle, fan, field) =>
 					handleMatching({
@@ -75,6 +75,7 @@ function VsGamePage(props: GamePageProps) {
 						fieldColor: field,
 					})
 				}
+				isConfigComplete={isConfigComplete}
 			/>
 		</div>
 	);
