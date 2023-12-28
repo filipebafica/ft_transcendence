@@ -37,6 +37,7 @@ import { JoinMessageDTO } from './join.message.dto';
 import { CustomizeGameService } from 'src/core/projects/game/inviteRouter/customize/customize.game.service';
 import { CustomizeMessageDTO } from './customize.message.dto';
 import { Request as CustomizeGameServiceRequest } from 'src/core/projects/game/inviteRouter/customize/dtos/request.dto';
+import { UserAdapter } from '../authentication/login/user.adapter';
 
 @WebSocketGateway({
 	path: '/websocket/game',
@@ -53,6 +54,7 @@ export class GameGateway
 	private clientManagerAdapter: ClientManagerAdapter;
 	private messageEmitterAdapter: MessageEmitterAdapter;
 	private invitationRegisterAdapter: InvitationRegisterAdapter;
+	private userAdapter: UserAdapter;
 
 	@WebSocketServer()
 	server: Server;
@@ -87,6 +89,7 @@ export class GameGateway
 				this.clientManagerAdapter,
 				this.waitingQueue,
 				this.gameStateManager,
+				this.userAdapter,
 			);
 
 			const joinMessageDTO: JoinMessageDTO = JSON.parse(message);

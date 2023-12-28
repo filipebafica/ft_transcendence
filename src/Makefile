@@ -3,9 +3,10 @@ include .env
 all: setup up
 
 setup:
-	mkdir -p ${SHARED_VOLUME_DEVICE}
+	sudo mkdir -p ${SHARED_VOLUME_DEVICE}
 	docker-compose build
 	npm --prefix backend/nestjs/pong install
+	npm --prefix frontend/react install
 
 up:
 	docker-compose up -d

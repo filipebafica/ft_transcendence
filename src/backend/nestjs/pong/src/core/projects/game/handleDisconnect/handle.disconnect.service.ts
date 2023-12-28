@@ -44,7 +44,7 @@ export class HandleDisconnectService {
 			if (gameState == undefined) {
 				throw new UnavailableGameIdException({ key: "gameId", value: gameId.toString() });
 			}
-			this.clientManager.removeClientGameMask(gameState.id);
+			await this.clientManager.removeClientGameMask(gameState.id);
 
 			if (await this.waitingQueue.isOnQueue(disconnectedId) == true) {
 				await this.waitingQueue.removeByGameId(gameState.id);
