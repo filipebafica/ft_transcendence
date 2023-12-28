@@ -61,25 +61,19 @@ export const InviteMatchProvider = (props: { children: any }) => {
 	const { showSnackbar } = useSnackbar();
 
 	// ! ACCEPT GAME
-	const debouncedHandleAccept = useCallback(() => {
-		const debouncedFunction = debounce(() => {
-			setInviteArrived(false);
-			gameSocket.connect();
-			gameSocket.emit(
-				"inviteRouter",
-				JSON.stringify({
-					meta: "invite",
-					data: {
-						to: message.data.from,
-						from: message.data.to,
-						content: "accepted",
-					},
-				})
-			);
-		}, 2000);
-
-		return debouncedFunction();
-	}, [message.data.from, message.data.to, setInviteArrived]);
+	const debouncedAccept = debounce(() => {
+		console.log("accepting game");
+		setInviteArrived(false);
+		gameSocket.connect();
+		gameSocket.emit("inviteRouter", JSON.stringify({
+		  meta: "invite",
+		  data: {
+			to: message.data.from,
+			from: message.data.to,
+			content: "accepted",
+		  },
+		}));
+	  }, 300);
 
 	// ! REJECT GAME
 	const handleRefuse = () => {
@@ -150,7 +144,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={debouncedHandleAccept} autoFocus>
+					<Button onClick={debouncedAccept} autoFocus>
 						Yes
 					</Button>
 					<Button onClick={handleRefuse}>No</Button>
