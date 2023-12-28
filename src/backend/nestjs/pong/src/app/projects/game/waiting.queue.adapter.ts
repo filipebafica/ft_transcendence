@@ -139,4 +139,19 @@ export class WaitingQueueAdapter implements QueueInterface {
 			throw error;
 		}
 	}
+
+	public async removeByGameId(
+		gameId: number,
+	): Promise<void> {
+		try {
+			await this.waitingQueueRepository
+			.createQueryBuilder()
+			.delete()
+			.where("game_id = :gameId", { gameId })
+			.execute();
+
+		} catch (error) {
+			throw error;
+		}
+	}
 }

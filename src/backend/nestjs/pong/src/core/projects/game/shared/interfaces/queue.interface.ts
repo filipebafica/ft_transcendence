@@ -27,4 +27,8 @@ export interface QueueInterface {
 		gameId: number,
 		playerId: number,
 	): Promise<string>
+
+	removeByGameId(
+		gameId: number,
+	): Promise<void>
 }
