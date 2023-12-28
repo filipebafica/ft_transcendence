@@ -1,4 +1,10 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
+import React, {
+	createContext,
+	useEffect,
+	useState,
+	useContext,
+	useCallback,
+} from "react";
 // import { useNavigate } from "react-router-dom";
 
 import Dialog from "@mui/material/Dialog";
@@ -29,6 +35,20 @@ export const InviteMatchContext = createContext({
 	setChallengeAccepted: (challengeAccepted: string) => {},
 });
 
+const debounce = (func: any, wait: any) => {
+	let timeout: NodeJS.Timeout;
+
+	return function executedFunction(...args: any) {
+		const later = () => {
+			clearTimeout(timeout);
+			func(...args);
+		};
+
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+	};
+};
+
 export const InviteMatchProvider = (props: { children: any }) => {
 	const { children } = props;
 	const { user } = useContext(AuthContext);
@@ -41,22 +61,25 @@ export const InviteMatchProvider = (props: { children: any }) => {
 	const { showSnackbar } = useSnackbar();
 
 	// ! ACCEPT GAME
-	const handleAccept = () => {
-		setInviteArrived(false);
-		// ! SEND ACCEPT TO BACKEND
-		gameSocket.connect();
-		gameSocket.emit(
-			"inviteRouter",
-			JSON.stringify({
-				meta: "invite",
-				data: {
-					to: message.data.from,
-					from: message.data.to,
-					content: "accepted",
-				},
-			})
-		);
-	};
+	const debouncedHandleAccept = useCallback(() => {
+		const debouncedFunction = debounce(() => {
+			setInviteArrived(false);
+			gameSocket.connect();
+			gameSocket.emit(
+				"inviteRouter",
+				JSON.stringify({
+					meta: "invite",
+					data: {
+						to: message.data.from,
+						from: message.data.to,
+						content: "accepted",
+					},
+				})
+			);
+		}, 2000);
+
+		return debouncedFunction();
+	}, [message.data.from, message.data.to, setInviteArrived]);
 
 	// ! REJECT GAME
 	const handleRefuse = () => {
@@ -127,7 +150,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleAccept} autoFocus>
+					<Button onClick={debouncedHandleAccept} autoFocus>
 						Yes
 					</Button>
 					<Button onClick={handleRefuse}>No</Button>
