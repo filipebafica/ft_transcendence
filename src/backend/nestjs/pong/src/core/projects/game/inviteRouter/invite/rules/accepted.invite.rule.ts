@@ -18,16 +18,6 @@ export class AcceptedInviteRule {
     private waitingQueue: QueueInterface,
   ) {}
 
-  /**
-   * @brief This rule is responsible for:
-   * Create a private game, add it to opened game map (the game starts running), add it to game history table
-   * Send the GameId for the players trough socket
-   * Add the socketid of both players on the table to controll join games
-   * Add them to the waiting queue, because it has to send  the customization yet
-   * customization service should be called on the flow. They will be removed from
-   * the waiting queue on the customization service.
-   * Update the invitation
-   */
   public async apply(request: Request, inviteStatus: InviteStatus) {
     const mockePlayerOneName: string = 'PlayerOne';
     const mockedPlayerTwoName: string = 'PlayerTwo';
@@ -86,6 +76,10 @@ export class AcceptedInviteRule {
       request.socketId,
       inviteStatus,
       gameState.id,
+    );
+
+    await this.invitationRegister.rejectOpenedInvites(
+      request.message.data.from,
     );
   }
 }

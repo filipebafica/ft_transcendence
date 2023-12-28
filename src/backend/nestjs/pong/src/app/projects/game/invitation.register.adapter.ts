@@ -124,4 +124,20 @@ export class InvitationRegisterAdapter implements InvitationRepository {
       throw error;
     }
   }
+
+  public async rejectOpenedInvites(playerId: number): Promise<void> {
+    try {
+      await this.invitationRepository
+        .createQueryBuilder()
+        .update()
+        .set({ status: 'rejected' })
+        .where(
+          '(sender_id = :playerId OR receiver_id = :playerId) AND status = :currentStatus',
+          { playerId, currentStatus: 'opened' },
+        )
+        .execute();
+    } catch (error) {
+      throw error;
+    }
+  }
 }
