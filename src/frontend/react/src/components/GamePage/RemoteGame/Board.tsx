@@ -100,48 +100,56 @@ function Board(props: BoardProps) {
 		if (!context) return;
 
 		const renderGameState = (gameState: GameState) => {
+			const scaleX = canvas!.width / boardWidth;
+    		const scaleY = canvas!.height / boardHeight;
+			
 			context.fillStyle =
 				fieldColors[gameState.player1.customization.fieldColor];
-			context.fillRect(0, 0, boardWidth / 2 + 1, boardHeight);
+			context.fillRect(0, 0, (boardWidth / 2 + 1) * scaleX, boardHeight * scaleY);
 
 			context.fillStyle =
 				fieldColors[gameState.player2.customization.fieldColor];
 			context.fillRect(
-				boardWidth / 2 + 1,
+				(boardWidth / 2 + 1) * scaleX,
 				0,
-				boardWidth / 2,
-				boardHeight
+				(boardWidth / 2) * scaleX,
+				(boardHeight) * scaleY
 			);
 
 			context.fillStyle =
 				paddleColors[gameState.player1.customization.paddleColor];
 			context.fillRect(
-				gameState.player1.x,
-				gameState.player1.y,
-				gameState.player1.width,
-				gameState.player1.height
+				gameState.player1.x * scaleX,
+				gameState.player1.y * scaleY,
+				gameState.player1.width * scaleX,
+				gameState.player1.height * scaleY
 			);
 
 			context.fillStyle =
 				paddleColors[gameState.player2.customization.paddleColor];
 			context.fillRect(
-				gameState.player2.x,
-				gameState.player2.y,
-				gameState.player2.width,
-				gameState.player2.height
+				gameState.player2.x * scaleX,
+				gameState.player2.y * scaleY,
+				gameState.player2.width * scaleX,
+				gameState.player2.height * scaleY
 			);
 
 			context.fillStyle = "white";
 			context.fillRect(
-				gameState.ball.x,
-				gameState.ball.y,
-				gameState.ball.width,
-				gameState.ball.height
+				gameState.ball.x * scaleX,
+				gameState.ball.y * scaleY,
+				gameState.ball.width * scaleX,
+				gameState.ball.height * scaleY
 			);
 
 			context.fillStyle = "white";
 			for (let i = 10; i < boardHeight; i += 25) {
-				context.fillRect(boardWidth / 2 - 2, i, 5, 5);
+				context.fillRect(
+					(boardWidth / 2 - 2) * scaleX, 
+					i * scaleY, 
+					5 * scaleX, 
+					5 * scaleX
+				);
 			}
 		};
 
@@ -153,8 +161,8 @@ function Board(props: BoardProps) {
 	return (
 		<canvas
 			ref={canvasRef}
-			width={boardWidth}
-			height={boardHeight}
+			// width={boardWidth}
+			// height={boardHeight}
 			className={styles.canvasGame}
 		/>
 	);

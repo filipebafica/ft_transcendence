@@ -14,7 +14,7 @@ export default class GameStateAdapter implements GameStateInterface {
 
   private interval: number = 1000 / 40;
   private step: number = 6;
-  private maxScore: number = 3;
+  private maxScore: number = 900;
 
   private boardHeight: number = 600;
   private boardWidth: number = 800;
