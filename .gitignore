@@ -2,5 +2,3 @@
 .env
 tmp*
 todo
-backend/nestjs/pong/storage
-**/storage
