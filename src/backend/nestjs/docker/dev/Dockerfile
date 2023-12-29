@@ -6,13 +6,10 @@ WORKDIR /usr/src/app
 
 COPY pong .
 
-# Install app dependencies
-RUN npm install
-
-# Creates a "dist" folder with the production build
-RUN npm run build
+COPY docker/dev/script.sh ./script.sh
+RUN chmod +x ./script.sh
 
 EXPOSE 3000
 
 # Start the server using the production build
-CMD ["npm", "run", "start:dev"]
+ENTRYPOINT [ "./script.sh" ]

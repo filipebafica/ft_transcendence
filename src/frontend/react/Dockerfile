@@ -5,8 +5,6 @@ FROM node:18
 WORKDIR /usr/src/app
 
 COPY . .
+RUN chmod +x ./script.sh
 
-# Install app dependencies
-RUN npm install
-
-CMD ["npm", "start"]
+ENTRYPOINT [ "./script.sh" ]
