@@ -11,58 +11,97 @@
 	margin-bottom: 5px;
 }
 
+.screenVertical {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.screenVerticalScore {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-between;
+}
+
+.screenVerticalScore .score {
+	font-size: 20px;
+	text-align: left;
+}
+
+.screenVerticalScore .score:nth-child(2) {
+	font-size: 20px;
+	text-align: right;
+}
+
 .score {
 	display: flex;
 	flex-direction: column;
 	font-size: 30px;
 	font-family: sans-serif;
 	text-align: center;
+	margin-top: 20px;
 }
 
 .board {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 100%;
+}
+
+.board canvas {
+	width: 100%;
 }
 
 .fans {
 	display: flex;
 	flex-direction: row;
+	width: 100%;
 }
 
 .playerFans1 {
 	display: flex;
 	flex-direction: row;
 	margin-right: 20px;
+	width: 50%;
 }
 
 .playerFans2 {
 	display: flex;
 	flex-direction: row;
-	filter: invert(0.1); 
+	filter: invert(0.1);
 	margin-left: 20px;
+	width: 50%;
+}
+
+.jumpingImage {
+	max-width: 25%;
 }
 
 @keyframes jump {
-	0%, 100% {
-	  transform: translateY(0);
+	0%,
+	100% {
+		transform: translateY(0);
 	}
 	50% {
-	  transform: translateY(-20px); /* Adjust the value for more or less height */
+		transform: translateY(
+			-20px
+		); /* Adjust the value for more or less height */
 	}
-  }
-  
-  .jumpingImage {
+}
+
+.jumpingImage {
 	animation: jump 1s ease-in-out infinite;
-  }
-  
-  /* Optional: To make each image jump at a different time */
-  .jumpingImage:nth-child(1) {
+}
+
+/* Optional: To make each image jump at a different time */
+.jumpingImage:nth-child(1) {
 	animation-delay: 0s;
-  }
-  .jumpingImage:nth-child(2) {
+}
+.jumpingImage:nth-child(2) {
 	animation-delay: 0.2s; /* Delay the second image's jump */
-  }
+}
 
 .jumpingImage:nth-child(3) {
 	animation-delay: 0.4s; /* Delay the third image's jump */
