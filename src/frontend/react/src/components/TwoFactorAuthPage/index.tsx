@@ -7,21 +7,29 @@ import { authenticate2FA } from "api/user";
 
 import { AuthContext } from '../../auth'
 
+import { useSnackbar } from 'providers'
+
 const TwoFactorAuthPage = () => {
   const [code, setCode] = useState('');
   const { setToken } = useContext(AuthContext);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
   const location = useLocation();
 
   const handleSubmit = async () => {
-    const res = await authenticate2FA(code.toString());
-
-    const token = res.access_token
-    if (token) {
-      setToken(token)
-      navigate('/home')
-    } 
+    try {
+      const res = await authenticate2FA(code.toString());
+      const token = res.access_token
+      if (token) {
+        setToken(token)
+        navigate('/home')
+      } 
+    }
+    catch (err) {
+      console.log(err)
+      showSnackbar('Something went wrong, try again', 'error')
+    }
   };
 
   useEffect(() => {

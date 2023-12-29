@@ -79,3 +79,20 @@
 	margin-top: 15px;
 	width: 225px;
 }
+
+.roomName {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.exitIcon {
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.exitIcon > svg {
+	width: 25px;
+	height: 25px;
+}

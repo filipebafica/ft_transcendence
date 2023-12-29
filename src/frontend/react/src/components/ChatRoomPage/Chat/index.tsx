@@ -31,6 +31,9 @@ import { roomActionsSocket } from 'socket'
 // Hooks
 import { useSnackbar } from 'providers'
 
+// Icons
+import { IoMdExit } from "react-icons/io";
+
 interface Member {
   isOwner: boolean
   isAdmin: boolean
@@ -220,6 +223,19 @@ const Chat = () => {
     }
   }
 
+  const handleExitRoom = async () => {
+    if (!roomId) return
+    if (!user?.id) return
+
+    try {
+      const res = await removeMember(user?.id, Number(user?.id), roomId)
+      console.log('Exit room res', res)
+    }
+    catch (error) {
+      console.error('Error exiting room:', error)
+    }
+  }
+
 
   // Check for changes in the room members (bans, mutes etc)
   useEffect(() => {
@@ -274,7 +290,12 @@ const Chat = () => {
   return (
     <div className={styles.container}>
       <div className={styles.chatSection}>
-        <h2>Room: {roomName}</h2>
+        <div className={styles.roomName}>
+          <h2>Room: {roomName}</h2>
+          <div onClick={() => handleExitRoom()} title={'Leave room'} className={styles.exitIcon}>
+            <IoMdExit />
+          </div>
+        </div>
         <div className={styles.messagesBox} id="message-list">
           {roomId &&
             (messagesData.messages[roomId!] || []).map((msg: Message, index) => {
