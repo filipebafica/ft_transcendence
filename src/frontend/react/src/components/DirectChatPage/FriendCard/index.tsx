@@ -27,6 +27,7 @@ const FriendCard = ({ friend }: { friend: Friend }) => {
 
 	const handleInvite = () => {
 		// ! SEND GAME INVITE
+		gameSocket.connect();
 		gameSocket.emit(
 			"inviteRouter",
 			JSON.stringify({

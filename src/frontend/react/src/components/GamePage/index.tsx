@@ -35,6 +35,7 @@ function GamePage(props: GamePageProps) {
 					status: "in-game",
 				})
 			);
+			gameSocket.connect();
 			gameSocket.emit(
 				"joinGame",
 				JSON.stringify({
@@ -49,12 +50,18 @@ function GamePage(props: GamePageProps) {
 
 	useEffect(() => {
 		if (!user || !user.id) return;
+		gameSocket.connect();
 		gameSocket.on(user.id.toString(), (newGameId) => {
 			if (typeof newGameId === "number") {
 				setGameId(String(newGameId));
 				setIsConfigComplete(true);
 			}
 		});
+		return () => {
+			console.log("disconnecting from socket user", `${user.id}`);
+			gameSocket.off(`${user.id.toString()}`);
+			gameSocket.disconnect();
+		};
 	}, [user]);
 
 	if (isConfigComplete && gameId && user) {

@@ -1,4 +1,9 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
+import React, {
+	createContext,
+	useEffect,
+	useState,
+	useContext,
+} from "react";
 // import { useNavigate } from "react-router-dom";
 
 import Dialog from "@mui/material/Dialog";
@@ -9,10 +14,11 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 
 // Socket
-import { gameSocket } from "socket";
+import { gameSocket, inviteSocket } from "socket";
 
 // Provider
 import { AuthContext } from "auth";
+import { useSnackbar } from "providers";
 
 interface Message {
 	meta: string;
@@ -28,6 +34,20 @@ export const InviteMatchContext = createContext({
 	setChallengeAccepted: (challengeAccepted: string) => {},
 });
 
+const debounce = (func: any, wait: any) => {
+	let timeout: NodeJS.Timeout;
+
+	return function executedFunction(...args: any) {
+		const later = () => {
+			clearTimeout(timeout);
+			func(...args);
+		};
+
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+	};
+};
+
 export const InviteMatchProvider = (props: { children: any }) => {
 	const { children } = props;
 	const { user } = useContext(AuthContext);
@@ -37,28 +57,28 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		meta: "",
 		data: { to: "", from: "", content: "" },
 	});
+	const { showSnackbar } = useSnackbar();
 
 	// ! ACCEPT GAME
-	const handleAccept = () => {
+	const debouncedAccept = debounce(() => {
+		console.log("accepting game");
 		setInviteArrived(false);
-		// ! SEND ACCEPT TO BACKEND
-		gameSocket.emit(
-			"inviteRouter",
-			JSON.stringify({
-				meta: "invite",
-				data: {
-					to: message.data.from,
-					from: message.data.to,
-					content: "accepted",
-				},
-			})
-		);
-	};
+		gameSocket.connect();
+		gameSocket.emit("inviteRouter", JSON.stringify({
+		  meta: "invite",
+		  data: {
+			to: message.data.from,
+			from: message.data.to,
+			content: "accepted",
+		  },
+		}));
+	  }, 300);
 
 	// ! REJECT GAME
 	const handleRefuse = () => {
 		setInviteArrived(false);
 		// ! SEND REJECT TO BACKEND
+		gameSocket.connect();
 		gameSocket.emit(
 			"inviteRouter",
 			JSON.stringify({
@@ -77,9 +97,9 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		if (!user) return;
 		console.log("connecting to socket", `${user.id}-invite`);
 
-		gameSocket.connect();
+		inviteSocket.connect();
 		// ! RECEIVE INVITE FOR GAME
-		gameSocket.on(`${user.id}-invite`, (msg: any) => {
+		inviteSocket.on(`${user.id}-invite`, (msg: any) => {
 			if (msg.meta === "invite" && msg.data.content === "opened") {
 				setInviteArrived(true);
 				setMessage(msg);
@@ -87,6 +107,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 				msg.meta === "invite" &&
 				msg.data.content === "rejected"
 			) {
+				showSnackbar("Invite was rejected", "error");
 			} else if (msg.meta === "game") {
 				if (
 					typeof msg.data === "string" ||
@@ -98,10 +119,10 @@ export const InviteMatchProvider = (props: { children: any }) => {
 		});
 		return () => {
 			console.log("disconnecting from socket", `${user.id}-invite`);
-			gameSocket.removeAllListeners(`${user.id}-invite`);
-			gameSocket.disconnect();
+			inviteSocket.removeAllListeners(`${user.id}-invite`);
+			inviteSocket.disconnect();
 		};
-	}, [user]);
+	}, [user, showSnackbar]);
 
 	return (
 		// ! INVITE ALERT
@@ -122,7 +143,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleAccept} autoFocus>
+					<Button onClick={debouncedAccept} autoFocus>
 						Yes
 					</Button>
 					<Button onClick={handleRefuse}>No</Button>

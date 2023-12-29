@@ -47,7 +47,7 @@ export class HandleDisconnectService {
 			this.clientManager.removeClientGameMask(gameState.id);
 
 			if (await this.waitingQueue.isOnQueue(disconnectedId) == true) {
-				await this.waitingQueue.remove(disconnectedId);
+				await this.waitingQueue.removeByGameId(gameState.id);
 			}
 
 			await this.invitationRegister.removeOpenedInviteById(disconnectedId);

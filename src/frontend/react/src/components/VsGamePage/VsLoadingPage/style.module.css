@@ -1,0 +1,9 @@
+/* Component styles */
+.loading {
+	height: 60vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 50px;
+}

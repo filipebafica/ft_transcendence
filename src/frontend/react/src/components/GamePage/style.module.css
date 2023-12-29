@@ -19,7 +19,7 @@
 }
 
 .loading {
-	height: 100vh;
+	height: 60vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
