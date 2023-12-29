@@ -202,6 +202,7 @@ export class GameGateway
 					this.gameHistoryAdapter,
 					this.waitingQueue,
 					this.clientManagerAdapter,
+					this.userAdapter,
 				);
 
 				const inviteMessageDTO: InviteMessageDTO = parsedMessage;

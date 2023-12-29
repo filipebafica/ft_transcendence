@@ -11,6 +11,7 @@ import { GameHistoryRepository } from '../../shared/interfaces/game.history.repo
 import { CanPlayersPlayRule } from './rules/can.players.play.rule';
 import { QueueInterface } from '../../shared/interfaces/queue.interface';
 import { ClientManagerInterface } from '../../shared/interfaces/client.manager.interface';
+import { UserRepository } from 'src/core/projects/authentication/login/gateway/user.info.repository';
 
 export class InviteService {
   private openInviteRule: OpenInviteRule;
@@ -26,6 +27,7 @@ export class InviteService {
     private gameHistoryRepository: GameHistoryRepository,
     private waitingQueue: QueueInterface,
     private clientManager: ClientManagerInterface,
+    private userRepository: UserRepository,
   ) {
     this.openInviteRule = new OpenInviteRule(
       this.invitationRegister,
@@ -38,6 +40,7 @@ export class InviteService {
       this.gameManager,
       this.clientManager,
       this.waitingQueue,
+      this.userRepository,
     );
 
     this.rejectedInviteRule = new RejectedInviteRule(
@@ -62,7 +65,6 @@ export class InviteService {
         }),
       );
 
-      //usar adapter para verificar se o usuário esta logado
       if (request.message.data.content == InviteStatus.Opened) {
         if ((await this.canPlayersPlayRule.apply(request)) == false) {
           throw Error(
