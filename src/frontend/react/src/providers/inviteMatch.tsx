@@ -3,7 +3,6 @@ import React, {
 	useEffect,
 	useState,
 	useContext,
-	useCallback,
 } from "react";
 // import { useNavigate } from "react-router-dom";
 
@@ -123,7 +122,7 @@ export const InviteMatchProvider = (props: { children: any }) => {
 			inviteSocket.removeAllListeners(`${user.id}-invite`);
 			inviteSocket.disconnect();
 		};
-	}, [user]);
+	}, [user, showSnackbar]);
 
 	return (
 		// ! INVITE ALERT
