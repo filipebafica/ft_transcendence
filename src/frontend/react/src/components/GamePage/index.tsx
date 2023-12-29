@@ -58,7 +58,7 @@ function GamePage(props: GamePageProps) {
 			}
 		});
 		return () => {
-			console.log("disconnecting from socket user", `${user.id}`);
+			console.log("disconnecting from socket GamePage user", `${user.id}`);
 			gameSocket.off(`${user.id.toString()}`);
 			gameSocket.disconnect();
 		};

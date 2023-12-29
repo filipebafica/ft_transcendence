@@ -21,7 +21,7 @@ import { Badge } from "@mui/material";
 import { friendsStatusSocket } from "socket";
 
 const Header = () => {
-	const { user, signOut /*fakeSignIn*/ } = useContext(AuthContext);
+	const { user, signOut, /*fakeSignIn*/ } = useContext(AuthContext);
 	const { messagesData } = useContext(DirectChatContext);
 	const { messagesData: messagesDataRoom } = useContext(RoomChatContext);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
