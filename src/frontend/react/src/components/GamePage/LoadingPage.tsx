@@ -42,6 +42,7 @@ function LoadingPage(props: LoadingProps) {
 		});
 		return () => {
 			console.log("disconnecting from socket game", `${gameId}`);
+			gameSocket.off(`${gameId}`);
 			gameSocket.disconnect();
 		};
 	}, [gameId, playerId, navigate]);
