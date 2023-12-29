@@ -21,14 +21,14 @@ import { Badge } from "@mui/material";
 import { friendsStatusSocket } from "socket";
 
 const Header = () => {
-	const { user, signOut, fakeSignIn } = useContext(AuthContext);
+	const { user, signOut /*fakeSignIn*/ } = useContext(AuthContext);
 	const { messagesData } = useContext(DirectChatContext);
 	const { messagesData: messagesDataRoom } = useContext(RoomChatContext);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 	const navigate = useNavigate();
 
 	// For dev purposes
-	const [id, setId] = useState(user?.id.toString() || "1");
+	// const [id, setId] = useState(user?.id.toString() || "1");
 
 	const handleSignIn = async () => {
 		try {
@@ -47,21 +47,21 @@ const Header = () => {
 	};
 
 	// For dev Purposes
-	const handleFakeSignIn = async () => {
-		try {
-			const res = await fakeSignIn(id);
-			console.log("Test", res);
-			friendsStatusSocket.emit(
-				"statusRouter",
-				JSON.stringify({
-					userId: id,
-					status: "online",
-				})
-			);
-		} catch (err) {
-			console.log(err);
-		}
-	};
+	// const handleFakeSignIn = async () => {
+	// 	try {
+	// 		const res = await fakeSignIn(id);
+	// 		console.log("Test", res);
+	// 		friendsStatusSocket.emit(
+	// 			"statusRouter",
+	// 			JSON.stringify({
+	// 				userId: id,
+	// 				status: "online",
+	// 			})
+	// 		);
+	// 	} catch (err) {
+	// 		console.log(err);
+	// 	}
+	// };
 
 	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorElUser(event.currentTarget);
@@ -135,7 +135,7 @@ const Header = () => {
 			{user && (
 				<div className={styles.loggedOutNavigation}>
 					{/* // For Dev Purposes */}
-					<input
+					{/* <input
 						value={id}
 						onChange={(e) => setId(e.target.value)}
 						style={{ width: "30px" }}
@@ -145,7 +145,7 @@ const Header = () => {
 						onClick={() => handleFakeSignIn()}
 					>
 						Fake Log In
-					</Button> 
+					</Button> */}
 					<Button
 						variant="contained"
 						onClick={() => {

@@ -101,11 +101,16 @@ function Board(props: BoardProps) {
 
 		const renderGameState = (gameState: GameState) => {
 			const scaleX = canvas!.width / boardWidth;
-    		const scaleY = canvas!.height / boardHeight;
-			
+			const scaleY = canvas!.height / boardHeight;
+
 			context.fillStyle =
 				fieldColors[gameState.player1.customization.fieldColor];
-			context.fillRect(0, 0, (boardWidth / 2 + 1) * scaleX, boardHeight * scaleY);
+			context.fillRect(
+				0,
+				0,
+				(boardWidth / 2 + 1) * scaleX,
+				boardHeight * scaleY
+			);
 
 			context.fillStyle =
 				fieldColors[gameState.player2.customization.fieldColor];
@@ -113,25 +118,25 @@ function Board(props: BoardProps) {
 				(boardWidth / 2 + 1) * scaleX,
 				0,
 				(boardWidth / 2) * scaleX,
-				(boardHeight) * scaleY
+				boardHeight * scaleY
 			);
 
 			context.fillStyle =
 				paddleColors[gameState.player1.customization.paddleColor];
 			context.fillRect(
-				gameState.player1.x * scaleX,
-				gameState.player1.y * scaleY,
-				gameState.player1.width * scaleX,
-				gameState.player1.height * scaleY
+				Math.round(gameState.player1.x * scaleX),
+				Math.round(gameState.player1.y * scaleY),
+				Math.round(gameState.player1.width * scaleX),
+				Math.round(gameState.player1.height * scaleY)
 			);
 
 			context.fillStyle =
 				paddleColors[gameState.player2.customization.paddleColor];
 			context.fillRect(
-				gameState.player2.x * scaleX,
-				gameState.player2.y * scaleY,
-				gameState.player2.width * scaleX,
-				gameState.player2.height * scaleY
+				Math.round(gameState.player2.x * scaleX),
+				Math.round(gameState.player2.y * scaleY),
+				Math.round(gameState.player2.width * scaleX),
+				Math.round(gameState.player2.height * scaleY)
 			);
 
 			context.fillStyle = "white";
@@ -145,10 +150,10 @@ function Board(props: BoardProps) {
 			context.fillStyle = "white";
 			for (let i = 10; i < boardHeight; i += 25) {
 				context.fillRect(
-					(boardWidth / 2 - 2) * scaleX, 
-					i * scaleY, 
-					5 * scaleX, 
-					5 * scaleX
+					Math.round((boardWidth / 2 - 2) * scaleX),
+					Math.round(i * scaleY),
+					Math.round(5 * scaleX),
+					Math.round(5 * scaleX)
 				);
 			}
 		};
