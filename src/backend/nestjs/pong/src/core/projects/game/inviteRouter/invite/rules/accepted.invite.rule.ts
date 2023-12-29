@@ -8,6 +8,8 @@ import { ClientManagerInterface } from '../../../shared/interfaces/client.manage
 import { InviteDTO } from '../dtos/invite.dto';
 import { QueueInterface } from '../../../shared/interfaces/queue.interface';
 import { GameType } from '../../../shared/enums/game.type';
+import { UserRepository } from 'src/core/projects/authentication/login/gateway/user.info.repository';
+import { User } from 'src/app/entities/user.entity';
 
 export class AcceptedInviteRule {
   constructor(
@@ -16,16 +18,17 @@ export class AcceptedInviteRule {
     private gameManager: GameStateInterface,
     private clientManager: ClientManagerInterface,
     private waitingQueue: QueueInterface,
+    private userRepository: UserRepository,
   ) {}
 
   public async apply(request: Request, inviteStatus: InviteStatus) {
-    const mockePlayerOneName: string = 'PlayerOne';
-    const mockedPlayerTwoName: string = 'PlayerTwo';
+    const playerOneName: string = await this.getUserName(request.message.data.to);
+    const playerTwoName: string = await this.getUserName(request.message.data.from);
     const gameState: GameState = await this.gameManager.createPrivateGame(
       request.message.data.to,
-      mockePlayerOneName,
+      playerOneName,
       request.message.data.from,
-      mockedPlayerTwoName,
+      playerTwoName,
     );
 
     const message = {
@@ -81,5 +84,15 @@ export class AcceptedInviteRule {
     await this.invitationRegister.rejectOpenedInvites(
       request.message.data.from,
     );
+  }
+
+  private async getUserName(userId: number): Promise<string> {
+    const user: User = await this.userRepository.getUser({
+        id: userId,
+    });
+
+    const userName: string = user?.nick_name || 'unknown';
+
+    return userName;
   }
 }
