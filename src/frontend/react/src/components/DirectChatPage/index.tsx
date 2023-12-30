@@ -107,10 +107,12 @@ const DirectChatPage = (props: MessageBoxProps) => {
     const pendingMessages = messagesData.pendingMessages
     if (pendingMessages[friendId] && pendingMessages[friendId] > 0) {
       pendingMessages[friendId] = 0
-      setMessagesData({
+      const newMessageData = {
         messages: messagesData.messages,
         pendingMessages: pendingMessages,
-      })
+      }
+      setMessagesData(newMessageData)
+      localStorage.setItem(`messagesData-${userId}`, JSON.stringify(newMessageData))
     }
   }, [userId, friendId, messagesData, setMessagesData])
 

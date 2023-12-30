@@ -70,7 +70,7 @@ interface RoomActionMessage {
 
 const Chat = () => {
   const { user } = useContext(AuthContext)
-  const { messagesData, cleanPendingMessages } = useContext(RoomChatContext)
+  const { messagesData, cleanPendingMessages, reloadRooms } = useContext(RoomChatContext)
 
   const [members, setMembers] = useState([] as Member[])
   const [userRole, setUserRole] = useState<'admin' | 'owner' | 'member'>('member')
@@ -251,6 +251,7 @@ const Chat = () => {
       } else if (message.action === roomActions.USER_HAS_BEEN_BANNED_FROM_ROOM) {
         if (isCurrentUser) {
           setShowAlert(true)
+          reloadRooms()
           setAlertMessage('You have been banned from this room')
         }
         fetchMembers()
@@ -267,6 +268,7 @@ const Chat = () => {
       } else if (message.action === roomActions.USER_HAS_BEEN_REMOVED_FROM_ROOM) {
         if (message.user.toString() === userId?.toString()) {
           setShowAlert(true)
+          reloadRooms()
           setAlertMessage('You have been removed from this room')
         }
         fetchMembers()
@@ -285,7 +287,7 @@ const Chat = () => {
       console.log('Removing listener', `${roomId}-room-participants-action-message`)
       roomActionsSocket.off(`${roomId}-room-participants-action-message`)
     }
-  }, [roomId, userId, userRole, fetchMembers, showSnackbar]) 
+  }, [roomId, userId, userRole, fetchMembers, showSnackbar, reloadRooms]) 
 
   return (
     <div className={styles.container}>
