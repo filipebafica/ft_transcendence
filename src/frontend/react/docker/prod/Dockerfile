@@ -5,10 +5,6 @@ FROM node:18
 WORKDIR /usr/src/app
 
 COPY . .
-
 RUN npm install
-RUN npm install -D serve
 
-RUN npm run build
-
-CMD ["npx", "serve", "build", "-p", "3001"]
+CMD ["npm", "start"]
