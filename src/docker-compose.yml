@@ -55,5 +55,6 @@ services:
       - .env
     build:
       context: frontend/react
+      dockerfile: ${BUILD_ENVIROMENT}
     ports:
       - 3001:3001

@@ -6,10 +6,9 @@ WORKDIR /usr/src/app
 
 COPY pong .
 
-COPY docker/prod/script.sh ./script.sh
-RUN chmod +x ./script.sh
+RUN npm install
+RUN npm run build
 
 EXPOSE 3000
 
-# Start the server using the production build
-ENTRYPOINT [ "./script.sh" ]
+CMD [ "npm", "run", "start:prod" ]

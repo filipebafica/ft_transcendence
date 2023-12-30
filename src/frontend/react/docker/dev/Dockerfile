@@ -5,6 +5,6 @@ FROM node:18
 WORKDIR /usr/src/app
 
 COPY . .
-RUN chmod +x ./script.sh
+RUN npm install
 
-ENTRYPOINT [ "./script.sh" ]
+CMD ["npm", "start"]
