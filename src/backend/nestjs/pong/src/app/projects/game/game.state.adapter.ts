@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import Ball from 'src/core/projects/game/shared/entities/ball';
 import Canvas from 'src/core/projects/game/shared/entities/canvas';
 import GameState from 'src/core/projects/game/shared/entities/game.state';
@@ -23,11 +22,8 @@ export default class GameStateAdapter implements GameStateInterface {
   private ballWidth: number = 10;
   private ballHeight: number = 10;
   private initialPlayerSpeed: number = 0;
-  private logger: Logger;
 
-  constructor(private gameHistoryRepository: GameHistoryRepository) {
-    this.logger = new Logger(GameStateAdapter.name);
-  }
+  constructor(private gameHistoryRepository: GameHistoryRepository) {}
 
   public async createGame(
     playerId: number,
@@ -73,6 +69,9 @@ export default class GameStateAdapter implements GameStateInterface {
     }
     this.openedGames.delete(gameId);
 
+    if (gameState.status == GameStatus.Finished) {
+      return gameState;
+    }
     gameState.status = GameStatus.Finished;
 
     //there is only one player on the game and they've disconnected
@@ -203,9 +202,6 @@ export default class GameStateAdapter implements GameStateInterface {
 
       ball.vX = Math.min(Math.abs(ball.vX), 20) * signVX;
       ball.vY = Math.min(Math.abs(ball.vY), 20) * signVY;
-
-      this.logger.log(`ball.vX: ${ball.vX}`);
-      this.logger.log(`ball.vY: ${ball.vY}`);
 
       return ball;
     };
